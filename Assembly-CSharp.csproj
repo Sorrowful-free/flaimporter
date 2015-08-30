@@ -50,7 +50,7 @@
     <Compile Include="Assets\FlaExporter\Data\RawData\FillStyles\FlaBaseFillStyleRaw.cs" />
     <Compile Include="Assets\FlaExporter\Data\RawData\FlaDocumentRaw.cs" />
     <Compile Include="Assets\FlaExporter\Data\RawData\FillStyles\FlaFillStyleRaw.cs" />
-    <Compile Include="Assets\FlaExporter\Data\RawData\FrameElements\FlaEdgeRaw.cs" />
+    <Compile Include="Assets\FlaExporter\Data\RawData\Geom\FlaEdgeRaw.cs" />
     <Compile Include="Assets\FlaExporter\Data\RawData\StorkeStyle\FlaBaseStorkyStyleRaw.cs" />
     <Compile Include="Assets\FlaExporter\Data\RawData\FrameElements\FlaFrameElementRaw.cs" />
     <Compile Include="Assets\FlaExporter\Data\RawData\FlaFrameRaw.cs" />

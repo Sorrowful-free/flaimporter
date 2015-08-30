@@ -1,6 +1,6 @@
 using System.Xml.Serialization;
 
-namespace Assets.FlaExporter.Data.RawData.FrameElements
+namespace Assets.FlaExporter.Data.RawData.Geom
 {
     public class FlaEdgeRaw
     {
