@@ -27,6 +27,6 @@ namespace Assets.FlaExporter.Data.RawData
         [XmlArray("elements")]
         [XmlArrayItem("DOMShape",Type = typeof(FlaShapeRaw))]
         [XmlArrayItem("DOMSymbolInstance", Type = typeof(FlaSymbolInstanceRaw))]
-        public List<FlaFrameElementRaw> Elements;
+        public List<FlaFrameElementRaw> Elements; 
     }
 }
