@@ -3,13 +3,36 @@ using System.Xml.Serialization;
 
 namespace Assets.FlaExporter.Data.RawData
 {
-    [XmlRoot]
+   [XmlRoot("DOMDocument", Namespace = "http://ns.adobe.com/xfl/2008/")]
+
     public class FlaDocumentRaw
     {
+        [XmlAttribute("backgroundColor")] 
+        public string BackgroundColor;
+
+        [XmlAttribute("width")] 
+        public int Width;
+
+        [XmlAttribute("height")]
+        public int Height;
+
+        [XmlAttribute("frameRate")]
+        public int FrameRate;
+
+        [XmlAttribute("currentTimeline")]
+        public int CurrentTimeline;
+
+        [XmlAttribute("xflVersion")]
+        public string XflVersion;
+        
         [XmlArray("symbols")]
         [XmlArrayItem("Include")]
         public List<FlaIncludeRaw> IncludeSymbols;
 
+        [XmlArray("media")]
+        [XmlArrayItem("DOMBitmapItem")]
+        public List<FlaBitmapItemRaw> IncludeBitmaps;
+        
         [XmlArray("timelines")] 
         [XmlArrayItem("DOMTimeline")]
         public List<FlaTimeLineRaw> Timelines;
@@ -18,8 +41,10 @@ namespace Assets.FlaExporter.Data.RawData
         [XmlArrayItem("PD")] 
         public List<FlaPersistentDataRaw> PersistentData;
 
-        //public List<FlaPublishingHistoryRaw> History;
-        //public List<FlaPrinterSettingsRaw> PrinterSettings;
-
+        public override string ToString()
+        {
+            return string.Format("width:{0}, height:{1}, frameRate:{2}, xflVersion:{3}, currentTimeline:{4}, backgroundColor:{5}",
+                                    Width,Height,FrameRate,XflVersion,CurrentTimeline,BackgroundColor);
+        }
     }
 }

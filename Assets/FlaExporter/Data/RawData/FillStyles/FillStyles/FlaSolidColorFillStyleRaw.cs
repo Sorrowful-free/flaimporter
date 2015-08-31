@@ -1,4 +1,4 @@
-﻿namespace Assets.FlaExporter.Data.RawData.FillStyles
+﻿namespace Assets.FlaExporter.Data.RawData.FillStyles.FillStyles
 {
     public class FlaSolidColorFillStyleRaw : FlaBaseFillStyleRaw
     {

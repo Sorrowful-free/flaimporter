@@ -14,5 +14,10 @@ namespace Assets.FlaExporter.Data.RawData
         [XmlArray("layers")]
         [XmlArrayItem("DOMLayer")]
         public List<FlaLayerRaw> Layers;
+
+        public override string ToString()
+        {
+            return string.Format("name:{0}, currentFrame:{1}", Name, CurrentFrame);
+        }
     }
 }
