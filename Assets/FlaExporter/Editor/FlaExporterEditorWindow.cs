@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using Assets.BundleExporter.Editor.Helpers;
 using Assets.FlaExporter.Data.RawData;
 using Assets.Scripts.Helpers.Extensions;
@@ -25,15 +28,7 @@ namespace Assets.FlaExporter.Editor
                 //var br = new BinaryReader(new MemoryStream(data));
                // Debug.Log(br.ReadString() + br.ReadString() + br.ReadString());
                 var fla = data.ObjectFromXML<FlaDocumentRaw>();
-                Debug.Log(fla+"\n"+fla.Timelines.JoinToString("\n"));
-                foreach (var timeLineRaw in fla.Timelines)
-                {
-                    Debug.Log("ololo");
-                    foreach (var layer in timeLineRaw.Layers)
-                    {
-                        Debug.Log("layer:"+layer.ToString());
-                    }
-                }
+                Debug.Log(fla.PrettyPrintObjects());
             }
         }
     }
