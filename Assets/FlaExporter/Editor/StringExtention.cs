@@ -10,7 +10,7 @@ namespace Assets.BundleExporter.Editor.Helpers
             string result = String.Empty;
             foreach (var item in enumerable)
             {
-                result += item + separator;
+                result += (item == null?"null":item.ToString()) + separator;
             }
             if(result.Length >= 1)
                 result = result.Substring(0,result.Length-1);
