@@ -46,6 +46,16 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\FlaExporter\Data\RawData\Effects\Color\FlaColorElementRaw.cs" />
+     <Compile Include="Assets\FlaExporter\Data\RawData\Effects\Color\FlaColorRaw.cs" />
+     <Compile Include="Assets\FlaExporter\Data\RawData\Effects\Filters\FlaAdjustColorFilterRaw.cs" />
+     <Compile Include="Assets\FlaExporter\Data\RawData\Effects\Filters\FlaBaseFilterRaw.cs" />
+     <Compile Include="Assets\FlaExporter\Data\RawData\Effects\Filters\FlaBevelFilterRaw.cs" />
+     <Compile Include="Assets\FlaExporter\Data\RawData\Effects\Filters\FlaBlurFilterRaw.cs" />
+     <Compile Include="Assets\FlaExporter\Data\RawData\Effects\Filters\FlaDropShadowFilterRaw.cs" />
+     <Compile Include="Assets\FlaExporter\Data\RawData\Effects\Filters\FlaGlowFilterRaw.cs" />
+     <Compile Include="Assets\FlaExporter\Data\RawData\Effects\Filters\FlaGradientBevelFilterRaw.cs" />
+     <Compile Include="Assets\FlaExporter\Data\RawData\Effects\Filters\FlaGradientGlowFilterRaw.cs" />
      <Compile Include="Assets\FlaExporter\Data\RawData\FillStyles\FillStyles\FlaBaseFillStyleRaw.cs" />
      <Compile Include="Assets\FlaExporter\Data\RawData\FillStyles\FillStyles\FlaBitmapFillRaw.cs" />
      <Compile Include="Assets\FlaExporter\Data\RawData\FillStyles\FillStyles\FlaSolidColorFillStyleRaw.cs" />
@@ -58,6 +68,7 @@
      <Compile Include="Assets\FlaExporter\Data\RawData\FlaDocumentRaw.cs" />
      <Compile Include="Assets\FlaExporter\Data\RawData\FlaFrameRaw.cs" />
      <Compile Include="Assets\FlaExporter\Data\RawData\FlaIncludeRaw.cs" />
+     <Compile Include="Assets\FlaExporter\Data\RawData\FlaKeyFrame.cs" />
      <Compile Include="Assets\FlaExporter\Data\RawData\FlaLayerRaw.cs" />
      <Compile Include="Assets\FlaExporter\Data\RawData\FlaPersistentDataRaw.cs" />
      <Compile Include="Assets\FlaExporter\Data\RawData\FlaSymbolItemRaw.cs" />
@@ -71,6 +82,19 @@
      <Compile Include="Assets\FlaExporter\Data\RawData\Geom\FlaMatrixRaw.cs" />
      <Compile Include="Assets\FlaExporter\Data\RawData\Geom\FlaPointRaw.cs" />
      <Compile Include="Assets\FlaExporter\Data\RawData\Geom\FlaTransformationPointElementRaw.cs" />
+     <Compile Include="Assets\FlaExporter\Data\RawData\IKTree\FlaDataPointRaw.cs" />
+     <Compile Include="Assets\FlaExporter\Data\RawData\IKTree\FlaIKTreeRaw.cs" />
+     <Compile Include="Assets\FlaExporter\Data\RawData\IKTree\FlaIkContourRaw.cs" />
+     <Compile Include="Assets\FlaExporter\Data\RawData\IKTree\FlaIkNodeRaw.cs" />
+     <Compile Include="Assets\FlaExporter\Data\RawData\IKTree\FlaIkStateRaw.cs" />
+     <Compile Include="Assets\FlaExporter\Data\RawData\MotionTween\FlaAnimationCoreRaw.cs" />
+     <Compile Include="Assets\FlaExporter\Data\RawData\MotionTween\FlaMotionObjectXMLRaw.cs" />
+     <Compile Include="Assets\FlaExporter\Data\RawData\MotionTween\FlaPropertyContainerRaw.cs" />
+     <Compile Include="Assets\FlaExporter\Data\RawData\MotionTween\FlaPropertyRaw.cs" />
+     <Compile Include="Assets\FlaExporter\Data\RawData\MotionTween\FlaTimeMapRaw.cs" />
+     <Compile Include="Assets\FlaExporter\Data\RawData\ShapeTween\FlaMorphCurvesRaw.cs" />
+     <Compile Include="Assets\FlaExporter\Data\RawData\ShapeTween\FlaMorphSegmentRaw.cs" />
+     <Compile Include="Assets\FlaExporter\Data\RawData\ShapeTween\FlaMorphShapeRaw.cs" />
      <Compile Include="Assets\FlaExporter\Data\RawData\StorkeStyle\FlaStorkeFillRaw.cs" />
      <Compile Include="Assets\FlaExporter\Data\RawData\StorkeStyle\FlaStorkeStyleRaw.cs" />
      <Compile Include="Assets\FlaExporter\Data\RawData\StorkeStyle\StorkeStyles\FlaBaseStorkyStyleRaw.cs" />

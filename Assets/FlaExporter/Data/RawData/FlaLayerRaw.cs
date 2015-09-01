@@ -23,6 +23,15 @@ namespace Assets.FlaExporter.Data.RawData
         [XmlAttribute("isSelected")] 
         public bool IsSelected;
 
+        [XmlAttribute("locked")] 
+        public bool Locked;
+
+        [XmlAttribute("layerType")]
+        public string LayerType;
+
+        [XmlAttribute("parentLayerIndex")]
+        public int ParentLayerIndex;
+
         [XmlArray("frames")] 
         [XmlArrayItem("DOMFrame")] 
         public List<FlaFrameRaw> Frames;
