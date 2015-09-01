@@ -8,11 +8,11 @@ namespace Assets.FlaExporter.Data.RawData.StorkeStyle
         [XmlAttribute("index")] 
         public int Index;
 
-        [XmlElement("SolidStroke", typeof(FlaSolidStrokeStyleRaw))]
-        [XmlElement("DashedStroke", typeof(FlaDashedStrokeStyleRaw))]
-        [XmlElement("DottedStroke", typeof(FlaDottedStrokeStyleRaw))]
-        [XmlElement("RaggedStroke", typeof(FlaRaggedStrokeStyleRaw))]
-        [XmlElement("StippleStroke", typeof(FlaStippleStrokeStyleRaw))]
+        [XmlElement("SolidStroke", Type = typeof(FlaSolidStrokeStyleRaw))]
+        [XmlElement("DashedStroke", Type = typeof(FlaDashedStrokeStyleRaw))]
+        [XmlElement("DottedStroke", Type = typeof(FlaDottedStrokeStyleRaw))]
+        [XmlElement("RaggedStroke", Type = typeof(FlaRaggedStrokeStyleRaw))]
+        [XmlElement("StippleStroke", Type = typeof(FlaStippleStrokeStyleRaw))]
         public FlaBaseStorkyStyleRaw StorkyStyle;
     }
 }

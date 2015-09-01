@@ -9,10 +9,10 @@ namespace Assets.FlaExporter.Data.RawData.FillStyles
         [XmlAttribute("index")] 
         public int Index;
 
-        [XmlElement("SolidColor", typeof(FlaSolidColorFillStyleRaw))]
-        [XmlElement("LinearGradient", typeof(FlaLinearGradientFillStyleRaw))]
-        [XmlElement("RadialGradient", typeof(FlaRadialGradientFillStyleRaw))]
-        [XmlElement("BitmapFill", typeof(FlaBitmapFillRaw))]
+        [XmlElement("SolidColor", Type = typeof(FlaSolidColorFillStyleRaw))]
+        [XmlElement("LinearGradient", Type = typeof(FlaLinearGradientFillStyleRaw))]
+        [XmlElement("RadialGradient", Type = typeof(FlaRadialGradientFillStyleRaw))]
+        [XmlElement("BitmapFill", Type = typeof(FlaBitmapFillRaw))]
         public FlaBaseFillStyleRaw FillStyle;
     }
 }

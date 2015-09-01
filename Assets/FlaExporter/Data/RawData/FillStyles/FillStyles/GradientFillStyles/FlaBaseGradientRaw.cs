@@ -9,10 +9,11 @@ namespace Assets.FlaExporter.Data.RawData.FillStyles.FillStyles.GradientFillStyl
         [XmlAttribute("spreadMethod")]
         public string SpreadMethod;
 
-        [XmlElement("matrix")]
+        [XmlElement("matrix", Type = typeof(FlaMatrixElemetRaw))]
         public FlaMatrixElemetRaw Matrix;
 
-        [XmlArrayItem("GradientEntry")]
+        [XmlElement("GradientEntry", Type = typeof(FlaGradientEntryRaw))]
         public List<FlaGradientEntryRaw> GradientEntries;
+
     }
 }

@@ -1,9 +1,6 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Assets.BundleExporter.Editor.Helpers;
-using Debug = UnityEngine.Debug;
 
 namespace Assets.FlaExporter.Editor
 {
@@ -16,48 +13,37 @@ namespace Assets.FlaExporter.Editor
 
         private static string PrintObj(object obj,int depth)
         {
+           
+            if (obj is string)
+            {
+                return obj as string + "\n";
+            }
+            if (obj is IEnumerable)
+            {
+                return PrintIEnumerable(obj as IEnumerable, depth);
+            }
+            if (obj == null)
+            {
+                return "null\n";
+            }
+            var resultString = "";
             var separator = "";
             for (int i = 0; i < depth; i++)
             {
                 separator += "-";
             }
-            if (obj is string)
-            {
-                return obj as string;
-            }
-            if (obj is IEnumerable)
-            {
-                return separator+ PrintIEnumerable(obj as IEnumerable, depth);
-            }
-            if (obj == null)
-            {
-                return separator+"null";
-            }
-            var resultString = "\n";
-            
+            if (depth > 0)
+                resultString += "\n";
             var objType = obj.GetType();
             var props = objType.GetProperties();
             var fields = objType.GetFields();
             if (props.Length > 0)
-                resultString += props.Select(e => separator + (e.PropertyType.IsValueType ?  e.Name + ":" + e.GetValue(obj, null) : e.Name + ":" + PrintObj(e.GetValue(obj, null), depth + 1))).JoinToString("\n");
+                resultString += props.Select(e => (e.PropertyType.IsValueType ? separator + e.Name + ":" + e.GetValue(obj, null) +"\n": separator + e.Name + ":" + PrintObj(e.GetValue(obj, null), depth + 1))).JoinToString("");
 
             if (fields.Length > 0)
-                resultString += fields.Select(e => separator + (e.FieldType.IsValueType ? e.Name + ":" + e.GetValue(obj) : e.Name + ":" + PrintObj(e.GetValue(obj), depth + 1))).JoinToString("\n");
-            //if(props.Length>0)
-            //resultString += props.Select(e =>
-            //            e.PropertyType.IsValueType
-            //                ? e.Name + ":" + e.GetValue(obj, null)
-            //                : typeof (IEnumerable).IsAssignableFrom(e.PropertyType) && e.PropertyType != typeof(string)
-            //                    ? e.Name + ":" + PrintIEnumerable(e.GetValue(obj, null) as IEnumerable)
-            //                    : e.Name + ":" + PrintObj(e.GetValue(obj, null))).JoinToString("\n");
-            //if (fields.Length > 0)
-            //resultString += fields.Select(e =>
-            //            e.FieldType.IsValueType
-            //                ? e.Name + ":" + e.GetValue(obj)
-            //                : typeof(IEnumerable).IsAssignableFrom(e.FieldType) && e.FieldType != typeof(string)
-            //                    ? e.Name + ":" + PrintIEnumerable(e.GetValue(obj) as IEnumerable)
-            //                    : e.Name + ":" + PrintObj(e.GetValue(obj))).JoinToString("\n");
-            return resultString;
+                resultString += fields.Select(e => (e.FieldType.IsValueType ? separator + e.Name + ":" + e.GetValue(obj) + "\n" : separator + e.Name + ":" + PrintObj(e.GetValue(obj), depth + 1))).JoinToString("");
+            
+            return resultString + "\n";
         }
         
         private static string PrintIEnumerable(IEnumerable enumerable,int depth)
@@ -66,13 +52,18 @@ namespace Assets.FlaExporter.Editor
             {
                 return "null";
             }
-           
-           
-            var result = "";
+
+            var separator = "";
+            for (int i = 0; i < depth; i++)
+            {
+                separator += "-";
+            }
+            var result = "\n";
             
             foreach (var element in enumerable)
             {
-                result += PrintObj(element, depth ) + "\n";
+                result += "\n" + separator+"+";
+                result += PrintObj(element, depth );
             }
             return result;
         }

@@ -25,8 +25,6 @@ namespace Assets.FlaExporter.Editor
             {
                 var path = EditorUtility.OpenFilePanel("fla", "Assets", "xml");
                 var data = File.ReadAllBytes(path);
-                //var br = new BinaryReader(new MemoryStream(data));
-               // Debug.Log(br.ReadString() + br.ReadString() + br.ReadString());
                 var fla = data.ObjectFromXML<FlaDocumentRaw>();
                 Debug.Log(fla.PrettyPrintObjects());
             }
