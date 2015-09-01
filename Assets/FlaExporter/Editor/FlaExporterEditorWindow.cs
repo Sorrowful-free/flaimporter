@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.IO.Compression;
 using Assets.FlaExporter.Data.RawData;
 using Assets.Scripts.Helpers.Extensions;
 using Ionic.Zip;
@@ -27,19 +26,23 @@ namespace Assets.FlaExporter.Editor
                     return;
                 }
 
-                if (path.ToLower().EndsWith(".fla"))
-                {
-                    ProcessZip(path);
-                    return;
-                }
-                else if (path.ToLower().EndsWith(".xml"))
-                {
-                    var data = File.ReadAllBytes(path);
-                    ProcessDocumentXml(data);
-                    return;
-                }
-                Debug.Log("it is no flash file");
+                ProcessPath(path);
             }
+        }
+
+        private void ProcessPath(string path)
+        {
+            if (path.ToLower().EndsWith(".fla"))
+            {
+                ProcessZip(path);
+                return;
+            }
+            else if (path.ToLower().EndsWith(".xml"))
+            {
+                ProcessXMLFile(path);
+                return;
+            }
+            Debug.Log("it is no flash file");
         }
 
         private void ProcessZip(string path)
@@ -63,14 +66,42 @@ namespace Assets.FlaExporter.Editor
             ProcessDocumentXml(writeSpace.ToArray());
         }
 
+        private void ProcessXMLFile(string path)
+        {
+            var stringXML = File.ReadAllText(path);
+            var data = File.ReadAllBytes(path);
+            if (stringXML.StartsWith("<DOMDocument"))
+            {
+                ProcessDocumentXml(data);
+            }
+            else if (stringXML.StartsWith("<DOMSymbolItem"))
+            {
+                ProcessSymbolXml(data); 
+            }
+            
+        }
+
+        private void ProcessSymbolXml(byte[] bytes)
+        {
+            var fla = bytes.ObjectFromXML<FlaSymbolItemRaw>();
+            ProcessFlaSymbol(fla);
+        }
+
+        private void ProcessFlaSymbol(FlaSymbolItemRaw flaData)
+        {
+            Debug.Log(flaData.PrettyPrintObjects());
+        }
+
         private void ProcessDocumentXml(byte[] bytes)
         {
             var fla = bytes.ObjectFromXML<FlaDocumentRaw>(); 
-            ProcessFla(fla);
+            ProcessFlaDocument(fla);
         }
 
-        private void ProcessFla(FlaDocumentRaw flaData)
+        private void ProcessFlaDocument(FlaDocumentRaw flaData)
         {
+            Debug.Log(flaData.PrettyPrintObjects());
+            return;
             foreach (var timeline in flaData.Timelines)
             {
                 var timelineGO = new GameObject(timeline.Name);
