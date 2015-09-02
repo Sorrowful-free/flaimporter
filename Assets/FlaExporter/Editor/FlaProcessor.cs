@@ -45,7 +45,7 @@ namespace Assets.FlaExporter.Editor
             var sprite = spritesAsObjects.FirstOrDefault(e => e.name == FolderAndFileUtils.RemoveExtention(flaBitmapItem.Href)) as Sprite;
             bitmapSriteRenderer.sprite = sprite;
             PrefabUtility.CreatePrefab("Assets"+BitmapSymbolsFolder + flaBitmapItem.Name+".prefab", bitmapSymbolGO);
-
+            GameObject.DestroyImmediate(bitmapSymbolGO);
         }
 
 
