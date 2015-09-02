@@ -1,6 +1,7 @@
 ﻿using System.IO;
-using Assets.FlaExporter.Data.RawData;
-using Assets.Scripts.Helpers.Extensions;
+using System.Linq;
+using Assets.FlaExporter.Editor.Extentions;
+using Assets.FlaExporter.Editor.Utils;
 using Ionic.Zip;
 using UnityEditor;
 using UnityEngine;
@@ -16,9 +17,13 @@ namespace Assets.FlaExporter.Editor
             window.Show();
         }
 
+        
+        private const string BitmapSymbolsTextureFolderFolder = "/BitmapSymbols/Textures/";
+        
+
         private void OnGUI()
         {
-            if (GUILayout.Button("OpenDoc"))
+            if (GUILayout.Button("OpenFLA"))
             {
                 var path = EditorUtility.OpenFilePanel("open flash file (fla;xml)", "Assets","*.*");
                 if (path == "")
@@ -34,7 +39,7 @@ namespace Assets.FlaExporter.Editor
         {
             if (path.ToLower().EndsWith(".fla"))
             {
-                ProcessZip(path);
+                ProcessZipFile(path);
                 return;
             }
             else if (path.ToLower().EndsWith(".xml"))
@@ -45,77 +50,98 @@ namespace Assets.FlaExporter.Editor
             Debug.Log("it is no flash file");
         }
 
-        private void ProcessZip(string path)
-        {
-            var flaFile = ZipFile.Read(path);
-            foreach (var entry in flaFile)
-            {
-                Debug.Log(entry.FileName);
-            }
-            var document = flaFile["DOMDocument.xml"];
-            var writeSpace = new MemoryStream();
-            writeSpace.Position = 0;
-
-            var reader = document.OpenReader();
-            var buffer = new byte[2048];
-            var len = 0;
-            while ((len = reader.Read(buffer, 0, buffer.Length)) > 0)
-            {
-                writeSpace.Write(buffer, 0, len);
-            }
-            ProcessDocumentXml(writeSpace.ToArray());
-        }
-
+        
         private void ProcessXMLFile(string path)
         {
             var stringXML = File.ReadAllText(path);
             var data = File.ReadAllBytes(path);
             if (stringXML.StartsWith("<DOMDocument"))
             {
-                ProcessDocumentXml(data);
+                var flaDocument = FlaParser.ProcessDocumentXml(data);
+
+                foreach (var includeSymbol in flaDocument.IncludeSymbols)
+                {
+                    var filePath = FolderAndFileUtils.GetDirectoryPath(path) + "/LIBRARY/" + includeSymbol.Href;
+                    if (!File.Exists(filePath))
+                    {
+                        Debug.Log("file not found " + filePath);
+                        continue;
+                    }
+                    var flaSymbol = FlaParser.ProcessSymbolXml(File.ReadAllBytes(filePath));
+                    FlaProcessor.ProcessFlaSymbol(flaSymbol);
+                }
+                foreach (var includeBitmap in flaDocument.IncludeBitmaps)
+                {
+                    if (!includeBitmap.Href.ToLower().EndsWith(".png") && !includeBitmap.Href.ToLower().EndsWith(".jpg"))
+                    {
+                        Debug.Log("can't load " + includeBitmap.Href);
+                        continue;
+                    }
+
+                    var filePath = FolderAndFileUtils.GetDirectoryPath(path) + "/LIBRARY/" + includeBitmap.Href;
+                    if (!File.Exists(filePath))
+                    {
+                        Debug.Log("file not found " + filePath);
+                        continue;
+                    }
+                    FolderAndFileUtils.CheckFolders(BitmapSymbolsTextureFolderFolder);
+                    File.Copy(filePath, Application.dataPath + BitmapSymbolsTextureFolderFolder + includeBitmap.Href);
+                    AssetDatabase.ImportAsset("Assets"+BitmapSymbolsTextureFolderFolder + includeBitmap.Href);
+                    AssetDatabase.Refresh();
+                    FlaProcessor.ProcessFlaBitmapSymbol(includeBitmap);
+                }
+                
+
+                FlaProcessor.ProcessFlaDocument(flaDocument);
             }
             else if (stringXML.StartsWith("<DOMSymbolItem"))
             {
-                ProcessSymbolXml(data); 
+                var flaSymbol = FlaParser.ProcessSymbolXml(data);
+                FlaProcessor.ProcessFlaSymbol(flaSymbol);
+            }
+        }
+
+        private void ProcessZipFile(string path)
+        {
+            var flaFile = ZipFile.Read(path);
+            var document = flaFile["DOMDocument.xml"];
+
+            var flaDocument = FlaParser.ProcessDocumentXml(document.ToByteArray());
+            foreach (var includeSymbol in flaDocument.IncludeSymbols)
+            {
+                var zipFileEntry = flaFile.FirstOrDefault(e => e.FileName.EndsWith(includeSymbol.Href));
+                var flaSymbol = FlaParser.ProcessSymbolXml(zipFileEntry.ToByteArray());
+                FlaProcessor.ProcessFlaSymbol(flaSymbol);
+            }
+            foreach (var includeBitmap in flaDocument.IncludeBitmaps)
+            {
+                if (!includeBitmap.Href.ToLower().EndsWith(".png") && !includeBitmap.Href.ToLower().EndsWith(".jpg"))
+                {
+                    Debug.Log("can't load " + includeBitmap.Href);
+                    continue;
+                }
+                var zipFileEntry = flaFile.FirstOrDefault(e => e.FileName.EndsWith(includeBitmap.Href));
+
+                FolderAndFileUtils.CheckFolders(BitmapSymbolsTextureFolderFolder);
+                var file = File.Open(Application.dataPath + BitmapSymbolsTextureFolderFolder + includeBitmap.Href, FileMode.OpenOrCreate);
+                var bytes = zipFileEntry.ToByteArray();
+                file.Write(bytes, 0, bytes.Length);
+                file.Close();
+                AssetDatabase.ImportAsset("Assets" + BitmapSymbolsTextureFolderFolder + includeBitmap.Href);
+                AssetDatabase.Refresh();
+                FlaProcessor.ProcessFlaBitmapSymbol(includeBitmap);
+                
             }
             
+            FlaProcessor.ProcessFlaDocument(flaDocument);
         }
 
-        private void ProcessSymbolXml(byte[] bytes)
-        {
-            var fla = bytes.ObjectFromXML<FlaSymbolItemRaw>();
-            ProcessFlaSymbol(fla);
-        }
+        
 
-        private void ProcessFlaSymbol(FlaSymbolItemRaw flaData)
-        {
-            Debug.Log(flaData.PrettyPrintObjects());
-        }
 
-        private void ProcessDocumentXml(byte[] bytes)
-        {
-            var fla = bytes.ObjectFromXML<FlaDocumentRaw>(); 
-            ProcessFlaDocument(fla);
-        }
+        
 
-        private void ProcessFlaDocument(FlaDocumentRaw flaData)
-        {
-            Debug.Log(flaData.PrettyPrintObjects());
-            return;
-            foreach (var timeline in flaData.Timelines)
-            {
-                var timelineGO = new GameObject(timeline.Name);
-                foreach (var layer in timeline.Layers)
-                {
-                    var layerGO = new GameObject(layer.Name);
-                    layerGO.transform.SetParent(timelineGO.transform);
-                    foreach (var frame in layer.Frames)
-                    {
-                        var frameGO = new GameObject(frame.Name == null ? "frame" + frame.Index : frame.Name);
-                        frameGO.transform.SetParent(layerGO.transform);
-                    }
-                }
-            }
-        }
+        
+
     }
 }

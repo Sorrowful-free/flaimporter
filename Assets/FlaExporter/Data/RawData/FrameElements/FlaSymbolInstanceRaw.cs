@@ -25,6 +25,12 @@ namespace Assets.FlaExporter.Data.RawData.FrameElements
         [XmlAttribute("centerPoint3DY")] 
         public float CenterPoint3Dy;
 
+        [XmlAttribute("rotationX")]
+        public float RotationX;
+
+        [XmlAttribute("rotationY")]
+        public float RotationY;
+
         [XmlAttribute("blendMode")] 
         public string BlendMode;
 
@@ -33,6 +39,9 @@ namespace Assets.FlaExporter.Data.RawData.FrameElements
 
         [XmlAttribute("referenceID")]
         public string ReferenceId;
+
+        [XmlAttribute("matrix3D")]
+        public string Matrix3D;
 
         [XmlElement("color")]
         public FlaColorElementRaw Color;

@@ -5,6 +5,6 @@ namespace Assets.FlaExporter.Data.RawData
     public class FlaTimelineElementRaw
     {
         [XmlElement("DOMTimeline")]
-        public FlaTimeLineRaw Timelines;
+        public FlaTimeLineRaw Timeline;
     }
 }

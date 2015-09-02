@@ -1,0 +1,33 @@
+﻿using System.IO;
+using System.Linq;
+using Assets.BundleExporter.Editor.Helpers;
+using UnityEngine;
+
+namespace Assets.FlaExporter.Editor.Utils
+{
+    public static class FolderAndFileUtils
+    {
+        public static string GetDirectoryPath(string filePath)
+        {
+            var path = filePath.Split('/', '\\');
+            path = path.Take(path.Length - 1).ToArray();
+            var stringPath = path.JoinToString("/");
+            if (stringPath.EndsWith("/"))
+            {
+                stringPath = stringPath.Substring(0, stringPath.Length - 1);
+            }
+            return stringPath;
+        }
+        public static void CheckFolders(string folder)
+        {
+            if (!Directory.Exists(Application.dataPath + folder))
+                Directory.CreateDirectory(Application.dataPath + folder);
+        }
+
+        public static string RemoveExtention(string filePath)
+        {
+            var index = filePath.LastIndexOf(".");
+            return filePath.Substring(0,index);
+        }
+    }
+}

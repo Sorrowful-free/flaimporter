@@ -1,10 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Linq;
 using Assets.BundleExporter.Editor.Helpers;
 
 namespace Assets.FlaExporter.Editor
 {
-    public static class PrettyPrint 
+    public static class PrettyPrintExtention 
     {
         public static string PrettyPrintObjects(this object obj)
         {
