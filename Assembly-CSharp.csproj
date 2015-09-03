@@ -74,6 +74,8 @@
      <Compile Include="Assets\FlaExporter\Data\RawData\FlaSymbolItemRaw.cs" />
      <Compile Include="Assets\FlaExporter\Data\RawData\FlaTimeLineRaw.cs" />
      <Compile Include="Assets\FlaExporter\Data\RawData\FlaTimelineElementRaw.cs" />
+     <Compile Include="Assets\FlaExporter\Data\RawData\FrameElements\FlaBaseInstanceRaw.cs" />
+     <Compile Include="Assets\FlaExporter\Data\RawData\FrameElements\FlaBitmapInstanceRaw.cs" />
      <Compile Include="Assets\FlaExporter\Data\RawData\FrameElements\FlaFrameElementRaw.cs" />
      <Compile Include="Assets\FlaExporter\Data\RawData\FrameElements\FlaShapeRaw.cs" />
      <Compile Include="Assets\FlaExporter\Data\RawData\FrameElements\FlaSymbolInstanceRaw.cs" />

@@ -51,8 +51,8 @@
      <Compile Include="Assets\FlaExporter\Editor\Extentions\XMLExtention.cs" />
      <Compile Include="Assets\FlaExporter\Editor\Extentions\ZipExtention.cs" />
      <Compile Include="Assets\FlaExporter\Editor\FlaExporterEditorWindow.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\FlaParser.cs" />
      <Compile Include="Assets\FlaExporter\Editor\FlaProcessor.cs" />
+     <Compile Include="Assets\FlaExporter\Editor\FoldersConstants.cs" />
      <Compile Include="Assets\FlaExporter\Editor\Utils\FolderAndFileUtils.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>

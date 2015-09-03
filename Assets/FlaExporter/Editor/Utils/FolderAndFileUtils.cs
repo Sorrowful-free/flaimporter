@@ -24,6 +24,17 @@ namespace Assets.FlaExporter.Editor.Utils
                 Directory.CreateDirectory(Application.dataPath + folder);
         }
 
+        public static string GetAssetFolder(string path)
+        {
+            if (path.StartsWith("/") || path.StartsWith("\\"))
+            {
+                path = path.Substring(1, path.Length - 1);
+            }
+            if (!path.EndsWith("/"))
+                path += "/";
+            return "Assets/" + path;
+        }
+
         public static string RemoveExtention(string filePath)
         {
             var index = filePath.LastIndexOf(".");
