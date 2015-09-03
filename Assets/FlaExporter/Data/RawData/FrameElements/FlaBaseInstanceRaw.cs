@@ -35,7 +35,7 @@ namespace Assets.FlaExporter.Data.RawData.FrameElements
         public string BlendMode;
 
         [XmlAttribute("cacheAsBitmap")]
-        public bool cacheAsBitmap;
+        public bool CacheAsBitmap;
 
         [XmlAttribute("referenceID")]
         public string ReferenceId;
