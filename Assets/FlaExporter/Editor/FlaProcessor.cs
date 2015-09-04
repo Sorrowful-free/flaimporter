@@ -71,7 +71,6 @@ namespace Assets.FlaExporter.Editor
             return frameGO;
         }
 
-
         public static void ProcessFlaSymbol(FlaSymbolItemRaw flaSymbolData, bool createInstance = false)
         {
             var flaSymbolGO = new GameObject(flaSymbolData.Name);
@@ -84,23 +83,7 @@ namespace Assets.FlaExporter.Editor
                 GameObject.DestroyImmediate(flaSymbolGO);
             }
         }
-
-        public static void ProcessFlaBitmapSymbol(FlaBitmapInstanceRaw instance, bool createInstance = false)
-        {
-            FolderAndFileUtils.CheckFolders(FoldersConstants.BitmapSymbolsFolder);
-            var bitmapSymbolGO = new GameObject(instance.LibraryItemName);
-            var bitmapSriteRenderer = bitmapSymbolGO.AddComponent<SpriteRenderer>();
-            var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) + instance.LibraryItemName);
-            var spritesAsObjects = AssetDatabase.LoadAllAssetRepresentationsAtPath(AssetDatabase.GetAssetPath(texture));
-            var sprite = spritesAsObjects.FirstOrDefault(e => e.name == FolderAndFileUtils.RemoveExtention(instance.LibraryItemName)) as Sprite;
-            bitmapSriteRenderer.sprite = sprite;
-            PrefabUtility.CreatePrefab(FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsFolder) + instance.LibraryItemName + ".prefab", bitmapSymbolGO);
-            if (!createInstance)
-            {
-                GameObject.DestroyImmediate(bitmapSymbolGO);
-            }
-        }
-
+        
         public static GameObject ProcessFlaSymbolInstance(FlaSymbolInstanceRaw instance)
         {
             return GameObject.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(FolderAndFileUtils.GetAssetFolder(FoldersConstants.SymbolsFolder) + instance.LibraryItemName+".prefab"));
@@ -108,13 +91,18 @@ namespace Assets.FlaExporter.Editor
 
         public static GameObject ProcessFlaBitmapInstance(FlaBitmapInstanceRaw instance)
         {
-            return GameObject.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsFolder) + instance.LibraryItemName + ".prefab"));
+            var bitmapSymbolGO = new GameObject(instance.LibraryItemName);
+            var bitmapSriteRenderer = bitmapSymbolGO.AddComponent<SpriteRenderer>();
+            var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) + instance.LibraryItemName);
+            var spritesAsObjects = AssetDatabase.LoadAllAssetRepresentationsAtPath(AssetDatabase.GetAssetPath(texture));
+            var sprite = spritesAsObjects.FirstOrDefault(e => e.name == FolderAndFileUtils.RemoveExtention(instance.LibraryItemName)) as Sprite;
+            bitmapSriteRenderer.sprite = sprite;
+            return bitmapSymbolGO;// GameObject.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsFolder) + instance.LibraryItemName + ".prefab"));
         }
         
-
         public static GameObject ProcessFlaShape(FlaShapeRaw shape)
         {
-            return new GameObject("shape"+shape.GetHashCode());
+            return FlaShapeProcessor.ProcessFlaShape(shape);
         }
 
        

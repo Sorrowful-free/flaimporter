@@ -15,5 +15,8 @@ namespace Assets.FlaExporter.Data.RawData.Geom
 
         [XmlAttribute("edges")]
         public string Edges;
+
+        [XmlAttribute("cubics")]
+        public string Cubics;
     }
 }

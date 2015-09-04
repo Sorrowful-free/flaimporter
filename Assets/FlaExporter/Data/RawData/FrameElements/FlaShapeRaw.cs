@@ -19,5 +19,9 @@ namespace Assets.FlaExporter.Data.RawData.FrameElements
         [XmlArray("edges")] 
         [XmlArrayItem("Edge")] 
         public List<FlaEdgeRaw> Edges;
+
+
+
+      
     }
 }
