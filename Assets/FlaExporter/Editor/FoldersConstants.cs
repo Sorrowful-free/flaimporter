@@ -7,5 +7,6 @@ namespace Assets.FlaExporter.Editor
         public const string LibraryFolder = "/Library";
         public const string BitmapSymbolsTextureFolderFolder = ExportedOutputFolder + LibraryFolder + "/Textures/";
         public const string SymbolsFolder = ExportedOutputFolder + LibraryFolder + "/Symbols/";
+        public const string ShapesFolder = ExportedOutputFolder + LibraryFolder + "/Shapes/";
     }
 }
