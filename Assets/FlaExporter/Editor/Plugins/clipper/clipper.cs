@@ -55,12 +55,13 @@
 
 using System;
 using System.Collections.Generic;
+
 //using System.Text;          //for Int128.AsString() & StringBuilder
 //using System.IO;            //debugging with streamReader & StreamWriter
 //using System.Windows.Forms; //debugging to clipboard
 
 
-namespace SVGImporter.ClipperLib
+namespace Assets.FlaExporter.Editor.Plugins.clipper
 {
 
 #if use_int32
