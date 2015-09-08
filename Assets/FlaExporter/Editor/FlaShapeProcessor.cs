@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Assets.BundleExporter.Editor.Helpers;
 using Assets.FlaExporter.Data.RawData.FrameElements;
 using Assets.FlaExporter.Data.RawData.Geom;
 using Assets.FlaExporter.Editor.Plugins.clipper;
@@ -30,6 +31,11 @@ namespace Assets.FlaExporter.Editor
 
                 foreach (var edge in shape.Edges)
                 {
+                    if (edge.Edges == null || edge.Edges == "")
+                    {
+                        continue;
+                    }
+                   
                     var shapeGO = new GameObject("shape" + shape.GetHashCode());
                     shapeGO.AddComponent<MeshRenderer>();
                     var meshFilter = shapeGO.AddComponent<MeshFilter>();
@@ -69,53 +75,82 @@ namespace Assets.FlaExporter.Editor
         private static Mesh ProcessFlaEdge(FlaEdgeRaw edge)
         {
             var mesh = new Mesh();
-            var vertices = ProcessFlaEdgeString(edge.Edges);
-            var polygons = Clipper.SimplifyPolygon(vertices.Select(e => new IntPoint(e.x*20, e.y*20)).ToList(),PolyFillType.pftNonZero);
+            var polygons = ProcessFlaEdgeString(edge.Edges);
+        //  //  var polygons = Clipper.SimplifyPolygon(vertices.Select(e => new IntPoint(e.x*20, e.y*20)).ToList(),PolyFillType.pftNonZero);
             var resultIndexes = new List<int>();
-            var resultVertices = new List<Vector3>();
+            var resultVertices = new List<Vector3>(); 
 
             //var polygon = new Polygon(vertices.Select(e => new PolygonPoint(e.x, e.y)));
             //P2T.Triangulate(polygon);
             //mesh.vertices = polygon.Points.Select(e => new Vector3((float) e.X, (float) e.Y)).ToArray();
-            //mesh.triangles =polygon.Triangles.SelectMany(e => e.Points.Select(p => polygon.Points.IndexOf(p))).ToArray()
+            //mesh.triangles =
+            //    polygon.Triangles.SelectMany(e => e.Points.Select(p => polygon.Points.IndexOf(p))).ToArray();
 
 
-            var sweep = new Tess();
-            sweep.AddContour(vertices.Select(e=> new ContourVertex{Position = new Vec3{X = e.x,Y = e.y}}).ToArray());
-            sweep.Tessellate(WindingRule.NonZero, ElementType.BoundaryContours,50);
-            mesh.vertices = sweep.Vertices.Select(e => new Vector3(e.Position.X, e.Position.Y)).ToArray();
-            mesh.triangles = sweep.Elements;
-            return mesh;
+          
+         //   return mesh;
                
-            Debug.Log("polygon count:"+polygons.Count+" vertex count:"+vertices.Count);
+            //Debug.Log("polygon count:"+polygons.Count+" vertex count:"+vertices.Count);
             for (int i = 0; i < polygons.Count; i++)
             {
-               // var oldVertices = mesh.vertices;
-                var polygonVertices = polygons[i].Select(e => new Vector3((float) e.X/20.0f, (float) e.Y/20.0f));
-                var polygonTrinagles = FlaTriangulate.Process(polygonVertices.Select(e=> (Vector2)e).ToList());
-                if (polygonTrinagles == null || polygonTrinagles.Count <= 0)
+                // var oldVertices = mesh.vertices;
+                Debug.Log(polygons[i].JoinToString("; "));
+                var simplifyPolygon = Clipper.SimplifyPolygon(polygons[i].Select(e => new IntPoint(e.x * 20, e.y * 20)).ToList(), PolyFillType.pftEvenOdd);
+                foreach (var simpPoly in simplifyPolygon)
                 {
-                    Debug.Log("triangles empty");
-                    continue;
+                    var polygonVertices = polygons[i].Select(e => new Vector3((float)e.x / 20.0f, (float)e.y / 20.0f));
                 }
-                resultIndexes.AddRange(polygonTrinagles.Select(e => e + resultVertices.Count));
-                resultVertices.AddRange(polygonVertices);
 
-              //  var meshVertices = oldVertices.ToList();
-               // meshVertices.AddRange(polygonVertices);
-              //  meshVertices.Reverse();
-              //  mesh.vertices = meshVertices.ToArray();
-             //   mesh.SetTriangles(polygonTrinagles.Select(e => e + mesh.vertices.Length - meshVertices.Count).ToArray(), i);
-                Debug.Log("triangleCount:"+polygonTrinagles.Count);
+           // var polygonVertices = polygons[i].Select(e => (Vector3) e);
+               // resultVertices.AddRange(polygonVertices);
+                //var sweep = new Tess(); 
+                //sweep.AddContour(polygonVertices.Select(e => new ContourVertex { Position = new Vec3 { X = e.x, Y = e.y } }).ToArray());
+                //sweep.Tessellate(WindingRule.NonZero, ElementType.Polygons, 3);
+
+              //  var polygonTrinagles = FlaTriangulate.Process(polygonVertices.Select(e => (Vector2)e).ToList());
+              //  if (polygonTrinagles != null)
+                //{
+                //    resultIndexes.AddRange(polygonTrinagles.Select(e => e + resultVertices.Count));
+                //    resultVertices.AddRange(polygonVertices);
+                //}
+                //else
+                //{
+                //    Debug.Log("can triangulate");
+                //}
             }
+            
+           // mesh.triangles = sweep.Elements;
+
+            //    var sweep = new Tess();
+            //    sweep.AddContour(polygonVertices.Select(e => new ContourVertex { Position = new Vec3 { X = e.x, Y = e.y } }).ToArray());
+            //    sweep.Tessellate(WindingRule.EvenOdd, ElementType.Polygons, 3);
+            //  //  mesh.vertices = sweep.Vertices.Select(e => new Vector3(e.Position.X, e.Position.Y)).ToArray();
+
+            //  //  mesh.triangles = sweep.Elements;
+            //    var polygonTrinagles = sweep.Elements.ToList();// 
+            //    if (polygonTrinagles == null || polygonTrinagles.Count <= 0)
+            //    {
+            //        Debug.Log("triangles empty");
+            //        continue;
+            //    }
+            //    resultIndexes.AddRange(polygonTrinagles.Select(e => e + resultVertices.Count));
+            //    resultVertices.AddRange(polygonVertices);
+
+            //  //  var meshVertices = oldVertices.ToList();
+            //   // meshVertices.AddRange(polygonVertices);
+            //  //  meshVertices.Reverse();
+            //  //  mesh.vertices = meshVertices.ToArray();
+            // //   mesh.SetTriangles(polygonTrinagles.Select(e => e + mesh.vertices.Length - meshVertices.Count).ToArray(), i);
+            //    Debug.Log("triangleCount:"+polygonTrinagles.Count);
+            //}
             mesh.vertices = resultVertices.ToArray();
             mesh.triangles = resultIndexes.ToArray();
             return mesh;
         }
 
-        private static List<Vector2> ProcessFlaEdgeString(string edgeString)
+        private static List<List<Vector2>> ProcessFlaEdgeString(string edgeString)
         {
-            var list = new List<Vector2>();
+            var list = new List<List<Vector2>>();
             if (edgeString == null || edgeString == "")
                 return list;
             edgeString =
@@ -137,17 +172,36 @@ namespace Assets.FlaExporter.Editor
                 switch (commands[operationIndex])
                 {
                     case "!":
-                        list.Add(TryParseFlaVector2(commands[operationIndex + 1], commands[operationIndex + 2]));
+                        var moveToPos = TryParseFlaVector2(commands[operationIndex + 1], commands[operationIndex + 2]);
+                        if(list.Count <= 0) 
+                            list.Add(new List<Vector2>());
+                        if( list.Last().Count <= 0 || list.Last().Last() != moveToPos)
+                            list.Last().Add(moveToPos);
                         operationIndex += 3;
                         break;
 
                     case "|":
-                        list.Add(TryParseFlaVector2(commands[operationIndex + 1], commands[operationIndex + 2]));
+                        var lineToPos = TryParseFlaVector2(commands[operationIndex + 1], commands[operationIndex + 2]);
+                        if (list.Last().First() == lineToPos)
+                        {
+                            list.Add(new List<Vector2>());
+                        }
+                        else
+                        {
+                            list.Last().Add(lineToPos);    
+                        }
                         operationIndex += 3;
                         break;
 
                     case "[":
-                        list.AddRange(GetFlaCurve(list.Last(),TryParseFlaVector2(commands[operationIndex + 1], commands[operationIndex + 2]), TryParseFlaVector2(commands[operationIndex + 3], commands[operationIndex + 4])));
+                        var controllPos= TryParseFlaVector2(commands[operationIndex + 1], commands[operationIndex + 2]);
+                        var secondPos = TryParseFlaVector2(commands[operationIndex + 3], commands[operationIndex + 4]);
+                        list.Last().AddRange(GetFlaCurve(list.Last().Last(), controllPos, secondPos));
+                        if (list.Last().First() == secondPos)
+                        {
+                            list.Last().Remove(list.Last().Last());
+                            list.Add(new List<Vector2>());
+                        }
                         operationIndex += 5;
                         break;
                         
@@ -157,7 +211,7 @@ namespace Assets.FlaExporter.Editor
                         break;
                 }
             }
-            return list.Distinct().ToList();
+            return list.ToList();
         }
 
         private static Vector2 TryParseFlaVector2(string commandX, string commandY)
