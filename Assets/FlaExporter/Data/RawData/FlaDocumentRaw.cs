@@ -37,6 +37,12 @@ namespace Assets.FlaExporter.Data.RawData
         [XmlArrayItem("DOMTimeline")]
         public List<FlaTimeLineRaw> Timelines;
 
+        //<folders>
+        //  <DOMFolderItem name="testFolder" itemID="55f144ae-00000007" isExpanded="true"/>
+        //  <DOMFolderItem name="testFolder/testfolderInclude" itemID="55f144b8-0000000b"/>
+        [XmlArray("folders")]
+        [XmlArrayItem("DOMFolderItem")]
+        public List<FlaFolderRaw> Folders;
         [XmlArray("persistentData")] 
         [XmlArrayItem("PD")] 
         public List<FlaPersistentDataRaw> PersistentData;
