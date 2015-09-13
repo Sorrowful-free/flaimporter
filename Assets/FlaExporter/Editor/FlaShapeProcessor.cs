@@ -4,6 +4,7 @@ using Assets.BundleExporter.Editor.Helpers;
 using Assets.FlaExporter.Data.RawData.FrameElements;
 using Assets.FlaExporter.Editor.Plugins.LibTessDotNet;
 using Assets.FlaExporter.Editor.Utils;
+using UnityEditor;
 using UnityEngine;
 using Mesh = UnityEngine.Mesh;
 
@@ -15,70 +16,76 @@ namespace Assets.FlaExporter.Editor
         public static GameObject ProcessFlaShape(FlaShapeRaw shape)
         {
             Debug.Log("process shape");
-           
+            var shapeGO = new GameObject("shape" + shape.GetHashCode());
+            shapeGO.AddComponent<MeshRenderer>();
+            var meshFilter = shapeGO.AddComponent<MeshFilter>();
+            var shapeVertices = new List<Vector3>();
+            var shapeTriangles = new List<List<int>>();
+            var shapeMesh = new Mesh();
             if (shape.Edges.Count > 0)
             {
-                var i = 0;
                
-
                 var groupByFill = new Dictionary<int, List<List<Vector3>>>();
-
-
+                Debug.Log(shape.Edges.Select(e => e.Edges).JoinToString("->").GetHashCode());
                 foreach (var edge in shape.Edges)
                 {
                     if (edge.Edges == null || edge.Edges == "" )
                     {
                         continue;
                     }
-
                     var list = default(List<List<Vector3>>);
                     if (!groupByFill.TryGetValue(edge.FillStyle1, out list))
                     {
                         groupByFill.Add(edge.FillStyle1,new List<List<Vector3>>());
                     }
-                    if (edge.FillStyle0 != 0)
-                    {
-                        groupByFill[edge.FillStyle1].AddRange(ProcessFlaEdgeString(edge.Edges).Select(e => e.Select(v => (Vector3)v).Reverse().ToList()));    
-                    }
-                    else
-                    {
+                 //   Debug.Log(edge.Edges.GetHashCode());
+                  //  if (edge.FillStyle0 != 0)
+                  //  {
+                 //       groupByFill[edge.FillStyle1].AddRange(ProcessFlaEdgeString(edge.Edges).Select(e => e.Select(v => (Vector3)v).Reverse().ToList()));    
+                 //   }
+                 //   else
+                //    {
                         groupByFill[edge.FillStyle1].AddRange(ProcessFlaEdgeString(edge.Edges).Select(e => e.Select(v => (Vector3)v).ToList()));
-                    }
-                    
+                //    }
                 }
-
+                var submeshInstance = 0;
+                var combines = new List<CombineInstance>();
                 foreach (var pair in groupByFill)
                 {
-                    var resultIndexes = new List<int>();
-                    var resultVertices = new List<Vector3>();
+                   
                     var tess = new Tess();
-            
+                    
                     foreach (var polygon in pair.Value)
                     {
-                        Debug.Log(polygon.JoinToString("; "));
+                        if (polygon.Count <= 0)
+                        {
+                            continue;
+                        }
+                        
                         tess.AddContour(polygon.Select(e=> new ContourVertex{Position = new Vec3{X = e.x,Y = e.y}}).ToArray(),ContourOrientation.Original);
                     }
 
                     tess.Tessellate(WindingRule.NonZero, ElementType.Polygons, 3);
-                    resultVertices.AddRange(tess.Vertices.Select(e => new Vector3(e.Position.X, e.Position.Y)));
-                    resultIndexes.AddRange(tess.Elements);
-
-                    var shapeGO = new GameObject("shape" + shape.GetHashCode());
-                    shapeGO.AddComponent<MeshRenderer>();
-                    var meshFilter = shapeGO.AddComponent<MeshFilter>();
-                    var mesh = new Mesh();
-                    mesh.vertices = resultVertices.ToArray();
-                    mesh.triangles = resultIndexes.ToArray();
-                    meshFilter.mesh = mesh;
+                    shapeTriangles.Add(tess.Elements.Select(e=>e+shapeVertices.Count).Reverse().ToList());
+                    shapeVertices.AddRange(tess.Vertices.Select(e => new Vector3(e.Position.X, e.Position.Y)));
                 }
-                
+
+                shapeMesh.vertices = shapeVertices.ToArray();
+                for (int i = 0; i < shapeTriangles.Count; i++)
+                {
+                    shapeMesh.SetTriangles(shapeTriangles[i].ToArray(),i);
+                }
+                FolderAndFileUtils.CheckFolders(FoldersConstants.ShapesFolder);
+                AssetDatabase.CreateAsset(shapeMesh,FolderAndFileUtils.GetAssetFolder(FoldersConstants.ShapesFolder)+shapeGO.name+".asset");
+                meshFilter.mesh = shapeMesh;
+
             }
-         
+            
             if (shape.Matrix != null && shape.Matrix.Matrix != null)
             {
-              //  shape.Matrix.Matrix.CopyMatrix(shapeGO.transform);
+                shape.Matrix.Matrix.CopyMatrix(shapeGO.transform);
             }
-            return new GameObject();
+            return shapeGO;
         }
 
         private static List<List<Vector2>> ProcessFlaEdgeString(string edgeString)
@@ -139,7 +146,7 @@ namespace Assets.FlaExporter.Editor
                         break;
                         
                     default:
-                        Debug.LogWarningFormat("can parce operation \"{0}\"",commands[operationIndex]);
+                        Debug.LogWarningFormat("can parse operation \"{0}\"",commands[operationIndex]);
                         operationIndex++;
                         break;
                 }

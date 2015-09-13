@@ -14,13 +14,20 @@ namespace Assets.FlaExporter.Editor
         {
             var name = "FlaDocument" + flaDocumentData.GetHashCode();
             var documentGO = new GameObject(name);
+            //var scriptableObject = FlaLibraryDataBaseSigleton.CreateLibraryDataBase();
+
             foreach (var timeline in flaDocumentData.Timelines)
             {
                 var timelineGO = ProcessFlaTimeLine(timeline);
                 timelineGO.transform.SetParent(documentGO.transform); 
             }
+            
             PrefabUtility.CreatePrefab(FolderAndFileUtils.GetAssetFolder(FoldersConstants.ExportedOutputFolder) + name + ".prefab", documentGO);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
         }
+
+       
         
         private static GameObject ProcessFlaTimeLine(FlaTimeLineRaw timeLine)
         {
@@ -72,17 +79,14 @@ namespace Assets.FlaExporter.Editor
             return frameGO;
         }
 
-        public static void ProcessFlaSymbol(FlaSymbolItemRaw flaSymbolData, bool createInstance = false)
+        public static void ProcessFlaSymbol(FlaSymbolItemRaw flaSymbolData)
         {
             var flaSymbolGO = new GameObject(flaSymbolData.Name);
             var timeLineGO = ProcessFlaTimeLine(flaSymbolData.Timeline.Timeline);
             timeLineGO.transform.SetParent(flaSymbolGO.transform);
             FolderAndFileUtils.CheckFolders(FoldersConstants.SymbolsFolder);
             PrefabUtility.CreatePrefab(FolderAndFileUtils.GetAssetFolder(FoldersConstants.SymbolsFolder) + flaSymbolData.Name + ".prefab", flaSymbolGO);
-            if (!createInstance)
-            {
-                GameObject.DestroyImmediate(flaSymbolGO);
-            }
+            GameObject.DestroyImmediate(flaSymbolGO);
         }
         
         public static GameObject ProcessFlaSymbolInstance(FlaSymbolInstanceRaw instance)

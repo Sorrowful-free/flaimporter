@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using Assets.BundleExporter.Editor.Helpers;
+using UnityEditor;
 using UnityEngine;
 
 namespace Assets.FlaExporter.Editor.Utils
@@ -21,10 +22,12 @@ namespace Assets.FlaExporter.Editor.Utils
         public static void CheckFolders(string folder)
         {
             if (!Directory.Exists(Application.dataPath + folder))
+            {
                 Directory.CreateDirectory(Application.dataPath + folder);
+            }
         }
 
-        public static string GetAssetFolder(string path)
+        public static string GetAssetFolder(string path) 
         {
             if (path.StartsWith("/") || path.StartsWith("\\"))
             {
