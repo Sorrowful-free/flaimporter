@@ -2,6 +2,7 @@
 using System.Linq;
 using Assets.BundleExporter.Editor.Helpers;
 using Assets.FlaExporter.Data.RawData.FrameElements;
+using Assets.FlaExporter.Data.RawData.StorkeStyle.StorkeStyles;
 using Assets.FlaExporter.Editor.Plugins.LibTessDotNet;
 using Assets.FlaExporter.Editor.Utils;
 using UnityEditor;
@@ -12,23 +13,34 @@ namespace Assets.FlaExporter.Editor
 {
     public static class FlaShapeProcessor
     {
-        public const float PointByPixels = 3f;
+        public const float CurveQuality = 3f;
+        public const float UnitsPerPixel = 20;
         public static GameObject ProcessFlaShape(FlaShapeRaw shape)
         {
-            Debug.Log("process shape");
-            var shapeGO = new GameObject("shape" + shape.GetHashCode());
+            var shapeGO = new GameObject("shape" + shape.Edges.Select(e => e.Edges).JoinToString("->").GetHashCode());
+            if (shape.Matrix != null && shape.Matrix.Matrix != null)
+            {
+                shape.Matrix.Matrix.CopyMatrix(shapeGO.transform);
+            }
             shapeGO.AddComponent<MeshRenderer>();
             var meshFilter = shapeGO.AddComponent<MeshFilter>();
+
+            var mesh = AssetDatabase.LoadAssetAtPath<Mesh>(FolderAndFileUtils.GetAssetFolder(FoldersConstants.ShapesFolder) + shapeGO.name + ".asset");
+            if (mesh != null)
+            {
+                meshFilter.mesh = mesh;
+                return shapeGO;
+            }
+
             var shapeVertices = new List<Vector3>();
             var shapeTriangles = new List<List<int>>();
             var shapeMesh = new Mesh();
             if (shape.Edges.Count > 0)
             {
-               
                 var groupByFill = new Dictionary<int, List<List<Vector3>>>();
-                Debug.Log(shape.Edges.Select(e => e.Edges).JoinToString("->").GetHashCode());
                 foreach (var edge in shape.Edges)
                 {
+                    
                     if (edge.Edges == null || edge.Edges == "" )
                     {
                         continue;
@@ -38,18 +50,9 @@ namespace Assets.FlaExporter.Editor
                     {
                         groupByFill.Add(edge.FillStyle1,new List<List<Vector3>>());
                     }
-                 //   Debug.Log(edge.Edges.GetHashCode());
-                  //  if (edge.FillStyle0 != 0)
-                  //  {
-                 //       groupByFill[edge.FillStyle1].AddRange(ProcessFlaEdgeString(edge.Edges).Select(e => e.Select(v => (Vector3)v).Reverse().ToList()));    
-                 //   }
-                 //   else
-                //    {
-                        groupByFill[edge.FillStyle1].AddRange(ProcessFlaEdgeString(edge.Edges).Select(e => e.Select(v => (Vector3)v).ToList()));
-                //    }
+              
+                    groupByFill[edge.FillStyle1].AddRange(ProcessFlaEdgeString(edge.Edges).Select(e => e.Select(v => (Vector3)v).ToList()));
                 }
-                var submeshInstance = 0;
-                var combines = new List<CombineInstance>();
                 foreach (var pair in groupByFill)
                 {
                    
@@ -75,17 +78,39 @@ namespace Assets.FlaExporter.Editor
                 {
                     shapeMesh.SetTriangles(shapeTriangles[i].ToArray(),i);
                 }
+                #region uv0
+                var bounds = shapeMesh.bounds;
+                var uvs = new List<Vector2>();
+                var isHorisontal = bounds.size.x > bounds.size.y;
+                var yOffset = isHorisontal ? (bounds.size.x - bounds.size.y)/2 : 0;// pomestat menyami
+                var xOffset = isHorisontal ? 0 : (bounds.size.y - bounds.size.x)/2;
+                var offsets = new Vector3(xOffset,yOffset);
+                var maxSize = isHorisontal ? bounds.size.x : bounds.size.y;
+                for (var i = 0; i < shapeMesh.vertexCount; i++)
+                {
+                    var normalizedPosition = shapeMesh.vertices[i]+ offsets - bounds.min;
+                    var uv = Vector2.zero;
+                    uv.x = normalizedPosition.x / maxSize;
+                    uv.y = normalizedPosition.y / maxSize;
+                    Debug.Log(string.Format("ih:{0},ms:{1},bs:{2}, np:{3}(p:{6}),uv:{4}, of:{5}",isHorisontal,maxSize,bounds.size,normalizedPosition,uv,offsets, shapeMesh.vertices[i]));
+                    uvs.Add(uv);
+                }
+                shapeMesh.uv = uvs.ToArray();
+                #endregion
                 FolderAndFileUtils.CheckFolders(FoldersConstants.ShapesFolder);
                 AssetDatabase.CreateAsset(shapeMesh,FolderAndFileUtils.GetAssetFolder(FoldersConstants.ShapesFolder)+shapeGO.name+".asset");
                 meshFilter.mesh = shapeMesh;
 
             }
             
-            if (shape.Matrix != null && shape.Matrix.Matrix != null)
-            {
-                shape.Matrix.Matrix.CopyMatrix(shapeGO.transform);
-            }
+            
             return shapeGO;
+        }
+
+        public static GameObject ProcessFlaStorkeEdge(FlaBaseStorkyStyleRaw storkeStyle, List<Vector2> edge)
+        {
+            
+            return new GameObject("stroke");
         }
 
         private static List<List<Vector2>> ProcessFlaEdgeString(string edgeString)
@@ -144,7 +169,9 @@ namespace Assets.FlaExporter.Editor
                         }
                         operationIndex += 5;
                         break;
-                        
+                    case "":
+                        operationIndex++;
+                        break;
                     default:
                         Debug.LogWarningFormat("can parse operation \"{0}\"",commands[operationIndex]);
                         operationIndex++;
@@ -156,8 +183,8 @@ namespace Assets.FlaExporter.Editor
 
         private static Vector2 TryParseFlaVector2(string commandX, string commandY)
         {
-            return new Vector2((float)FlaMathUtils.ParseFlaInteger(commandX) / 20.0f,
-                                (float)FlaMathUtils.ParseFlaInteger(commandY) / 20.0f);
+            return new Vector2((float)FlaMathUtils.ParseFlaInteger(commandX) / UnitsPerPixel,
+                                (float)FlaMathUtils.ParseFlaInteger(commandY) / UnitsPerPixel);
         }
 
         private static List<Vector2> GetFlaCurve(Vector2 point1, Vector2 controlpoint,Vector2 point2)
@@ -165,7 +192,7 @@ namespace Assets.FlaExporter.Editor
             var curveList = new List<Vector2>();
             var length = (point1 - controlpoint).magnitude;
             length += (point2 - controlpoint).magnitude;
-            var countOfPoints = (int) (length/PointByPixels);
+            var countOfPoints = (int) (length/CurveQuality);
             for (int i = 1; i < countOfPoints ; i++)
             {
                 var delta = (float)i / (float)countOfPoints;
@@ -173,14 +200,6 @@ namespace Assets.FlaExporter.Editor
             }
             return curveList;
         }
-
-        
-
-
-
-
-        
-
 
 
     }

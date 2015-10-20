@@ -77,9 +77,13 @@ namespace Assets.FlaExporter.Editor
                         continue;
                     }
                     FolderAndFileUtils.CheckFolders(FoldersConstants.BitmapSymbolsTextureFolderFolder);
-                    File.Copy(filePath, Application.dataPath + FoldersConstants.BitmapSymbolsTextureFolderFolder + includeBitmap.Href);
-                    AssetDatabase.ImportAsset(FolderAndFileUtils.GetAssetFolder( FoldersConstants.BitmapSymbolsTextureFolderFolder) + includeBitmap.Href);
-                    AssetDatabase.Refresh();
+                    if (!File.Exists(FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) +includeBitmap.Href))
+                    {
+                        File.Copy(filePath, FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) + includeBitmap.Href);
+                        AssetDatabase.ImportAsset(FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) + includeBitmap.Href);
+                        AssetDatabase.Refresh();
+                    }
+                    
                 }
 
                 var flaSymbols = new List<FlaSymbolItemRaw>();
@@ -129,12 +133,16 @@ namespace Assets.FlaExporter.Editor
                 var zipFileEntry = flaFile.FirstOrDefault(e => e.FileName.EndsWith(includeBitmap.Href));
 
                 FolderAndFileUtils.CheckFolders(FoldersConstants.BitmapSymbolsTextureFolderFolder);
-                var file = File.Open(Application.dataPath + FoldersConstants.BitmapSymbolsTextureFolderFolder + includeBitmap.Href, FileMode.OpenOrCreate);
-                var bytes = zipFileEntry.ToByteArray();
-                file.Write(bytes, 0, bytes.Length);
-                file.Close();
-                AssetDatabase.ImportAsset(FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) + includeBitmap.Href);
-                AssetDatabase.Refresh();
+                if (!File.Exists(FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) +includeBitmap.Href))
+                {
+                    var file = File.Open(FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) + includeBitmap.Href, FileMode.OpenOrCreate);
+                    var bytes = zipFileEntry.ToByteArray();
+                    file.Write(bytes, 0, bytes.Length);
+                    file.Close();
+                    AssetDatabase.ImportAsset(FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) + includeBitmap.Href);
+                    AssetDatabase.Refresh();
+                }
+                
             }
 
             var flaSymbols = new List<FlaSymbolItemRaw>();
@@ -144,7 +152,6 @@ namespace Assets.FlaExporter.Editor
                 var zipFileEntry = flaFile.FirstOrDefault(e => e.FileName.EndsWith(includeSymbol.Href));
                 var flaSymbol = zipFileEntry.ToByteArray().ObjectFromXML<FlaSymbolItemRaw>();
                 flaSymbols.Add(flaSymbol);
-                //FlaProcessor.ProcessFlaSymbol(flaSymbol);
             }
 
             flaSymbols = GetDependetSymbols(flaSymbols);

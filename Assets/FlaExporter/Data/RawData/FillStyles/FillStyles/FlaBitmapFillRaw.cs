@@ -7,8 +7,5 @@ namespace Assets.FlaExporter.Data.RawData.FillStyles.FillStyles
     {
         [XmlAttribute("bitmapPath")]
         public string BitmapPath;
-
-        [XmlElement("matrix")]
-        public FlaMatrixElemetRaw Matrix;
     }
 }
