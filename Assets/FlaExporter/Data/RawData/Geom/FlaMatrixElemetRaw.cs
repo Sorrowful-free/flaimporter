@@ -5,6 +5,6 @@ namespace Assets.FlaExporter.Data.RawData.Geom
     public class FlaMatrixElemetRaw
     {
         [XmlElement("Matrix")] 
-        public FlaMatrixRaw Matrix;
+        public FlaMatrixRaw Matrix = new FlaMatrixRaw();
     }
 }

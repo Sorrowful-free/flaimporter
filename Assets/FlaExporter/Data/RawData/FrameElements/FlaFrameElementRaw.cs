@@ -6,6 +6,6 @@ namespace Assets.FlaExporter.Data.RawData.FrameElements
     public class FlaFrameElementRaw
     {
         [XmlElement("matrix")]
-        public FlaMatrixElemetRaw Matrix;
+        public FlaMatrixElemetRaw Matrix = new FlaMatrixElemetRaw();
     }
 }
