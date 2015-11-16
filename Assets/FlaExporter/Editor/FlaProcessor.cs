@@ -1,6 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections;
+using System.Linq;
 using Assets.FlaExporter.Data.RawData;
 using Assets.FlaExporter.Data.RawData.FrameElements;
+using Assets.FlaExporter.Editor.Extentions;
 using Assets.FlaExporter.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -10,48 +13,65 @@ namespace Assets.FlaExporter.Editor
     public static class FlaProcessor
     {
         
-        public static void ProcessFlaDocument(FlaDocumentRaw flaDocumentData)
+        public static IEnumerator ProcessFlaDocument(FlaDocumentRaw flaDocumentData)
         {
             var name = "FlaDocument" + flaDocumentData.GetHashCode();
             var documentGO = new GameObject(name);
-            //var scriptableObject = FlaLibraryDataBaseSigleton.CreateLibraryDataBase();
 
             foreach (var timeline in flaDocumentData.Timelines)
             {
-                var timelineGO = ProcessFlaTimeLine(timeline);
-                timelineGO.transform.SetParent(documentGO.transform); 
+                yield return ProcessFlaTimeLine(timeline, timelineGO =>
+                {
+                    timelineGO.transform.SetParent(documentGO.transform); 
+                }).StartAsEditorCoroutine();
             }
-            
+            yield return null;
             PrefabUtility.CreatePrefab(FolderAndFileUtils.GetAssetFolder(FoldersConstants.ExportedOutputFolder) + name + ".prefab", documentGO);
+            yield return null;
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
+            yield return null;
         }
 
        
         
-        private static GameObject ProcessFlaTimeLine(FlaTimeLineRaw timeLine)
+        private static IEnumerator ProcessFlaTimeLine(FlaTimeLineRaw timeLine,Action<GameObject> callback)
         {
             var timeLineGO = new GameObject(timeLine.Name);
             foreach (var layer in timeLine.Layers)
             {
-                var layerGO = ProcessFlaLayer(layer);
-                layerGO.transform.SetParent(timeLineGO.transform);
+                yield return ProcessFlaLayer(layer, layerGO =>
+                {
+                    layerGO.transform.SetParent(timeLineGO.transform);
+                }).StartAsEditorCoroutine();
+               
             }
-            return timeLineGO;
+            yield return null;
+            if (callback != null)
+            {
+                callback(timeLineGO);
+            }
+            yield return null;
         }
 
-        private static GameObject ProcessFlaLayer(FlaLayerRaw layer)
+        private static IEnumerator ProcessFlaLayer(FlaLayerRaw layer,Action<GameObject> callback)
         {
             var layerGO = new GameObject(layer.Name);
             foreach (var frame in layer.Frames)
             {
-                var frameGO = ProcessFlaFrame(frame);
-                frameGO.transform.SetParent(layerGO.transform);
+                yield return ProcessFlaFrame(frame, frameGO =>
+                {
+                    frameGO.transform.SetParent(layerGO.transform);
+                }).StartAsEditorCoroutine();
             }
-            return layerGO;
+            if (callback != null)
+            {
+                callback(layerGO);
+            }
+            yield return null;
         }
 
-        private static GameObject ProcessFlaFrame(FlaFrameRaw frame)
+        private static IEnumerator ProcessFlaFrame(FlaFrameRaw frame,Action<GameObject> callback)
         {
             var frameGO = new GameObject("frame"+frame.Index + (frame.Name == null ? "":frame.Name));
             foreach (var element in frame.Elements)
@@ -66,27 +86,39 @@ namespace Assets.FlaExporter.Editor
                 }
                 else if (shape != null)
                 {
-                    elementGO = ProcessFlaShape(shape);
+                    yield return ProcessFlaShape(shape, o =>
+                    {
+                        elementGO = o;
+                    }).StartAsEditorCoroutine();
                 }
-                else if (bitmap != null)
+                else if (bitmap != null) 
                 {
                     elementGO = ProcessFlaBitmapInstance(bitmap);
                 }
                 
                 elementGO.transform.SetParent(frameGO.transform);
+                yield return null;
             }
-            
-            return frameGO;
+            if (callback != null)
+            {
+                callback(frameGO);
+            }
+            yield return null;
         }
 
-        public static void ProcessFlaSymbol(FlaSymbolItemRaw flaSymbolData)
+        public static IEnumerator ProcessFlaSymbol(FlaSymbolItemRaw flaSymbolData)
         {
             var flaSymbolGO = new GameObject(flaSymbolData.Name);
-            var timeLineGO = ProcessFlaTimeLine(flaSymbolData.Timeline.Timeline);
-            timeLineGO.transform.SetParent(flaSymbolGO.transform);
+            yield return ProcessFlaTimeLine(flaSymbolData.Timeline.Timeline, timeLineGO =>
+            {
+                timeLineGO.transform.SetParent(flaSymbolGO.transform);
+            }).StartAsEditorCoroutine();
+            yield return null;
+           // timeLineGO.transform.SetParent(flaSymbolGO.transform);
             FolderAndFileUtils.CheckFolders(FoldersConstants.SymbolsFolder);
             PrefabUtility.CreatePrefab(FolderAndFileUtils.GetAssetFolder(FoldersConstants.SymbolsFolder) + flaSymbolData.Name + ".prefab", flaSymbolGO);
             GameObject.DestroyImmediate(flaSymbolGO);
+            yield return null;
         }
         
         public static GameObject ProcessFlaSymbolInstance(FlaSymbolInstanceRaw instance)
@@ -112,9 +144,9 @@ namespace Assets.FlaExporter.Editor
             return bitmapSymbolGO;// GameObject.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsFolder) + instance.LibraryItemName + ".prefab"));
         }
         
-        public static GameObject ProcessFlaShape(FlaShapeRaw shape)
+        public static IEnumerator ProcessFlaShape(FlaShapeRaw shape,Action<GameObject> callback)
         {
-            return FlaShapeProcessor.ProcessFlaShape(shape);
+            return FlaShapeProcessor.ProcessFlaShape(shape,callback);
         }
 
        

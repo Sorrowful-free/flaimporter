@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Assets.BundleExporter.Editor.Helpers;
 using Assets.FlaExporter.Data.RawData.FrameElements;
@@ -15,7 +17,7 @@ namespace Assets.FlaExporter.Editor
     {
         public const float CurveQuality = 3f;
         public const float UnitsPerPixel = 20;
-        public static GameObject ProcessFlaShape(FlaShapeRaw shape)
+        public static IEnumerator ProcessFlaShape(FlaShapeRaw shape,Action<GameObject> callback)
         {
             var shapeGO = new GameObject("shape" + shape.Edges.Select(e => e.Edges).JoinToString("->").GetHashCode());
             if (shape.Matrix != null && shape.Matrix.Matrix != null)
@@ -29,7 +31,11 @@ namespace Assets.FlaExporter.Editor
             if (mesh != null)
             {
                 meshFilter.mesh = mesh;
-                return shapeGO;
+                if (callback != null)
+                {
+                    callback(shapeGO);
+                }
+                yield break;
             }
 
             var shapeVertices = new List<Vector3>();
@@ -40,7 +46,6 @@ namespace Assets.FlaExporter.Editor
                 var groupByFill = new Dictionary<int, List<List<Vector3>>>();
                 foreach (var edge in shape.Edges)
                 {
-                    
                     if (edge.Edges == null || edge.Edges == "" )
                     {
                         continue;
@@ -50,13 +55,12 @@ namespace Assets.FlaExporter.Editor
                     {
                         groupByFill.Add(edge.FillStyle1,new List<List<Vector3>>());
                     }
-              
                     groupByFill[edge.FillStyle1].AddRange(ProcessFlaEdgeString(edge.Edges).Select(e => e.Select(v => (Vector3)v).ToList()));
+                    yield return null;
                 }
                 foreach (var pair in groupByFill)
                 {
-                   
-                    var tess = new Tess();
+                   var tess = new Tess();
                     
                     foreach (var polygon in pair.Value)
                     {
@@ -64,19 +68,21 @@ namespace Assets.FlaExporter.Editor
                         {
                             continue;
                         }
-                        
                         tess.AddContour(polygon.Select(e=> new ContourVertex{Position = new Vec3{X = e.x,Y = e.y}}).ToArray(),ContourOrientation.Original);
+                        yield return null;
                     }
 
                     tess.Tessellate(WindingRule.NonZero, ElementType.Polygons, 3);
                     shapeTriangles.Add(tess.Elements.Select(e=>e+shapeVertices.Count).Reverse().ToList());
                     shapeVertices.AddRange(tess.Vertices.Select(e => new Vector3(e.Position.X, e.Position.Y)));
+                    yield return null;
                 }
 
                 shapeMesh.vertices = shapeVertices.ToArray();
                 for (int i = 0; i < shapeTriangles.Count; i++)
                 {
                     shapeMesh.SetTriangles(shapeTriangles[i].ToArray(),i);
+                    yield return null;
                 }
                 #region uv0
                 var bounds = shapeMesh.bounds;
@@ -94,6 +100,7 @@ namespace Assets.FlaExporter.Editor
                     uv.y = normalizedPosition.y / maxSize;
                     Debug.Log(string.Format("ih:{0},ms:{1},bs:{2}, np:{3}(p:{6}),uv:{4}, of:{5}",isHorisontal,maxSize,bounds.size,normalizedPosition,uv,offsets, shapeMesh.vertices[i]));
                     uvs.Add(uv);
+                    yield return null;
                 }
                 shapeMesh.uv = uvs.ToArray();
                 #endregion
@@ -102,9 +109,11 @@ namespace Assets.FlaExporter.Editor
                 meshFilter.mesh = shapeMesh;
 
             }
-            
-            
-            return shapeGO;
+
+            if (callback != null)
+            {
+                callback(shapeGO);
+            }
         }
 
         public static GameObject ProcessFlaStorkeEdge(FlaBaseStorkyStyleRaw storkeStyle, List<Vector2> edge)

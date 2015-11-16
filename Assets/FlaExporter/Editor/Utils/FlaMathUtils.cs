@@ -19,15 +19,18 @@ namespace Assets.FlaExporter.Editor.Utils
             var indexOfS = flaNumber.ToLower().IndexOf("s");
             if (indexOfS >= 0)
             {
-                return int.Parse(flaNumber.Substring(0, indexOfS));
+                return ParseInt(flaNumber.Substring(0, indexOfS), NumberStyles.Integer);
             }
             var indexOfPoint = flaNumber.ToLower().IndexOf(".");
             if (indexOfPoint >= 0)
             {
                 flaNumber = flaNumber.Substring(0, indexOfPoint);
             }
+            var result = ParseInt(flaNumber,NumberStyles.Integer);
             
-            return int.Parse(flaNumber);
+               
+            
+            return result;
         }
 
         public static int ParseFlaHex(string flaHex)
@@ -45,7 +48,25 @@ namespace Assets.FlaExporter.Editor.Utils
                 }
             }
             var parsedStr = parsedStrings[0] + parsedStrings[1];
-            return int.Parse((parsedStr).ToLower(),NumberStyles.HexNumber);
+
+            var result = ParseInt(parsedStr,NumberStyles.HexNumber);
+
+            return result;
+        }
+
+        private static int ParseInt(string str,NumberStyles style)
+        {
+            var result = 0;
+            try
+            {
+                result = int.Parse((str).ToLower(), style);
+            }
+            catch (Exception e)
+            {
+                Debug.LogErrorFormat("try parse int:{0} with exception {1}", str, e);
+                
+            }
+            return result;
         }
 
         public static Vector2 CalculateQuadCurvePoint(Vector2 p1,Vector2 p2,Vector2 c, float delta)

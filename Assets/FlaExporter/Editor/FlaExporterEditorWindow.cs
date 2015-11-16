@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -27,12 +28,12 @@ namespace Assets.FlaExporter.Editor
         {
             if (GUILayout.Button("OpenFLA"))
             {
+               
                 var path = EditorUtility.OpenFilePanel("open flash file (fla;xml)", "Assets","*.*");
                 if (path == "")
                 {
                     return;
                 }
-
                 ProcessPath(path);
             }
         }
@@ -41,26 +42,34 @@ namespace Assets.FlaExporter.Editor
         {
             if (path.ToLower().EndsWith(".fla"))
             {
-                ProcessZipFile(path);
+                ProcessZipFile(path).StartAsEditorCoroutine();
                 return;
             }
             else if (path.ToLower().EndsWith(".xml"))
             {
-                ProcessXMLFile(path);
+                ProcessXMLFile(path).StartAsEditorCoroutine();
                 return;
             }
             Debug.Log("it is no flash file");
         }
 
-        
-        private void ProcessXMLFile(string path)
+
+        private void ProgressLog(string title, string text, float percents)
         {
+            EditorUtility.DisplayProgressBar(title, text, percents);
+            Debug.Log(string.Format("{0}.{1}({2}%)",title,text,percents*100.0f));
+        }
+        
+        private IEnumerator ProcessXMLFile(string path)
+        {
+            
             var stringXML = File.ReadAllText(path);
             var data = File.ReadAllBytes(path);
             if (stringXML.StartsWith("<DOMDocument"))
             {
+                ProgressLog("parse xml", "parse xml file", 0.0f);
                 var flaDocument = data.ObjectFromXML<FlaDocumentRaw>();
-
+                ProgressLog("parse xml", "parsed xml document", 0.1f);
                
                 foreach (var includeBitmap in flaDocument.IncludeBitmaps)
                 {
@@ -83,9 +92,11 @@ namespace Assets.FlaExporter.Editor
                         AssetDatabase.ImportAsset(FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) + includeBitmap.Href);
                         AssetDatabase.Refresh();
                     }
+                    ProgressLog("parse bitmap", "import bitmap include", (float)flaDocument.IncludeBitmaps.IndexOf(includeBitmap) / (float)flaDocument.IncludeBitmaps.Count);
+                    yield return null;
                     
                 }
-
+                ProgressLog("parse fla", "parsed fla bitmap include", 0.3f);
                 var flaSymbols = new List<FlaSymbolItemRaw>();
                 foreach (var includeSymbol in flaDocument.IncludeSymbols)
                 {
@@ -97,32 +108,48 @@ namespace Assets.FlaExporter.Editor
                     }
                     var flaSymbol = File.ReadAllBytes(filePath).ObjectFromXML<FlaSymbolItemRaw>();
                     flaSymbols.Add(flaSymbol);
+                    ProgressLog("parse symbols", "import fla symbols", (float)flaSymbols.IndexOf(flaSymbol) / (float)flaSymbols.Count);
+                    yield return null;
                 }
 
                 flaSymbols = GetDependetSymbols(flaSymbols);
-                Debug.Log("symbols count = "+flaSymbols.Count);
+                ProgressLog("parse fla", "parsed fla symbols include", 0.6f);
 
                 foreach (var flaSymbol in flaSymbols)
                 {
-                    FlaProcessor.ProcessFlaSymbol(flaSymbol);
+                    yield return FlaProcessor.ProcessFlaSymbol(flaSymbol).StartAsEditorCoroutine();
+                    ProgressLog("process symbols", "process fla symbols", (float)flaSymbols.IndexOf(flaSymbol) / (float)flaSymbols.Count);
+                    yield return null;
                 }
 
-                FlaProcessor.ProcessFlaDocument(flaDocument);
+                ProgressLog("parse fla", "process fla symbols", 0.9f);
+
+                yield return FlaProcessor.ProcessFlaDocument(flaDocument).StartAsEditorCoroutine();
+
+                ProgressLog("parse fla", "process fla document", 1f);
+                yield return null;
+                EditorUtility.ClearProgressBar();
             }
             else if (stringXML.StartsWith("<DOMSymbolItem"))
             {
+                ProgressLog("parse xml", "process xml symbol", 1f);
                 var flaSymbol = data.ObjectFromXML<FlaSymbolItemRaw>();
-                FlaProcessor.ProcessFlaSymbol(flaSymbol);
+                yield return FlaProcessor.ProcessFlaSymbol(flaSymbol).StartAsEditorCoroutine();
+                EditorUtility.ClearProgressBar();
             }
+            yield return null;
         }
 
-        private void ProcessZipFile(string path)
+        private IEnumerator ProcessZipFile(string path)
         {
+            ProgressLog("parse fla","parse fla file",0.0f);
+
             var flaFile = ZipFile.Read(path);
             var document = flaFile["DOMDocument.xml"];
 
             var flaDocument = document.ToByteArray().ObjectFromXML<FlaDocumentRaw>();
-           
+            ProgressLog("parse fla", "parsed fla document", 0.1f);
+            
             foreach (var includeBitmap in flaDocument.IncludeBitmaps)
             {
                 if (!includeBitmap.Href.ToLower().EndsWith(".png") && !includeBitmap.Href.ToLower().EndsWith(".jpg"))
@@ -142,8 +169,13 @@ namespace Assets.FlaExporter.Editor
                     AssetDatabase.ImportAsset(FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) + includeBitmap.Href);
                     AssetDatabase.Refresh();
                 }
-                
+
+                ProgressLog("parse bitmap", "import bitmap include", (float)flaDocument.IncludeBitmaps.IndexOf(includeBitmap) / (float)flaDocument.IncludeBitmaps.Count);
+                yield return null;
+
             }
+            ProgressLog("parse fla", "parsed fla bitmap include", 0.3f);
+            
 
             var flaSymbols = new List<FlaSymbolItemRaw>();
 
@@ -152,16 +184,26 @@ namespace Assets.FlaExporter.Editor
                 var zipFileEntry = flaFile.FirstOrDefault(e => e.FileName.EndsWith(includeSymbol.Href));
                 var flaSymbol = zipFileEntry.ToByteArray().ObjectFromXML<FlaSymbolItemRaw>();
                 flaSymbols.Add(flaSymbol);
+                ProgressLog("parse symbols", "import fla symbols", (float)flaSymbols.IndexOf(flaSymbol) / (float)flaSymbols.Count);
+                yield return null;
             }
+            ProgressLog("parse fla", "parsed fla symbols include", 0.6f);
 
             flaSymbols = GetDependetSymbols(flaSymbols);
-
             foreach (var flaSymbol in flaSymbols)
             {
-                FlaProcessor.ProcessFlaSymbol(flaSymbol);
+                yield return FlaProcessor.ProcessFlaSymbol(flaSymbol).StartAsEditorCoroutine();
+                ProgressLog("process symbols", "process fla symbols", (float)flaSymbols.IndexOf(flaSymbol) / (float)flaSymbols.Count);
+                yield return null;
             }
-
-            FlaProcessor.ProcessFlaDocument(flaDocument);
+            ProgressLog("parse fla", "process fla symbols", 0.9f);
+            
+            yield return FlaProcessor.ProcessFlaDocument(flaDocument).StartAsEditorCoroutine();
+            
+            ProgressLog("parse fla", "process fla document", 1f);
+            yield return null;
+            EditorUtility.ClearProgressBar();
+           // EditorUtility.ClearProgressBar();
         }
 
         private List<FlaSymbolItemRaw> GetDependetSymbols(List<FlaSymbolItemRaw> symbols)
