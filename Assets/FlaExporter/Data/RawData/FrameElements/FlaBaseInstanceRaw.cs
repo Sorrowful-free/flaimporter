@@ -10,6 +10,7 @@ namespace Assets.FlaExporter.Data.RawData.FrameElements
     {
         [XmlAttribute("libraryItemName")]
         public string LibraryItemName;
+
         [XmlAttribute("selected")]
         public bool Selected;
         

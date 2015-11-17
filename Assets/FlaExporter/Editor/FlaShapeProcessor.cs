@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.BundleExporter.Editor.Helpers;
 using Assets.FlaExporter.Data.RawData.FrameElements;
 using Assets.FlaExporter.Data.RawData.StorkeStyle.StorkeStyles;
 using Assets.FlaExporter.Editor.Extentions;
@@ -17,7 +16,7 @@ namespace Assets.FlaExporter.Editor
     public static class FlaShapeProcessor
     {
         public const float CurveQuality = 3f;
-        public const float UnitsPerPixel = 20;
+        public const float UnitsPerPixel = 20;//flash units
         public static IEnumerator ProcessFlaShape(FlaShapeRaw shape,Action<GameObject> callback)
         {
             var shapeGO = new GameObject(shape.GetUniqueName());
@@ -107,7 +106,6 @@ namespace Assets.FlaExporter.Editor
                 FolderAndFileUtils.CheckFolders(FoldersConstants.ShapesFolder);
                 AssetDatabase.CreateAsset(shapeMesh,FolderAndFileUtils.GetAssetFolder(FoldersConstants.ShapesFolder)+shapeGO.name+".asset");
                 meshFilter.mesh = shapeMesh;
-
             }
 
             if (callback != null)
@@ -118,7 +116,6 @@ namespace Assets.FlaExporter.Editor
 
         public static GameObject ProcessFlaStorkeEdge(FlaBaseStorkyStyleRaw storkeStyle, List<Vector2> edge)
         {
-            
             return new GameObject("stroke");
         }
 
@@ -138,7 +135,6 @@ namespace Assets.FlaExporter.Editor
                     .Replace("   "," ");
             if (edgeString.EndsWith(" "))
                 edgeString = edgeString.Substring(0, edgeString.Length - 1);
-            Debug.Log(edgeString);
             var commands = edgeString.Split(' ');
             var operationIndex = 0;
             while (operationIndex < commands.Length)

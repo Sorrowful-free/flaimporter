@@ -1,23 +1,38 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Assets.FlaExporter.Data.RawData;
 using Assets.FlaExporter.Data.RawData.FrameElements;
 using Assets.FlaExporter.Editor.Extentions;
 using Assets.FlaExporter.Editor.Utils;
+using Assets.FlaExporter.FlaExporter;
 using UnityEditor;
+using UnityEditor.Animations;
 using UnityEngine;
 
 namespace Assets.FlaExporter.Editor
 {
     public static class FlaProcessor
     {
-        
+
+        private static FlaDocumentRaw _currentFlaDocumentRaw;
+        private static GameObject _currentFlaDocumentGO;
+        private static AnimatorController _currentFlaDocumentAC;
         public static IEnumerator ProcessFlaDocument(FlaDocumentRaw flaDocumentData)
         {
+            
             var name = "FlaDocument" + flaDocumentData.GetHashCode();
             var documentGO = new GameObject(name);
+            var anim = documentGO.AddComponent<Animator>();
+            _currentFlaDocumentGO = documentGO;
+
+            FolderAndFileUtils.CheckFolders(FoldersConstants.AnimatorControllerFolder);
+            _currentFlaDocumentAC = AnimatorController.CreateAnimatorControllerAtPath(FolderAndFileUtils.GetAssetFolder(FoldersConstants.AnimatorControllerFolder) + name+".controller");
             
+            anim.runtimeAnimatorController = _currentFlaDocumentAC;
+
+
             foreach (var timeline in flaDocumentData.Timelines)
             {
                 yield return ProcessFlaTimeLine(timeline, elementGO =>
@@ -30,21 +45,22 @@ namespace Assets.FlaExporter.Editor
             yield return null;
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
+            _currentFlaDocumentAC.AddMotion(clip);
+            _currentFlaDocumentGO = null;
+            _currentFlaDocumentAC = null;
             yield return null;
         }
-
-       
         
         private static IEnumerator ProcessFlaTimeLine(FlaTimeLineRaw timeLine,Action<GameObject> callback)
         {
-
             foreach (var flaLayerRaw in timeLine.Layers)
             {
                 yield return ProcessFlaLayer(flaLayerRaw, callback).StartAsEditorCoroutine();
             }
             yield return null;
-
         }
+
+        private static AnimationClip clip = new AnimationClip();
 
         private static IEnumerator ProcessFlaLayer(FlaLayerRaw layer,Action<GameObject> callback)
         {
@@ -57,16 +73,16 @@ namespace Assets.FlaExporter.Editor
             var instancesNames = instances.Select(e => e.LibraryItemName).Distinct();
             var shapesNames = shapes.Select(e => e.GetUniqueName()).Distinct();
 
+            
+
             foreach (var shapesName in shapesNames)
             {
                 var element = shapes.FirstOrDefault(e => e.GetUniqueName() == shapesName);
                 yield return ProcessFlaElement(element, (elementGO) =>
                 {
-                    //if (callback != null)
-                    //{
-                    //    callback(elementGO);
-                    //}
                     elementGO.transform.SetParent(layerGO.transform);
+                    elementGO.AddComponent<FlaTransform>();
+                    
                 }).StartAsEditorCoroutine();
             }
 
@@ -75,11 +91,9 @@ namespace Assets.FlaExporter.Editor
                 var element = instances.FirstOrDefault(e => e.LibraryItemName == instanceName);
                 yield return ProcessFlaElement(element, (elementGO) =>
                 {
-                    //if (callback != null)
-                    //{
-                    //    callback(elementGO);
-                    //}
                     elementGO.transform.SetParent(layerGO.transform);
+                    elementGO.AddComponent<FlaTransform>();
+                   
                 }).StartAsEditorCoroutine();
 
             }
@@ -90,36 +104,64 @@ namespace Assets.FlaExporter.Editor
                 callback(layerGO);
             }
 
-            yield break;
+            
+            var animationPositionCurvesX = new Dictionary<string,AnimationCurve>();
+            var animationPositionCurvesY = new Dictionary<string, AnimationCurve>();
+          
 
-            foreach (var frame in layer.Frames)
+            foreach (var frame in frames)
             {
-                yield return ProcessFlaFrame(frame, frameGO =>
+                foreach (var elementRaw in frame.Elements)
                 {
-                    frameGO.transform.SetParent(layerGO.transform);
-                }).StartAsEditorCoroutine();
+                    //elementRaw.Matrix.Matrix.GetAngle()
+                    var position = elementRaw.Matrix.Matrix.GetPosition();
+                    var path = layerGO.name + "/";
+                    if (elementRaw is FlaShapeRaw)
+                    {
+                        var shape = elementRaw as FlaShapeRaw;
+                        path += shape.GetUniqueName();
+                    }
+                    else if(elementRaw is FlaBaseInstanceRaw)
+                    {
+                        var instance = elementRaw as FlaBaseInstanceRaw;
+                        path += instance.LibraryItemName;
+                    }
+                    
+                    var curveX = default(AnimationCurve);
+                    if (!animationPositionCurvesX.TryGetValue(path, out curveX))
+                    {
+                        curveX = new AnimationCurve();
+                        animationPositionCurvesX.Add(path, curveX);
+                    }
+                    curveX.AddKey((float)frame.Index / (float)(_currentFlaDocumentRaw == null ? 30 : _currentFlaDocumentRaw.FrameRate), position.x);
+
+                    var curveY = default(AnimationCurve);
+                    if (!animationPositionCurvesY.TryGetValue(path, out curveY))
+                    {
+                        curveY = new AnimationCurve();
+                        animationPositionCurvesY.Add(path, curveY);
+                    }
+                    curveY.AddKey((float)frame.Index / (float)(_currentFlaDocumentRaw == null ? 30 : _currentFlaDocumentRaw.FrameRate), position.y);
+                }
             }
-            if (callback != null)
+            
+            clip.name = layerGO.name;
+            foreach (var key in animationPositionCurvesX.Keys)
             {
-                callback(layerGO);
+                clip.SetCurve(key, typeof(Transform), "localPosition.x", animationPositionCurvesX[key]);
+                clip.SetCurve(key, typeof(Transform), "localPosition.y", animationPositionCurvesY[key]);    
             }
-            yield return null;
+
+            
+
+
         }
 
-        private static IEnumerator ProcessFlaFrame(FlaFrameRaw frame,Action<GameObject> callback)
+        private static IEnumerator ProcessFlaFrame(FlaFrameRaw frame)
         {
-            var frameGO = new GameObject("frame"+frame.Index + (frame.Name == null ? "":frame.Name));
-            foreach (var element in frame.Elements)
-            {
-                yield return ProcessFlaElement(element, (elementGO) =>
-                {
-                    elementGO.transform.SetParent(frameGO.transform);    
-                }).StartAsEditorCoroutine();
-            }
-            if (callback != null)
-            {
-                callback(frameGO);
-            }
+
+            //Debug.Log(_currentFlaDocumentGO.transform.GetTransformPath());
+            //frame.Elements
             yield return null;
         }
 
@@ -166,15 +208,24 @@ namespace Assets.FlaExporter.Editor
         public static IEnumerator ProcessFlaSymbol(FlaSymbolItemRaw flaSymbolData)
         {
             var flaSymbolGO = new GameObject(flaSymbolData.Name);
+            _currentFlaDocumentGO = flaSymbolGO;
+            var anim = flaSymbolGO.AddComponent<Animator>();
+            _currentFlaDocumentGO = flaSymbolGO;
+            FolderAndFileUtils.CheckFolders(FoldersConstants.AnimatorControllerFolder);
+            _currentFlaDocumentAC = AnimatorController.CreateAnimatorControllerAtPath(FolderAndFileUtils.GetAssetFolder(FoldersConstants.AnimatorControllerFolder) + flaSymbolData.Name + ".controller");
+            anim.runtimeAnimatorController = _currentFlaDocumentAC;
+
             yield return ProcessFlaTimeLine(flaSymbolData.Timeline.Timeline, timeLineGO =>
             {
                 timeLineGO.transform.SetParent(flaSymbolGO.transform);
             }).StartAsEditorCoroutine();
             yield return null;
-           // timeLineGO.transform.SetParent(flaSymbolGO.transform);
+
             FolderAndFileUtils.CheckFolders(FoldersConstants.SymbolsFolder);
             PrefabUtility.CreatePrefab(FolderAndFileUtils.GetAssetFolder(FoldersConstants.SymbolsFolder) + flaSymbolData.Name + ".prefab", flaSymbolGO);
             GameObject.DestroyImmediate(flaSymbolGO);
+            _currentFlaDocumentGO = null;
+            _currentFlaDocumentAC = null;
             yield return null;
         }
         
@@ -206,9 +257,6 @@ namespace Assets.FlaExporter.Editor
         {
             return FlaShapeProcessor.ProcessFlaShape(shape,callback);
         }
-
-       
-
        
     }
 }
