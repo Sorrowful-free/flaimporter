@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using Assets.BundleExporter.Editor.Helpers;
 using UnityEngine;
 
 namespace Assets.FlaExporter.Editor.Utils

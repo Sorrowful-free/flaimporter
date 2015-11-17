@@ -48,6 +48,7 @@
   <ItemGroup>
      <Compile Include="Assets\FlaExporter\Editor\EditorCoroutine\EditorCoroutine.cs" />
      <Compile Include="Assets\FlaExporter\Editor\EditorCoroutine\EditorCoroutineExtention.cs" />
+     <Compile Include="Assets\FlaExporter\Editor\Extentions\FlaShapeRawExtention.cs" />
      <Compile Include="Assets\FlaExporter\Editor\Extentions\PrettyPrintExtention.cs" />
      <Compile Include="Assets\FlaExporter\Editor\Extentions\StringExtention.cs" />
      <Compile Include="Assets\FlaExporter\Editor\Extentions\XMLExtention.cs" />

@@ -5,6 +5,7 @@ using System.Linq;
 using Assets.BundleExporter.Editor.Helpers;
 using Assets.FlaExporter.Data.RawData.FrameElements;
 using Assets.FlaExporter.Data.RawData.StorkeStyle.StorkeStyles;
+using Assets.FlaExporter.Editor.Extentions;
 using Assets.FlaExporter.Editor.Plugins.LibTessDotNet;
 using Assets.FlaExporter.Editor.Utils;
 using UnityEditor;
@@ -19,7 +20,7 @@ namespace Assets.FlaExporter.Editor
         public const float UnitsPerPixel = 20;
         public static IEnumerator ProcessFlaShape(FlaShapeRaw shape,Action<GameObject> callback)
         {
-            var shapeGO = new GameObject("shape" + shape.Edges.Select(e => e.Edges).JoinToString("->").GetHashCode());
+            var shapeGO = new GameObject(shape.GetUniqueName());
             if (shape.Matrix != null && shape.Matrix.Matrix != null)
             {
                 shape.Matrix.Matrix.CopyMatrix(shapeGO.transform);
@@ -98,7 +99,6 @@ namespace Assets.FlaExporter.Editor
                     var uv = Vector2.zero;
                     uv.x = normalizedPosition.x / maxSize;
                     uv.y = normalizedPosition.y / maxSize;
-                    Debug.Log(string.Format("ih:{0},ms:{1},bs:{2}, np:{3}(p:{6}),uv:{4}, of:{5}",isHorisontal,maxSize,bounds.size,normalizedPosition,uv,offsets, shapeMesh.vertices[i]));
                     uvs.Add(uv);
                     yield return null;
                 }

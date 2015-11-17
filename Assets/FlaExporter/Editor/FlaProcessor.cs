@@ -17,12 +17,12 @@ namespace Assets.FlaExporter.Editor
         {
             var name = "FlaDocument" + flaDocumentData.GetHashCode();
             var documentGO = new GameObject(name);
-
+            
             foreach (var timeline in flaDocumentData.Timelines)
             {
-                yield return ProcessFlaTimeLine(timeline, timelineGO =>
+                yield return ProcessFlaTimeLine(timeline, elementGO =>
                 {
-                    timelineGO.transform.SetParent(documentGO.transform); 
+                    elementGO.transform.SetParent(documentGO.transform);
                 }).StartAsEditorCoroutine();
             }
             yield return null;
@@ -37,26 +37,61 @@ namespace Assets.FlaExporter.Editor
         
         private static IEnumerator ProcessFlaTimeLine(FlaTimeLineRaw timeLine,Action<GameObject> callback)
         {
-            var timeLineGO = new GameObject(timeLine.Name);
-            foreach (var layer in timeLine.Layers)
+
+            foreach (var flaLayerRaw in timeLine.Layers)
             {
-                yield return ProcessFlaLayer(layer, layerGO =>
-                {
-                    layerGO.transform.SetParent(timeLineGO.transform);
-                }).StartAsEditorCoroutine();
-               
+                yield return ProcessFlaLayer(flaLayerRaw, callback).StartAsEditorCoroutine();
             }
             yield return null;
-            if (callback != null)
-            {
-                callback(timeLineGO);
-            }
-            yield return null;
+
         }
 
         private static IEnumerator ProcessFlaLayer(FlaLayerRaw layer,Action<GameObject> callback)
         {
             var layerGO = new GameObject(layer.Name);
+
+            var frames = layer.Frames;
+            var elements = frames.SelectMany(e => e.Elements);
+            var instances = elements.OfType<FlaBaseInstanceRaw>();
+            var shapes = elements.OfType<FlaShapeRaw>();
+            var instancesNames = instances.Select(e => e.LibraryItemName).Distinct();
+            var shapesNames = shapes.Select(e => e.GetUniqueName()).Distinct();
+
+            foreach (var shapesName in shapesNames)
+            {
+                var element = shapes.FirstOrDefault(e => e.GetUniqueName() == shapesName);
+                yield return ProcessFlaElement(element, (elementGO) =>
+                {
+                    //if (callback != null)
+                    //{
+                    //    callback(elementGO);
+                    //}
+                    elementGO.transform.SetParent(layerGO.transform);
+                }).StartAsEditorCoroutine();
+            }
+
+            foreach (var instanceName in instancesNames)
+            {
+                var element = instances.FirstOrDefault(e => e.LibraryItemName == instanceName);
+                yield return ProcessFlaElement(element, (elementGO) =>
+                {
+                    //if (callback != null)
+                    //{
+                    //    callback(elementGO);
+                    //}
+                    elementGO.transform.SetParent(layerGO.transform);
+                }).StartAsEditorCoroutine();
+
+            }
+            yield return null;
+            
+            if (callback != null)
+            {
+                callback(layerGO);
+            }
+
+            yield break;
+
             foreach (var frame in layer.Frames)
             {
                 yield return ProcessFlaFrame(frame, frameGO =>
@@ -76,34 +111,56 @@ namespace Assets.FlaExporter.Editor
             var frameGO = new GameObject("frame"+frame.Index + (frame.Name == null ? "":frame.Name));
             foreach (var element in frame.Elements)
             {
-                var elementGO = default(GameObject);
-                var instance = element as FlaSymbolInstanceRaw;
-                var shape = element as FlaShapeRaw;
-                var bitmap = element as FlaBitmapInstanceRaw;
-                if (instance != null)
+                yield return ProcessFlaElement(element, (elementGO) =>
                 {
-                    elementGO = ProcessFlaSymbolInstance(instance);
-                }
-                else if (shape != null)
-                {
-                    yield return ProcessFlaShape(shape, o =>
-                    {
-                        elementGO = o;
-                    }).StartAsEditorCoroutine();
-                }
-                else if (bitmap != null) 
-                {
-                    elementGO = ProcessFlaBitmapInstance(bitmap);
-                }
-                
-                elementGO.transform.SetParent(frameGO.transform);
-                yield return null;
+                    elementGO.transform.SetParent(frameGO.transform);    
+                }).StartAsEditorCoroutine();
             }
             if (callback != null)
             {
                 callback(frameGO);
             }
             yield return null;
+        }
+
+        private static IEnumerator ProcessFlaElement(FlaFrameElementRaw element,Action<GameObject> callback)
+        {
+            var elementGO = default(GameObject);
+            var shape = element as FlaShapeRaw;
+            var instance = element as FlaBaseInstanceRaw;
+            if (shape != null)
+            {
+                yield return ProcessFlaShape(shape, callback).StartAsEditorCoroutine();
+                yield break;
+            }
+
+            if (instance != null)
+            {
+                yield return ProcessFlaInstance(instance, callback).StartAsEditorCoroutine();
+            }
+        }
+
+        private static IEnumerator ProcessFlaInstance(FlaBaseInstanceRaw instance,Action<GameObject> callback)
+        {
+            var symbolInstance = instance as FlaSymbolInstanceRaw;
+            var bitmapInstance = instance as FlaBitmapInstanceRaw;
+            if (symbolInstance != null)
+            {
+                var symbol = ProcessFlaSymbolInstance(symbolInstance);
+                if (callback != null)
+                {
+                    callback(symbol);
+                }
+                yield break;
+            }
+            if (bitmapInstance != null)
+            {
+                var bitmap = ProcessFlaBitmapInstance(bitmapInstance);
+                if (callback != null)
+                {
+                    callback(bitmap);
+                }
+            }
         }
 
         public static IEnumerator ProcessFlaSymbol(FlaSymbolItemRaw flaSymbolData)
@@ -124,6 +181,7 @@ namespace Assets.FlaExporter.Editor
         public static GameObject ProcessFlaSymbolInstance(FlaSymbolInstanceRaw instance)
         {
             var symbolGO = GameObject.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(FolderAndFileUtils.GetAssetFolder(FoldersConstants.SymbolsFolder) + instance.LibraryItemName+".prefab"));
+            symbolGO.name = instance.LibraryItemName;
             if (instance.Matrix != null && instance.Matrix.Matrix != null)
             {
                 instance.Matrix.Matrix.CopyMatrix(symbolGO.transform);

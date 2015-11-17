@@ -38,6 +38,12 @@ namespace Assets.FlaExporter.Editor
             }
         }
 
+        private void ProgressLog(string title, string text, float percents)
+        {
+            EditorUtility.DisplayProgressBar(title, text, percents);
+          //  Debug.Log(string.Format("{0}.{1}({2}%)", title, text, percents * 100.0f));
+        }
+
         private void ProcessPath(string path)
         {
             if (path.ToLower().EndsWith(".fla"))
@@ -54,15 +60,10 @@ namespace Assets.FlaExporter.Editor
         }
 
 
-        private void ProgressLog(string title, string text, float percents)
-        {
-            EditorUtility.DisplayProgressBar(title, text, percents);
-            Debug.Log(string.Format("{0}.{1}({2}%)",title,text,percents*100.0f));
-        }
+        
         
         private IEnumerator ProcessXMLFile(string path)
         {
-            
             var stringXML = File.ReadAllText(path);
             var data = File.ReadAllBytes(path);
             if (stringXML.StartsWith("<DOMDocument"))

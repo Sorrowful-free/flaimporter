@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using UnityEngine;
 
 namespace Assets.FlaExporter.Editor.EditorCoroutine
 {
@@ -27,7 +26,6 @@ namespace Assets.FlaExporter.Editor.EditorCoroutine
             if (_enumerator.Current is EditorCoroutine && _waitCoroutine == null)
             {
                 _waitCoroutine = _enumerator.Current as EditorCoroutine;
-                Debug.Log(_waitCoroutine);
             }
             if (_waitCoroutine != null)
             {
