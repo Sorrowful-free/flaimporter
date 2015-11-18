@@ -7,5 +7,8 @@ namespace Assets.FlaExporter.Data.RawData.FrameElements
     {
         [XmlElement("matrix")]
         public FlaMatrixElemetRaw Matrix = new FlaMatrixElemetRaw();
+
+        [XmlElement("transformationPoint")]
+        public FlaTransformationPointElementRaw TransformationPoint = new FlaTransformationPointElementRaw();
     }
 }

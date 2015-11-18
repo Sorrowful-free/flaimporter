@@ -1,12 +1,12 @@
 ﻿using System;
 using Assets.FlaExporter.Data.RawData.Geom;
+using Assets.FlaExporter.FlaExporter;
 using UnityEngine;
 
 namespace Assets.FlaExporter.Editor.Utils
 {
     public static class FlaMatrixUtils
     {
-       
         public static float GetSkewX(this FlaMatrixRaw flaMatrix)
         {
             return -(float)(Math.Atan(-flaMatrix.B/flaMatrix.A)*180/Math.PI);// -a for convert angles to unity
@@ -40,5 +40,7 @@ namespace Assets.FlaExporter.Editor.Utils
             transform.position = flaMatrix.GetPosition();
             transform.localScale = flaMatrix.GetScale();
         }
+
+       
     }
 }

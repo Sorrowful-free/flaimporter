@@ -14,8 +14,7 @@ namespace Assets.FlaExporter.Data.RawData.FrameElements
         [XmlAttribute("selected")]
         public bool Selected;
         
-        [XmlElement("transformationPoint")]
-        public FlaTransformationPointElementRaw TransformationPoint;
+        
 
         [XmlAttribute("centerPoint3DX")]
         public float CenterPoint3Dx;

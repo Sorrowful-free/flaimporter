@@ -143,12 +143,32 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                         curves.Add(elementPath,curveDictionary);
                     }
 
-
+                    foreach (var key in FlaTransform.ProperyNames.Keys)
+                    {
+                        var curve = default(AnimationCurve);
+                        if (!curveDictionary.TryGetValue(FlaTransform.ProperyNames[key], out curve))
+                        {
+                            curve = new AnimationCurve();
+                            curveDictionary.Add(FlaTransform.ProperyNames[key], curve);
+                        }
+                        curve.AddKey((float) frameRaw.Index/(float) frameRate, elementRaw.GetValueByPropertyType(key));
+                    }
+                    yield return null;
                 }
-                
+
             }
+            foreach (var curveDictionary in curves)
+            {
+                foreach (var curve in curveDictionary.Value)
+                {
+                    clip.SetCurve(curveDictionary.Key,typeof(FlaTransform),curve.Key,curve.Value);
+                }
+            }
+            
             yield return null;
         }
+
+        
 
     }
 }
