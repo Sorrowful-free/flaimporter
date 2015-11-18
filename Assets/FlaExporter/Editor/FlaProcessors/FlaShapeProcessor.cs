@@ -11,7 +11,7 @@ using UnityEditor;
 using UnityEngine;
 using Mesh = UnityEngine.Mesh;
 
-namespace Assets.FlaExporter.Editor
+namespace Assets.FlaExporter.Editor.FlaProcessors
 {
     public static class FlaShapeProcessor
     {

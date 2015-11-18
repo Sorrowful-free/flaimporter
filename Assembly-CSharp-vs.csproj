@@ -109,7 +109,9 @@
      <Compile Include="Assets\FlaExporter\Data\RawData\StorkeStyle\StorkeStyles\FlaVariablePointWidthRaw.cs" />
      <Compile Include="Assets\FlaExporter\FlaExporter\FlaTransform.cs" />
      <Compile Include="Assets\FlaExporter\FlaExporter\Renderers\BaseFlaRenderer.cs" />
+     <None Include="Assets\FlaExporter\Shader\grabColor.shader" />
      <None Include="Assets\FlaExporter\Editor\Plugins\LibTessDotNet\LibTessDotNet-LICENSE.txt" />
+     <None Include="Assets\FlaExporter\Shader\mainColor.shader" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

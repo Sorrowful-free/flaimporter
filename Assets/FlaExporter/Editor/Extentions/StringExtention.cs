@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Assets.BundleExporter.Editor.Helpers
+namespace Assets.FlaExporter.Editor.Extentions
 {
     public static class StringExtention
     {

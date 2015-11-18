@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Xml.Serialization;
 
-namespace Assets.Scripts.Helpers.Extensions
+namespace Assets.FlaExporter.Editor.Extentions
 {
     public static class XMLExtention
     {

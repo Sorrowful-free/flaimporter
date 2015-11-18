@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 
-namespace Assets.FlaExporter.Editor.Extentions
+namespace Assets.FlaExporter.Editor.EditorCoroutine
 {
     
     public static class EditorCoroutineExtention
     {
-        private static Dictionary<IEnumerator,EditorCoroutine.EditorCoroutine> _editorCoroutines = new Dictionary<IEnumerator, EditorCoroutine.EditorCoroutine>();
+        private static Dictionary<IEnumerator,EditorCoroutine> _editorCoroutines = new Dictionary<IEnumerator, EditorCoroutine>();
         private static bool _isNeedListening = true;
        
-        public static EditorCoroutine.EditorCoroutine StartAsEditorCoroutine(this IEnumerator coroutine)
+        public static EditorCoroutine StartAsEditorCoroutine(this IEnumerator coroutine)
         {
             return StartEditorCoroutine(coroutine);
         }
@@ -21,9 +21,9 @@ namespace Assets.FlaExporter.Editor.Extentions
             StopEditorCoroutine(coroutine);
         }
 
-        public static EditorCoroutine.EditorCoroutine StartEditorCoroutine(IEnumerator coroutine)
+        public static EditorCoroutine StartEditorCoroutine(IEnumerator coroutine)
         {
-            var corutineNode = new EditorCoroutine.EditorCoroutine(coroutine);
+            var corutineNode = new EditorCoroutine(coroutine);
             _editorCoroutines.Add(coroutine, corutineNode);
             if (_isNeedListening && _editorCoroutines.Count > 0)
             {

@@ -49,15 +49,19 @@
      <Compile Include="Assets\FlaExporter\Editor\CurveHelper\CurveHelper.cs" />
      <Compile Include="Assets\FlaExporter\Editor\EditorCoroutine\EditorCoroutine.cs" />
      <Compile Include="Assets\FlaExporter\Editor\EditorCoroutine\EditorCoroutineExtention.cs" />
+     <Compile Include="Assets\FlaExporter\Editor\Extentions\FlaFrameElementRawExtention.cs" />
      <Compile Include="Assets\FlaExporter\Editor\Extentions\FlaShapeRawExtention.cs" />
      <Compile Include="Assets\FlaExporter\Editor\Extentions\PrettyPrintExtention.cs" />
      <Compile Include="Assets\FlaExporter\Editor\Extentions\StringExtention.cs" />
      <Compile Include="Assets\FlaExporter\Editor\Extentions\TransformExtention.cs" />
      <Compile Include="Assets\FlaExporter\Editor\Extentions\XMLExtention.cs" />
      <Compile Include="Assets\FlaExporter\Editor\Extentions\ZipExtention.cs" />
+     <Compile Include="Assets\FlaExporter\Editor\FlaEditors\FlaTransformEditor.cs" />
      <Compile Include="Assets\FlaExporter\Editor\FlaExporterEditorWindow.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\FlaProcessor.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\FlaShapeProcessor.cs" />
+     <Compile Include="Assets\FlaExporter\Editor\FlaProcessors\FlaFrameElementProcessor.cs" />
+     <Compile Include="Assets\FlaExporter\Editor\FlaProcessors\FlaLayerProcessor.cs" />
+     <Compile Include="Assets\FlaExporter\Editor\FlaProcessors\FlaProcessor.cs" />
+     <Compile Include="Assets\FlaExporter\Editor\FlaProcessors\FlaShapeProcessor.cs" />
      <Compile Include="Assets\FlaExporter\Editor\FoldersConstants.cs" />
      <Compile Include="Assets\FlaExporter\Editor\Plugins\LibTessDotNet\Dict.cs" />
      <Compile Include="Assets\FlaExporter\Editor\Plugins\LibTessDotNet\Geom.cs" />
@@ -70,7 +74,9 @@
      <Compile Include="Assets\FlaExporter\Editor\Utils\FlaMathUtils.cs" />
      <Compile Include="Assets\FlaExporter\Editor\Utils\FlaMatrixUtils.cs" />
      <Compile Include="Assets\FlaExporter\Editor\Utils\FolderAndFileUtils.cs" />
+     <None Include="Assets\FlaExporter\Shader\grabColor.shader" />
      <None Include="Assets\FlaExporter\Editor\Plugins\LibTessDotNet\LibTessDotNet-LICENSE.txt" />
+     <None Include="Assets\FlaExporter\Shader\mainColor.shader" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

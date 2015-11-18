@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Linq;
-using Assets.BundleExporter.Editor.Helpers;
 
-namespace Assets.FlaExporter.Editor
+namespace Assets.FlaExporter.Editor.Extentions
 {
     public static class PrettyPrintExtention 
     {

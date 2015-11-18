@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using Assets.BundleExporter.Editor.Helpers;
 using Assets.FlaExporter.Data.RawData.FrameElements;
 
 namespace Assets.FlaExporter.Editor.Extentions

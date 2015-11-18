@@ -15,8 +15,8 @@ namespace Assets.FlaExporter.Data.RawData
         public bool AutoNamed;
 
         [XmlAttribute("animationType")]
-        public string AnimationType;
-
+        public string AnimationType; // default, IK pose,motion object,guide, mask
+        
         [XmlAttribute("current")] 
         public bool Current;
 
