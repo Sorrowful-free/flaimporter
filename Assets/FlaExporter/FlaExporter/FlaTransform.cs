@@ -6,7 +6,6 @@ using UnityEngine;
 namespace Assets.FlaExporter.FlaExporter
 {
     [ExecuteInEditMode]
-    [RequireComponent(typeof(BaseFlaRenderer))]
     public class FlaTransform : MonoBehaviour
     {
         public readonly static Dictionary<FlaTransformPropertyEnum, string> ProperyNames = new Dictionary<FlaTransformPropertyEnum, string>
@@ -91,8 +90,6 @@ namespace Assets.FlaExporter.FlaExporter
                 _oldRotation = Rotation;
             }
         }
-
-       
     }
 
     public enum FlaTransformPropertyEnum
