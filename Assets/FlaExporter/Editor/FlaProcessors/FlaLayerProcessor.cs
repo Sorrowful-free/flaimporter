@@ -131,7 +131,7 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                     {
                         visibleCurve.AddKey((float)frameRaw.Index / (float)frameRate, currentVisible);
                     }
-                    visibleCurve.AddKey((float)(frameRaw.Index + Math.Max(1, frameRaw.Duration)) / (float)frameRate, currentVisible);
+                    visibleCurve.AddKey(((float)frameRaw.Index + (float)Mathf.Max(1.0f,frameRaw.Duration)*0.99f) / (float)frameRate, currentVisible);
                     
                     if (elementRaw != null)
                     {
