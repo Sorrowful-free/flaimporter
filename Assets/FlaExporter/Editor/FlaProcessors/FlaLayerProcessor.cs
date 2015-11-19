@@ -95,7 +95,6 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
             {
                 yield break;
             }   
-            Debug.LogWarning("================layer :"+layerData.Name);
             var allElementsInLayerName = layerData.Frames.SelectMany(e => e.Elements).Select(e=>e.GetName()).Distinct();
             var curves = new Dictionary<string, Dictionary<string,AnimationCurve>>();
             foreach (var frameRaw in layerData.Frames)
@@ -172,7 +171,6 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                     }
                 }
             }
-            Debug.LogWarning(layerData.Name + "end============");
             yield return null;
         }
 

@@ -32,7 +32,7 @@ namespace Assets.FlaExporter.Editor.Extentions
                 case FlaTransformPropertyEnum.ScaleX:
                     return element.Matrix.Matrix.GetScale().x;
                 case FlaTransformPropertyEnum.ScaleY:
-                    return element.Matrix.Matrix.GetScale().x;
+                    return element.Matrix.Matrix.GetScale().y;
                 case FlaTransformPropertyEnum.SkewX:
                     return element.Matrix.Matrix.GetSkewX();
                 case FlaTransformPropertyEnum.SkewY:
