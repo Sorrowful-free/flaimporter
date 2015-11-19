@@ -15,10 +15,15 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
 {
     public static class FlaLayerProcessor
     {
-        public static IEnumerator ProcessFlaLayerElement(FlaLayerRaw layer, Action<GameObject> callback)
+        public static IEnumerator ProcessFlaLayerElement(FlaLayerRaw layerData, Action<GameObject> callback)
         {
-            var layerGO = new GameObject(layer.Name);
-            var frames = layer.Frames;
+            if (!layerData.Visible)
+            {
+                yield break;
+            }
+
+            var layerGO = new GameObject(layerData.Name+layerData.GetHashCode());
+            var frames = layerData.Frames;
             var elements = frames.SelectMany(e => e.Elements);
             var instances = elements.OfType<FlaBaseInstanceRaw>();
             var shapes = elements.OfType<FlaShapeRaw>();
@@ -54,56 +59,13 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                 callback(layerGO);
             }
             yield break;
-            var animationPositionCurvesX = new Dictionary<string, AnimationCurve>();
-            var animationPositionCurvesY = new Dictionary<string, AnimationCurve>();
-            
-            foreach (var frame in frames)
-            {
-                foreach (var elementRaw in frame.Elements)
-                {
-                    var position = elementRaw.Matrix.Matrix.GetPosition();
-                    var path = layerGO.name + "/";
-                    if (elementRaw is FlaShapeRaw)
-                    {
-                        var shape = elementRaw as FlaShapeRaw;
-                        path += shape.GetUniqueName();
-                    }
-                    else if (elementRaw is FlaBaseInstanceRaw)
-                    {
-                        var instance = elementRaw as FlaBaseInstanceRaw;
-                        path += instance.LibraryItemName;
-                    }
-
-                    var curveX = default(AnimationCurve);
-                    if (!animationPositionCurvesX.TryGetValue(path, out curveX))
-                    {
-                        curveX = new AnimationCurve();
-                        animationPositionCurvesX.Add(path, curveX);
-                    }
-               //     curveX.AddKey((float)frame.Index / (float)frameRate, position.x);
-
-                    var curveY = default(AnimationCurve);
-                    if (!animationPositionCurvesY.TryGetValue(path, out curveY))
-                    {
-                        curveY = new AnimationCurve();
-                        animationPositionCurvesY.Add(path, curveY);
-                    }
-                 //   curveY.AddKey((float)frame.Index / (float)frameRate, position.y);
-                }
-            }
-
-            //clip.name = layerGO.name;
-            //foreach (var key in animationPositionCurvesX.Keys)
-            //{
-            //    clip.SetCurve(key, typeof(Transform), "localPosition.x", animationPositionCurvesX[key]);
-            //    clip.SetCurve(key, typeof(Transform), "localPosition.y", animationPositionCurvesY[key]);
-            //}
+           
         }
 
         public static IEnumerator ProcessFlaLayer(FlaLayerRaw layerData,int frameRate,AnimationClip clip)
         {
             //FolderAndFileUtils.CheckFolders(FoldersConstants.AnimationClipsFolder);
-            Debug.Log("layer type :"+layerData.LayerType);
+            Debug.Log("layerData type :"+layerData.LayerType);
             switch (layerData.LayerType)
             {
                 case "mask":
@@ -125,17 +87,24 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                     yield return ProcessDefaultFlaLayer(layerData, frameRate, clip).StartAsEditorCoroutine();
                     break;
             }
-            yield break;
         }
 
         private static IEnumerator ProcessDefaultFlaLayer(FlaLayerRaw layerData, int frameRate, AnimationClip clip)
         {
+            if (!layerData.Visible)
+            {
+                yield break;
+            }   
+            Debug.LogWarning("================layer :"+layerData.Name);
+            var allElementsInLayerName = layerData.Frames.SelectMany(e => e.Elements).Select(e=>e.GetName()).Distinct();
             var curves = new Dictionary<string, Dictionary<string,AnimationCurve>>();
             foreach (var frameRaw in layerData.Frames)
             {
-                foreach (var elementRaw in frameRaw.Elements)
+
+                foreach (var elementName in allElementsInLayerName)
                 {
-                    var elementPath = layerData.Name + "/" + elementRaw.GetName();
+                    var elementPath = layerData.Name + layerData.GetHashCode() + "/" + elementName;
+                    var elementRaw = frameRaw.Elements.FirstOrDefault(e => e.GetName() == elementName);
                     var curveDictionary = default(Dictionary<string, AnimationCurve>);
                     if (!curves.TryGetValue(elementPath, out curveDictionary))
                     {
@@ -143,28 +112,67 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                         curves.Add(elementPath,curveDictionary);
                     }
 
-                    foreach (var key in FlaTransform.ProperyNames.Keys)
+                    var isVisible = elementRaw != null;
+                    var visibleCurve = default(AnimationCurve);
+                    if (!curveDictionary.TryGetValue("m_IsActive", out visibleCurve))
                     {
-                        var curve = default(AnimationCurve);
-                        if (!curveDictionary.TryGetValue(FlaTransform.ProperyNames[key], out curve))
+                        visibleCurve = new AnimationCurve();
+                        curveDictionary.Add("m_IsActive", visibleCurve);
+                    }
+
+                    var currentVisible = isVisible ? 1.0f : 0.0f;
+                    var lastVisible = visibleCurve.keys.Length>0?visibleCurve.keys[visibleCurve.keys.Length - 1].value:1;
+                    if (visibleCurve.keys.Length > 1 && lastVisible == currentVisible)
+                    {
+                        visibleCurve.RemoveKey(visibleCurve.keys.Length-1);
+                    }
+
+                    if (visibleCurve.keys.Length <= 0 || currentVisible != lastVisible)
+                    {
+                        visibleCurve.AddKey((float)frameRaw.Index / (float)frameRate, currentVisible);
+                    }
+                    visibleCurve.AddKey((float)(frameRaw.Index + Math.Max(1, frameRaw.Duration)) / (float)frameRate, currentVisible);
+                    
+                    if (elementRaw != null)
+                    {
+                        foreach (var key in FlaTransform.ProperyNames.Keys)
                         {
-                            curve = new AnimationCurve();
-                            curveDictionary.Add(FlaTransform.ProperyNames[key], curve);
+                            var curve = default(AnimationCurve);
+                            if (!curveDictionary.TryGetValue(FlaTransform.ProperyNames[key], out curve))
+                            {
+                                curve = new AnimationCurve();
+                                curveDictionary.Add(FlaTransform.ProperyNames[key], curve);
+                            }
+                            var lastKey = curve.keys.LastOrDefault();
+                            var currentFrameValue = elementRaw.GetValueByPropertyType(key);
+                            if ((curve.keys.Length <= 0 && currentFrameValue != FlaTransform.ProperyDefaultValues[key]) || lastKey.value != currentFrameValue)
+                            {
+                                curve.AddKey((float)frameRaw.Index / (float)frameRate, currentFrameValue);
+                            }
                         }
-                        curve.AddKey((float) frameRaw.Index/(float) frameRate, elementRaw.GetValueByPropertyType(key));
                     }
                     yield return null;
                 }
-
             }
             foreach (var curveDictionary in curves)
             {
                 foreach (var curve in curveDictionary.Value)
                 {
-                    clip.SetCurve(curveDictionary.Key,typeof(FlaTransform),curve.Key,curve.Value);
+                    if (curve.Value.keys.Length > 0)
+                    {
+                        if (curve.Key == "m_IsActive")
+                        {
+                            curve.Value.SetCurveLinear();
+                            clip.SetCurve(curveDictionary.Key, typeof(GameObject), curve.Key, curve.Value);
+                        }
+                        else
+                        {
+                            clip.SetCurve(curveDictionary.Key, typeof(FlaTransform), curve.Key, curve.Value);    
+                        }
+                    }
                 }
             }
-            
+            Debug.LogWarning(layerData.Name + "end============");
             yield return null;
         }
 

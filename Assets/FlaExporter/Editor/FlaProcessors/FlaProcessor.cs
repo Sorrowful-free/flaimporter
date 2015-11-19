@@ -81,9 +81,10 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
 
         private static IEnumerator ProcessFlaTimeLine(FlaTimeLineRaw timeLine, int frameRate, GameObject root)
         {
+            
             FolderAndFileUtils.CheckFolders(FoldersConstants.AnimatorControllerFolder);
             var animationController = AnimatorController.CreateAnimatorControllerAtPath(FolderAndFileUtils.GetAssetFolder(FoldersConstants.AnimatorControllerFolder) + root.name + "_AC.controller");
-
+            root.AddComponent<Animator>().runtimeAnimatorController = animationController;
             FolderAndFileUtils.CheckFolders(FoldersConstants.AnimationClipsFolder);
             var animationClip = new AnimationClip() { name = "clip" };
             AssetDatabase.CreateAsset(animationClip,FolderAndFileUtils.GetAssetFolder(FoldersConstants.AnimationClipsFolder) + animationController.name + ".anim");

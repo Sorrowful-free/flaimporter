@@ -26,6 +26,9 @@ namespace Assets.FlaExporter.Data.RawData
         [XmlAttribute("locked")] 
         public bool Locked;
 
+        [XmlAttribute("visible")]
+        public bool Visible = true;
+
         [XmlAttribute("layerType")]
         public string LayerType;
 

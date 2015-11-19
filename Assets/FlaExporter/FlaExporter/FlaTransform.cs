@@ -1,10 +1,12 @@
 ﻿
 using System.Collections.Generic;
+using Assets.FlaExporter.FlaExporter.Renderers;
 using UnityEngine;
 
 namespace Assets.FlaExporter.FlaExporter
 {
     [ExecuteInEditMode]
+    [RequireComponent(typeof(BaseFlaRenderer))]
     public class FlaTransform : MonoBehaviour
     {
         public readonly static Dictionary<FlaTransformPropertyEnum, string> ProperyNames = new Dictionary<FlaTransformPropertyEnum, string>
@@ -18,6 +20,19 @@ namespace Assets.FlaExporter.FlaExporter
             { FlaTransformPropertyEnum.SkewY, "Skew.y"},
             { FlaTransformPropertyEnum.TransformPointX, "TransformPoint.x"},
             { FlaTransformPropertyEnum.TransformPointY, "TransformPoint.y"},
+        };
+
+        public readonly static Dictionary<FlaTransformPropertyEnum, float> ProperyDefaultValues = new Dictionary<FlaTransformPropertyEnum, float>
+        {
+            { FlaTransformPropertyEnum.Rotation, 0},
+            { FlaTransformPropertyEnum.PositionX, 0},
+            { FlaTransformPropertyEnum.PositionY, 0},
+            { FlaTransformPropertyEnum.ScaleX, 1},
+            { FlaTransformPropertyEnum.ScaleY, 1},
+            { FlaTransformPropertyEnum.SkewX, 0},
+            { FlaTransformPropertyEnum.SkewY, 0},
+            { FlaTransformPropertyEnum.TransformPointX, 0},
+            { FlaTransformPropertyEnum.TransformPointY, 0},
         };
 
         [HideInInspector]
@@ -44,7 +59,6 @@ namespace Assets.FlaExporter.FlaExporter
         [SerializeField]
         public Vector2 TransformPoint = Vector2.zero;
         private Vector2 _oldTransformPoint = Vector2.zero;
-        
         private void Update()
         {
             if (_oldScale != Scale)
@@ -92,5 +106,6 @@ namespace Assets.FlaExporter.FlaExporter
         SkewY,
         TransformPointX,
         TransformPointY,
+        Visible,
     }
 }
