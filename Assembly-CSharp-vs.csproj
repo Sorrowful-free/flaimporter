@@ -108,10 +108,15 @@
      <Compile Include="Assets\FlaExporter\Data\RawData\StorkeStyle\StorkeStyles\FlaStippleStrokeStyleRaw.cs" />
      <Compile Include="Assets\FlaExporter\Data\RawData\StorkeStyle\StorkeStyles\FlaVariablePointWidthRaw.cs" />
      <Compile Include="Assets\FlaExporter\FlaExporter\FlaTransform.cs" />
-     <Compile Include="Assets\FlaExporter\FlaExporter\Renderers\BaseFlaRenderer.cs" />
-     <None Include="Assets\FlaExporter\Shader\grabColor.shader" />
+     <Compile Include="Assets\FlaExporter\FlaExporter\Renderers\FlaRenderer.cs" />
+     <None Include="Assets\FlaExporter\Shader\FillStyle\RadialGradient.shader" />
+     <None Include="Assets\FlaExporter\Shader\FillStyle\SolidColor.shader" />
+     <None Include="Assets\FlaExporter\Shader\temp\grabColor.shader" />
+     <None Include="Assets\FlaExporter\Shader\FillStyle\Bitmap.shader" />
      <None Include="Assets\FlaExporter\Editor\Plugins\LibTessDotNet\LibTessDotNet-LICENSE.txt" />
-     <None Include="Assets\FlaExporter\Shader\mainColor.shader" />
+     <None Include="Assets\FlaExporter\Shader\FlaCG.cginc" />
+     <None Include="Assets\FlaExporter\Shader\temp\mainColor.shader" />
+     <None Include="Assets\FlaExporter\Shader\FillStyle\LinearGradient.shader" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
