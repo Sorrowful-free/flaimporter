@@ -24,24 +24,24 @@ struct fla_frag_data
 	float2 uv_0 		:TEXCOORD0; 
 };
 
-fixed4 extract_value_from_sampler2D(sampler2D tex2d,int index,int count)
+float4 extract_value_from_sampler2D(sampler2D tex2d,int index,int count)
 {
 	float floatIndex = index;
 	float floatCount = count;
 	float offset = 1/floatCount/2;
-
-	if(index >= count)
+	
+	if(floatIndex >= floatCount-1)
 	{
-		return tex2D(tex2d,float2(1-offset,0.5));
+		return tex2D(tex2d,float2(1.0-offset,0.5));
 	}
 
-	if(index <= 0)
+	if(floatIndex < 0)
 	{
 		return tex2D(tex2d,float2(offset,0.5));
 	}
-
+	
 	float position = floatIndex/floatCount + offset;
-	fixed4 color = tex2D(tex2d,float2(position,0.5));
+	float4 color = tex2D(tex2d,float2(position,0.5));
 	return color;
 }
 
