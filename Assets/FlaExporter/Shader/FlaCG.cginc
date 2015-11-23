@@ -3,13 +3,11 @@
 
 #include "UnityCG.cginc"
 
-uniform float _ShapeTweenDeltaKoef;
+float _ShapeTweenDeltaKoef;
+const float PI = 3.14159;
 
-
-uniform float _TextureRotation;
-uniform float2 _TexturePosition;
-uniform float2 _TextureScale;
-uniform float2 _TextureTransformPosition;
+float4 _TextureMatrixABCD = float4(1,0,0,1);
+float2 _TextureMatrixTXTY = float2(0,0); 
 
 struct fla_vert_data
 {
@@ -63,7 +61,10 @@ float4 get_vertex_position(float4 position, float2 delta)
 
 float2 get_transform_uv(float2 uv)//todo need write
 {
-	return uv;
+	float2 uvResult = uv;
+	uvResult.x = uv.x*_TextureMatrixABCD.x + uv.y*_TextureMatrixABCD.z + _TextureMatrixTXTY.x; 
+	uvResult.y = uv.x*_TextureMatrixABCD.y + uv.y*_TextureMatrixABCD.w + _TextureMatrixTXTY.y;
+	return uvResult; 
 }
 
 fla_frag_data fla_vert_func(fla_vert_data input)

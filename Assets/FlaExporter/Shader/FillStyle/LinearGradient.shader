@@ -16,13 +16,13 @@
 		Lighting Off
 		ZWrite Off
 		Blend One OneMinusSrcAlpha
-
+		 
 		LOD 200
 
 		 Pass {
 			CGPROGRAM			
 			#include "../FlaCG.cginc"
-			#pragma vertex fla_vert_func
+			#pragma vertex fla_vert_func 
 			#pragma fragment frag 
 
 			sampler2D _Colors;
@@ -38,7 +38,7 @@
 				int index2 = 0;
 								
 				float weight1 = 0;
-				float weight2 = 0;
+				float weight2 = 0;  
 
 				float4 color1 = 0;
 				float4 color2 = 0;
@@ -62,15 +62,15 @@
 						}						
 					}					
 				}     
-				if(!checked)
+				if(!checked) 
 				{
 					color1 = extract_value_from_sampler2D(_Colors,_GradientEntryCount,_GradientEntryCount);
 					color2 = extract_value_from_sampler2D(_Colors,_GradientEntryCount,_GradientEntryCount);
 				}
 		
 				float delta = (radius - weight1)/(weight2-weight1); 
-				delta = max(0,min(1,delta));
-				return lerp(color1,color2,delta);
+				delta = max(0,min(1,delta)); 
+				return lerp(color1,color2,delta); 
 
 			}
 			ENDCG

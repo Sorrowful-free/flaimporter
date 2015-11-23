@@ -11,12 +11,12 @@
 		{	
 			"Queue"="Transparent" 			
 			"RenderType"="Transparent"  
-			"PreviewType"="Plane"
+			"PreviewType"="Plane" 
 		}
 
 		Cull Off
 		Lighting Off
-		ZWrite Off
+		ZWrite Off 
 		Blend One OneMinusSrcAlpha
 
 		LOD 200
@@ -28,7 +28,7 @@
 			#pragma vertex fla_vert_func 
 			#pragma fragment frag 
 			
-			sampler2D _Bitmap;
+			sampler2D _Bitmap;  
 				
 			fixed4 frag (fla_frag_data input) : SV_Target 
 			{ 

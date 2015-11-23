@@ -108,7 +108,10 @@
      <Compile Include="Assets\FlaExporter\Data\RawData\StorkeStyle\StorkeStyles\FlaStippleStrokeStyleRaw.cs" />
      <Compile Include="Assets\FlaExporter\Data\RawData\StorkeStyle\StorkeStyles\FlaVariablePointWidthRaw.cs" />
      <Compile Include="Assets\FlaExporter\FlaExporter\FlaTransform.cs" />
+     <Compile Include="Assets\FlaExporter\FlaExporter\Renderers\Enums\FillStyleTypeEnum.cs" />
+     <Compile Include="Assets\FlaExporter\FlaExporter\Renderers\FillStyles\FillStyleShadersNames.cs" />
      <Compile Include="Assets\FlaExporter\FlaExporter\Renderers\FlaRenderer.cs" />
+     <Compile Include="Assets\FlaExporter\Shader\TestShaderTransform.cs" />
      <None Include="Assets\FlaExporter\Shader\FillStyle\RadialGradient.shader" />
      <None Include="Assets\FlaExporter\Shader\FillStyle\SolidColor.shader" />
      <None Include="Assets\FlaExporter\Shader\temp\grabColor.shader" />

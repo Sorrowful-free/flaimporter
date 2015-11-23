@@ -3,7 +3,6 @@
 		_Colors ("Colors", 2D) = "white" {} 
 		_ColorWeight ("ColorWeight", 2D) = "white" {} 
 		_GradientEntryCount("GradientEntryCount",Int) = 3
-		_range("GradientEntryCountasd",Range(-1,1)) = 0
 	}
 	SubShader {
 		Tags 
@@ -28,8 +27,9 @@
 
 			sampler2D _Colors;
 			sampler2D _ColorWeight;
-			int _GradientEntryCount;
-			float _range;
+			int _GradientEntryCount; 
+			
+			
 			
 			fixed4 frag (fla_frag_data input) : SV_Target 
 			{ 

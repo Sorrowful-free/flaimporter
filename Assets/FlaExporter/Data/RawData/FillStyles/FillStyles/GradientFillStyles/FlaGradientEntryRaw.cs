@@ -5,10 +5,10 @@ namespace Assets.FlaExporter.Data.RawData.FillStyles.FillStyles.GradientFillStyl
     public class FlaGradientEntryRaw
     {
         [XmlAttribute("color")] 
-        public string Color;
+        public string Color ="#000000";
 
         [XmlAttribute("alpha")]
-        public float Alpha;
+        public float Alpha = 1;
         
         [XmlAttribute("ratio")]
         public float Ratio;

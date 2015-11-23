@@ -6,6 +6,7 @@ namespace Assets.FlaExporter.Editor.Utils
 {
     public static class FlaMathUtils
     {
+
         public static int ParseFlaInteger(string flaNumber)
         {
             if (flaNumber.StartsWith("#"))
