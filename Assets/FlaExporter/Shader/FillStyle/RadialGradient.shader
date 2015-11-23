@@ -34,10 +34,11 @@
 			fixed4 frag (fla_frag_data input) : SV_Target 
 			{ 
 				float radius = length(input.uv_0 - float2(0.5,0.5))/0.5; 
+				radius = min(1,radius);
+				bool checked = false; 
 				int index1 = 0;
 				int index2 = 0;
-				
-				bool cheked = false; 
+								
 				float weight1 = 0;
 				float weight2 = 0;
 
@@ -45,61 +46,32 @@
 				float4 color2 = 0;
 
 				int index = 0; 
+
 				for(index = 0; index <= _GradientEntryCount; index += 1) 
 				{
-					if(!cheked)
+					if(!checked)
 					{
-						index1 = index;// max(0,index-1);	
-						index2 = index1+1;   
-						
-						if(radius >= 1)
+						index1 = index;
+						index2 = min(index1+1,_GradientEntryCount-1);	
+					
+						weight2 = extract_value_from_sampler2D(_ColorWeight,index2,_GradientEntryCount).r;
+						if(weight2 >= radius)
 						{
-						//	index1 = _GradientEntryCount-1;	  
-						//	index2 = index1+1;   
-
 							weight1 = extract_value_from_sampler2D(_ColorWeight,index1,_GradientEntryCount).r;
-							weight2 = extract_value_from_sampler2D(_ColorWeight,index2,_GradientEntryCount).r;
 							color1 = extract_value_from_sampler2D(_Colors,index1,_GradientEntryCount);
 							color2 = extract_value_from_sampler2D(_Colors,index2,_GradientEntryCount);
-							cheked = true;     
-						}  
-											
-						if(!cheked)  
-						{  
-							weight1 = extract_value_from_sampler2D(_ColorWeight,index1,_GradientEntryCount).r;
-							weight2 = extract_value_from_sampler2D(_ColorWeight,index2,_GradientEntryCount).r; 
-							if(weight2 > radius && weight1 < radius) 
-							{
-								cheked = true;		
-								color1 = extract_value_from_sampler2D(_Colors,index1,_GradientEntryCount);
-								color2 = extract_value_from_sampler2D(_Colors,index2,_GradientEntryCount);						
-							}		
-							if(!cheked)									
-							{
-							//	index1 = _GradientEntryCount-1;	   
-							//	index2 = index1+1; 
-							//	color1 = extract_value_from_sampler2D(_Colors,index1,_GradientEntryCount);
-							//	color2 = extract_value_from_sampler2D(_Colors,index2,_GradientEntryCount);									
-								//cheked = true;     
-							}
-						}					
-					}
+							checked = true;
+						}						
+					}					
 				}     
-				
-			//	weight1 = extract_value_from_sampler2D(_ColorWeight,index1,_GradientEntryCount).r; 
-				
-				
-			//	if(input.uv_0.x<0.5)
-			//		return 	(weight2-weight1);
-				//return 	(radius - weight1); 
-								
-				float delta = (radius - weight1)/(weight2-weight1); //todo fix this shader 
+				if(!checked)
+				{
+					color1 = extract_value_from_sampler2D(_Colors,_GradientEntryCount,_GradientEntryCount);
+					color2 = extract_value_from_sampler2D(_Colors,_GradientEntryCount,_GradientEntryCount);
+				}
+		
+				float delta = (radius - weight1)/(weight2-weight1); 
 				delta = max(0,min(1,delta));
-			//	return delta;
-			//	return lerp(weight1,weight2,delta);
-			//	return delta;
-				//return delta;
-						
 				return lerp(color1,color2,delta);
 
 			}

@@ -31,31 +31,45 @@
 			
 			fixed4 frag (fla_frag_data input) : SV_Target 
 			{ 
-				int index1 =0;
-				int index2 =0;
-				float4 weigth ;
-				int index = 0;
-				bool cheked = false;
-				for(index = 0; index < _GradientEntryCount; index +=1)
+				float radius = input.uv_0.y; 
+				//radius = min(1,radius);
+				bool checked = false; 
+				int index1 = 0;
+				int index2 = 0;
+								
+				float weight1 = 0;
+				float weight2 = 0;
+
+				float4 color1 = 0;
+				float4 color2 = 0;
+
+				int index = 0; 
+
+				for(index = 0; index <= _GradientEntryCount; index += 1) 
 				{
-					if(!cheked)
+					if(!checked)
 					{
-						weigth = extract_value_from_sampler2D(_ColorWeight,index,_GradientEntryCount);
-						if(weigth.r >= input.uv_0.y)
+						index1 = index;
+						index2 = min(index1+1,_GradientEntryCount-1);	
+					
+						weight2 = extract_value_from_sampler2D(_ColorWeight,index2,_GradientEntryCount).r;
+						if(weight2 >= radius)
 						{
-							index1 = max(0,index-1);
-							index2 = index1+1;	
-							cheked = true;					
-						}
+							weight1 = extract_value_from_sampler2D(_ColorWeight,index1,_GradientEntryCount).r;
+							color1 = extract_value_from_sampler2D(_Colors,index1,_GradientEntryCount);
+							color2 = extract_value_from_sampler2D(_Colors,index2,_GradientEntryCount);
+							checked = true;
+						}						
 					}					
+				}     
+				if(!checked)
+				{
+					color1 = extract_value_from_sampler2D(_Colors,_GradientEntryCount,_GradientEntryCount);
+					color2 = extract_value_from_sampler2D(_Colors,_GradientEntryCount,_GradientEntryCount);
 				}
-
-				fixed4 weight1 = extract_value_from_sampler2D(_ColorWeight,index1,_GradientEntryCount);
-				fixed4 weight2 = extract_value_from_sampler2D(_ColorWeight,index2,_GradientEntryCount);
-				fixed4 color1 = extract_value_from_sampler2D(_Colors,index1,_GradientEntryCount);
-				fixed4 color2 = extract_value_from_sampler2D(_Colors,index2,_GradientEntryCount);
-
-				float delta = (input.uv_0.y - weight1.r)/(weight2.r-weight1.r);
+		
+				float delta = (radius - weight1)/(weight2-weight1); 
+				delta = max(0,min(1,delta));
 				return lerp(color1,color2,delta);
 
 			}
