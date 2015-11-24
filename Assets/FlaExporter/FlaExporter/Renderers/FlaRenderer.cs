@@ -1,8 +1,10 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using Assets.FlaExporter.FlaExporter.Renderers.FillStyles;
+using UnityEngine;
 
 namespace Assets.FlaExporter.FlaExporter.Renderers
 {
-    
+    [ExecuteInEditMode]
     public class FlaRenderer : MonoBehaviour
     {
         private MeshRenderer _meshRenderer;
@@ -25,6 +27,14 @@ namespace Assets.FlaExporter.FlaExporter.Renderers
             set { MeshRenderer.enabled = value; }
         }
 
+        [HideInInspector]
+        public List<BaseFillStyle> FillStyles = new List<BaseFillStyle>()
+        {
+            new SolidColorFillStyle(new Material("asd"){name = "test"}),
+            new SolidColorFillStyle(new Material("asd"){name = "test"}),
+            new SolidColorFillStyle(new Material("asd"){name = "test"}),
+        };
+        
 
     }
 }

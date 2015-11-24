@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Assets.FlaExporter.Data.RawData;
+using Assets.FlaExporter.Editor.Data.RawData;
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;

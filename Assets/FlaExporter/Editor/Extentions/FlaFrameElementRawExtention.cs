@@ -1,4 +1,4 @@
-﻿using Assets.FlaExporter.Data.RawData.FrameElements;
+﻿using Assets.FlaExporter.Editor.Data.RawData.FrameElements;
 using Assets.FlaExporter.Editor.Utils;
 using Assets.FlaExporter.FlaExporter;
 
@@ -38,9 +38,17 @@ namespace Assets.FlaExporter.Editor.Extentions
                 case FlaTransformPropertyEnum.SkewY:
                     return element.Matrix.Matrix.GetSkewY();
                 case FlaTransformPropertyEnum.TransformPointX:
+                    if (element.CenterPoint3Dx != null && element.CenterPoint3Dx != 0)
+                    {
+                        return element.CenterPoint3Dx - element.Matrix.Matrix.GetPosition().x;
+                    }
                     return element.TransformationPoint.Point.X;
                 case FlaTransformPropertyEnum.TransformPointY:
-                    return element.TransformationPoint.Point.Y;
+                    if (element.CenterPoint3Dy != null && element.CenterPoint3Dy != 0)
+                    {
+                        return element.CenterPoint3Dy;
+                    }
+                    return element.TransformationPoint.Point.Y - element.Matrix.Matrix.GetPosition().y;
                 default:
                     return 0;
             }

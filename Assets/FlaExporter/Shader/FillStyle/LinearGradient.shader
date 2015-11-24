@@ -13,7 +13,7 @@
 		}
 
 		Cull Off
-		Lighting Off
+		Lighting Off 
 		ZWrite Off
 		Blend One OneMinusSrcAlpha
 		 
@@ -22,7 +22,7 @@
 		 Pass {
 			CGPROGRAM			
 			#include "../FlaCG.cginc"
-			#pragma vertex fla_vert_func 
+			#pragma vertex fla_vert_func  
 			#pragma fragment frag 
 
 			sampler2D _Colors;

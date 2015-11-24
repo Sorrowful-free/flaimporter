@@ -2,11 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.FlaExporter.Data.RawData.FillStyles;
-using Assets.FlaExporter.Data.RawData.FillStyles.FillStyles;
-using Assets.FlaExporter.Data.RawData.FillStyles.FillStyles.GradientFillStyles;
-using Assets.FlaExporter.Data.RawData.FrameElements;
-using Assets.FlaExporter.Data.RawData.StorkeStyle.StorkeStyles;
+using Assets.FlaExporter.Editor.Data.RawData.FillStyles;
+using Assets.FlaExporter.Editor.Data.RawData.FillStyles.FillStyles;
+using Assets.FlaExporter.Editor.Data.RawData.FillStyles.FillStyles.GradientFillStyles;
+using Assets.FlaExporter.Editor.Data.RawData.FrameElements;
+using Assets.FlaExporter.Editor.Data.RawData.StorkeStyle.StorkeStyles;
 using Assets.FlaExporter.Editor.Extentions;
 using Assets.FlaExporter.Editor.Plugins.LibTessDotNet;
 using Assets.FlaExporter.Editor.Utils;
@@ -20,7 +20,7 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
 {
     public static class FlaShapeProcessor
     {
-        public const float CurveQuality = 3f;
+        
         public const float UnitsPerPixel = 20;//flash units
         public static IEnumerator ProcessFlaShape(FlaShapeRaw shape,Action<GameObject> callback)
         {
@@ -31,6 +31,14 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
             }
             var meshRenderer = shapeGO.AddComponent<MeshRenderer>();
             var meshFilter = shapeGO.AddComponent<MeshFilter>();
+
+            var sharedMaterials = new List<Material>();
+            foreach (var fillStyleRaw in shape.FillStyles)
+            {
+                sharedMaterials.Add(ProcessFlaFillStyle(fillStyleRaw));
+                yield return null;
+            }
+            meshRenderer.sharedMaterials = sharedMaterials.ToArray();
 
             var mesh = AssetDatabase.LoadAssetAtPath<Mesh>(FolderAndFileUtils.GetAssetFolder(FoldersConstants.ShapesFolder) + shapeGO.name + ".asset");
             if (mesh != null)
@@ -43,15 +51,10 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                 yield break;
             }
 
-            var sharedMaterials = new List<Material>();
-            foreach (var fillStyleRaw in shape.FillStyles)
-            {
-                 sharedMaterials.Add(ProcessFlaFillStyle(fillStyleRaw));
-                yield return null;
-            }
-            meshRenderer.sharedMaterials = sharedMaterials.ToArray();
+          
 
-
+            var matrix = new Matrix4x4();
+            matrix.SetTRS(Vector3.zero, Quaternion.identity, new Vector3(1,-1,1));
             var shapeVertices = new List<Vector3>();
             var shapeTriangles = new List<List<int>>();
             var shapeMesh = new Mesh();
@@ -82,13 +85,14 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                         {
                             continue;
                         }
-                        tess.AddContour(polygon.Select(e=> new ContourVertex{Position = new Vec3{X = e.x,Y = e.y}}).ToArray(),ContourOrientation.Original);
+                        var transformPolygon = polygon.Select(e => matrix.MultiplyPoint(e));
+                        tess.AddContour(transformPolygon.Select(e => new ContourVertex { Position = new Vec3 { X = e.x, Y = e.y } }).ToArray(), ContourOrientation.Original);
                         yield return null;
                     }
 
                     tess.Tessellate(WindingRule.NonZero, ElementType.Polygons, 3);
-                    shapeTriangles.Add(tess.Elements.Select(e=>e+shapeVertices.Count).Reverse().ToList());
-                    shapeVertices.AddRange(tess.Vertices.Select(e => new Vector3(e.Position.X, e.Position.Y)));
+                    shapeTriangles.Add(tess.Elements.Select(e=>e+shapeVertices.Count).ToList());
+                    shapeVertices.AddRange(tess.Vertices.Select(e => new Vector3(e.Position.X, e.Position.Y)/FlaExporterConstatns.PixelsPerUnits));
                     yield return null;
 
                     
@@ -112,8 +116,8 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                 {
                     var normalizedPosition = shapeMesh.vertices[i]+ offsets - bounds.min;
                     var uv = Vector2.zero;
-                    uv.x = normalizedPosition.x / maxSize;
-                    uv.y = 1-normalizedPosition.y / maxSize;
+                    uv.x = 1 - normalizedPosition.x / maxSize;
+                    uv.y = normalizedPosition.y / maxSize;
                     uvs.Add(uv);
                     yield return null;
                 }
@@ -134,49 +138,94 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
         {
             var fillStyle = fillStyleRaw.FillStyle;
             var material = default(Material);
+            var needSaveMaterial = false;
             if (fillStyle is FlaSolidColorFillStyleRaw)
             {
+                
                 var solidColor = (FlaSolidColorFillStyleRaw)fillStyle;
-                material = new Material(UnityEngine.Shader.Find(FillStyleShadersNames.ShaderNames[FillStyleTypeEnum.SolidColor]));
-                var color = Color.black;
-                Color.TryParseHexString(solidColor.Color, out color);
-                material.SetColor("_Color",color);
+                var matName = "material" + solidColor.Color.GetHashCode();
+                material = TryLoadMaterial(matName);
+                if (material == null)
+                {
+                    material = new Material(UnityEngine.Shader.Find(FillStyleShadersNames.ShaderNames[FillStyleTypeEnum.SolidColor]));
+                    var color = Color.black;
+                    Color.TryParseHexString(solidColor.Color, out color);
+                    material.SetColor("_Color", color);
+                    material.name = matName;
+                    needSaveMaterial = true;
+                }
                
+               
+
             }
             else if (fillStyle is FlaBitmapFillRaw)
             {
                 var bitmap = (FlaBitmapFillRaw)fillStyle;
-                material = new Material(UnityEngine.Shader.Find(FillStyleShadersNames.ShaderNames[FillStyleTypeEnum.Bitmap]));
-                var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(
-                    FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) +
-                    bitmap.BitmapPath);
-                material.SetTexture("_Bitmap",texture);
-
-
+                var matName = "material" + bitmap.BitmapPath.GetHashCode();
+                material = TryLoadMaterial(matName);
+                if (material == null)
+                {
+                    material = new Material(UnityEngine.Shader.Find(FillStyleShadersNames.ShaderNames[FillStyleTypeEnum.Bitmap]));
+                    var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(
+                        FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) +
+                        bitmap.BitmapPath);
+                    material.SetTexture("_Bitmap", texture);
+                    material.SetFloat("_TextureAspect", (float)texture.width / (float)texture.height);
+                    material.name = matName;
+                    needSaveMaterial = true;
+                }
             }
             else if (fillStyle is FlaLinearGradientFillStyleRaw)
             {
                 var linearGradient = (FlaLinearGradientFillStyleRaw) fillStyle;
-                material = new Material(UnityEngine.Shader.Find(FillStyleShadersNames.ShaderNames[FillStyleTypeEnum.LinearGradient]));
-                ProcessFlaGradientEntries(linearGradient.GradientEntries, ref material);
+                var matName = "material" + linearGradient.GetHashCode();
+                material = TryLoadMaterial(matName);
+                if (material == null)
+                {
+                    material = new Material(UnityEngine.Shader.Find(FillStyleShadersNames.ShaderNames[FillStyleTypeEnum.LinearGradient]));
+                    ProcessFlaGradientEntries(linearGradient.GradientEntries, ref material);
+                    material.name = matName;
+                    needSaveMaterial = true;
+                }
+                
 
             }
             else if (fillStyle is FlaRadialGradientFillStyleRaw)
             {
                 var radialGradient = (FlaRadialGradientFillStyleRaw)fillStyle;
-                material = new Material(UnityEngine.Shader.Find(FillStyleShadersNames.ShaderNames[FillStyleTypeEnum.RadialGradient]));
-                ProcessFlaGradientEntries(radialGradient.GradientEntries, ref material);
+                var matName = "material" + radialGradient.GetHashCode();
+                material = TryLoadMaterial(matName);
+                if (material == null)
+                {
+                    material = new Material(UnityEngine.Shader.Find(FillStyleShadersNames.ShaderNames[FillStyleTypeEnum.RadialGradient]));
+                    Debug.Log(radialGradient.GradientEntries + " : " + material);
+                    ProcessFlaGradientEntries(radialGradient.GradientEntries, ref material);
+                    material.name = matName;
+                    needSaveMaterial = true;
+                }
+                
             }
             var matrix = fillStyleRaw.FillStyle.Matrix.Matrix;
 
             material.SetVector("_TextureMatrixABCD", new Vector4(matrix.A,matrix.B,matrix.C,matrix.D));// not work =(
             material.SetVector("_TextureMatrixTXTY", new Vector4(matrix.TX, matrix.TY));// not work =(
 
-            FolderAndFileUtils.CheckFolders(FoldersConstants.MaterialsFolder);
-            AssetDatabase.CreateAsset(material, FolderAndFileUtils.GetAssetFolder(FoldersConstants.MaterialsFolder) + "material" + material.GetHashCode() + ".mat");
-            AssetDatabase.Refresh();
+            if (needSaveMaterial)
+            {
+                FolderAndFileUtils.CheckFolders(FoldersConstants.MaterialsFolder);
+                AssetDatabase.CreateAsset(material, FolderAndFileUtils.GetAssetFolder(FoldersConstants.MaterialsFolder) + material.name + ".mat");
+                AssetDatabase.Refresh();    
+                Debug.Log("save material "+ material.name);
+            }
 
             return material;
+        }
+
+        private static Material TryLoadMaterial(string name)
+        {
+            return
+                AssetDatabase.LoadAssetAtPath<Material>(
+                    FolderAndFileUtils.GetAssetFolder(FoldersConstants.MaterialsFolder) + name+".mat");
         }
 
         private static void ProcessFlaGradientEntries(List<FlaGradientEntryRaw> entries, ref Material material)
@@ -285,7 +334,7 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
             var curveList = new List<Vector2>();
             var length = (point1 - controlpoint).magnitude;
             length += (point2 - controlpoint).magnitude;
-            var countOfPoints = (int) (length/CurveQuality);
+            var countOfPoints = (int) (length/FlaExporterConstatns.CurveQuality);
             for (int i = 1; i < countOfPoints ; i++)
             {
                 var delta = (float)i / (float)countOfPoints;

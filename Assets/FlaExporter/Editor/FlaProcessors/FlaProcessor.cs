@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
-using Assets.FlaExporter.Data.RawData;
+using System.Linq;
+using Assets.FlaExporter.Editor.Data.RawData;
 using Assets.FlaExporter.Editor.EditorCoroutine;
 using Assets.FlaExporter.Editor.Utils;
 using UnityEditor;
@@ -81,7 +82,11 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
 
         private static IEnumerator ProcessFlaTimeLine(FlaTimeLineRaw timeLine, int frameRate, GameObject root)
         {
-            
+            var frames = timeLine.Layers.SelectMany(e => e.Frames);
+            if (frames.Max(e => e.Index) <= 0 && frames.Max(e => e.Duration) <= 0)
+            {
+                yield break;
+            }
             FolderAndFileUtils.CheckFolders(FoldersConstants.AnimatorControllerFolder);
             var animationController = AnimatorController.CreateAnimatorControllerAtPath(FolderAndFileUtils.GetAssetFolder(FoldersConstants.AnimatorControllerFolder) + root.name + "_AC.controller");
             root.AddComponent<Animator>().runtimeAnimatorController = animationController;

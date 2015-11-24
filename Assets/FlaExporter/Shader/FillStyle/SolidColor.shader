@@ -14,13 +14,13 @@
 		Lighting Off
 		ZWrite Off 
 		Blend One OneMinusSrcAlpha 
-
+		 
 		LOD 200
 
 		 Pass {
 			CGPROGRAM			
 			#include "../FlaCG.cginc"
-			#pragma vertex fla_vert_func
+			#pragma vertex fla_vert_func 
 			#pragma fragment frag 
 
 			fixed4 _Color;

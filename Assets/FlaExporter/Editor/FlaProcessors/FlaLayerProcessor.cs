@@ -2,13 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.FlaExporter.Data.RawData;
-using Assets.FlaExporter.Data.RawData.FrameElements;
+using Assets.FlaExporter.Editor.Data.RawData;
+using Assets.FlaExporter.Editor.Data.RawData.FrameElements;
 using Assets.FlaExporter.Editor.EditorCoroutine;
 using Assets.FlaExporter.Editor.Extentions;
-using Assets.FlaExporter.Editor.Utils;
 using Assets.FlaExporter.FlaExporter;
-using UnityEditor.Animations;
 using UnityEngine;
 
 namespace Assets.FlaExporter.Editor.FlaProcessors
@@ -24,19 +22,26 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
 
             var layerGO = new GameObject(layerData.Name+layerData.GetHashCode());
             var frames = layerData.Frames;
-            var elements = frames.SelectMany(e => e.Elements);
+            var elements = frames.SelectMany(e => e.Elements).ToList();
+           
             var instances = elements.OfType<FlaBaseInstanceRaw>();
-            var shapes = elements.OfType<FlaShapeRaw>();
             var instancesNames = instances.Select(e => e.LibraryItemName).Distinct();
+
+            var shapes = elements.OfType<FlaShapeRaw>();
             var shapesNames = shapes.Select(e => e.GetUniqueName()).Distinct();
+
             
             foreach (var shapesName in shapesNames)
             {
                 var element = shapes.FirstOrDefault(e => e.GetUniqueName() == shapesName);
                 yield return FlaFrameElementProcessor.ProcessFlaElement(element, (elementGO) =>
                 {
-                    elementGO.transform.SetParent(layerGO.transform);
+                    var order = (float)-elements.IndexOf(element)/10.0f;
+                    var pos = elementGO.transform.position;
+                    pos.z = order;
+                    elementGO.transform.position = pos;
                     elementGO.AddComponent<FlaTransform>();
+                    ApplyOffsets3d(elementGO, element).transform.SetParent(layerGO.transform);
 
                 }).StartAsEditorCoroutine();
             }
@@ -46,8 +51,12 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                 var element = instances.FirstOrDefault(e => e.LibraryItemName == instanceName);
                 yield return FlaFrameElementProcessor.ProcessFlaElement(element, (elementGO) =>
                 {
-                    elementGO.transform.SetParent(layerGO.transform);
+                    var order = (float)-elements.IndexOf(element) / 10.0f;
+                    var pos = elementGO.transform.position;
+                    pos.z = order;
+                    elementGO.transform.position = pos;
                     elementGO.AddComponent<FlaTransform>();
+                    ApplyOffsets3d(elementGO, element).transform.SetParent(layerGO.transform);
 
                 }).StartAsEditorCoroutine();
             }
@@ -58,14 +67,21 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
             {
                 callback(layerGO);
             }
-            yield break;
-           
+        }
+
+        private static GameObject ApplyOffsets3d(GameObject elementGO,FlaFrameElementRaw element)
+        {
+            //var offsets3d = new GameObject(element.GetName() + "_offsets3d");
+          //  offsets3d.transform.position = new Vector3(element.CenterPoint3Dx, - element.CenterPoint3Dy, element.CenterPoint3Dz) / FlaExporterConstatns.PixelsPerUnits;
+          //  offsets3d.transform.eulerAngles = new Vector3(-element.RotationX, -element.RotationY,  -element.RotationZ);
+        //    elementGO.transform.SetParent(offsets3d.transform,true);
+            return elementGO;
         }
 
         public static IEnumerator ProcessFlaLayer(FlaLayerRaw layerData,int frameRate,AnimationClip clip)
         {
             //FolderAndFileUtils.CheckFolders(FoldersConstants.AnimationClipsFolder);
-            Debug.Log("layerData type :"+layerData.LayerType);
+         //   Debug.Log("layerData type :"+layerData.LayerType);
             switch (layerData.LayerType)
             {
                 case "mask":
@@ -94,15 +110,18 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
             if (!layerData.Visible)
             {
                 yield break;
-            }   
+            }
+            if (layerData.Frames.Max(e => e.Index) <= 0 && layerData.Frames.Max(e => e.Duration) <= 0)
+            {
+                yield break;
+            }
             var allElementsInLayerName = layerData.Frames.SelectMany(e => e.Elements).Select(e=>e.GetName()).Distinct();
             var curves = new Dictionary<string, Dictionary<string,AnimationCurve>>();
             foreach (var frameRaw in layerData.Frames)
             {
-
                 foreach (var elementName in allElementsInLayerName)
                 {
-                    var elementPath = layerData.Name + layerData.GetHashCode() + "/" + elementName;
+                    var elementPath = layerData.Name + layerData.GetHashCode() + "/" /*+ elementName + "_offsets3d/" */+ elementName;
                     var elementRaw = frameRaw.Elements.FirstOrDefault(e => e.GetName() == elementName);
                     var curveDictionary = default(Dictionary<string, AnimationCurve>);
                     if (!curves.TryGetValue(elementPath, out curveDictionary))
@@ -130,7 +149,7 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                     {
                         visibleCurve.AddKey((float)frameRaw.Index / (float)frameRate, currentVisible);
                     }
-                    visibleCurve.AddKey(((float)frameRaw.Index + (float)Mathf.Max(1.0f,frameRaw.Duration)*0.99f) / (float)frameRate, currentVisible);
+                    visibleCurve.AddKey(((float)frameRaw.Index + (float)Mathf.Max(1.0f,frameRaw.Duration)-0.01f) / (float)frameRate, currentVisible);
                     
                     if (elementRaw != null)
                     {
@@ -144,6 +163,7 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                             }
                             var lastKey = curve.keys.LastOrDefault();
                             var currentFrameValue = elementRaw.GetValueByPropertyType(key);
+
                             if ((curve.keys.Length <= 0 && currentFrameValue != FlaTransform.ProperyDefaultValues[key]) || lastKey.value != currentFrameValue)
                             {
                                 curve.AddKey((float)frameRaw.Index / (float)frameRate, currentFrameValue);

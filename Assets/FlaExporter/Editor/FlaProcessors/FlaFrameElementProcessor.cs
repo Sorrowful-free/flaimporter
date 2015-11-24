@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Linq;
-using Assets.FlaExporter.Data.RawData.FrameElements;
+using Assets.FlaExporter.Editor.Data.RawData.FrameElements;
 using Assets.FlaExporter.Editor.EditorCoroutine;
-using Assets.FlaExporter.Editor.Extentions;
 using Assets.FlaExporter.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -14,9 +13,11 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
     {
         public static IEnumerator ProcessFlaElement(FlaFrameElementRaw element, Action<GameObject> callback)
         {
+            
             var elementGO = default(GameObject);
             var shape = element as FlaShapeRaw;
             var instance = element as FlaBaseInstanceRaw;
+            
             if (shape != null)
             {
                 yield return FlaShapeProcessor.ProcessFlaShape(shape, callback).StartAsEditorCoroutine();
@@ -75,5 +76,6 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
             instance.Matrix.Matrix.CopyMatrix(bitmapSymbolGO.transform);
             return bitmapSymbolGO;
         }
+
     }
 }
