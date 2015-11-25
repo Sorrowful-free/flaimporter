@@ -116,7 +116,7 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                 {
                     var normalizedPosition = shapeMesh.vertices[i]+ offsets - bounds.min;
                     var uv = Vector2.zero;
-                    uv.x = 1 - normalizedPosition.x / maxSize;
+                    uv.x = normalizedPosition.x / maxSize;
                     uv.y = normalizedPosition.y / maxSize;
                     uvs.Add(uv);
                     yield return null;

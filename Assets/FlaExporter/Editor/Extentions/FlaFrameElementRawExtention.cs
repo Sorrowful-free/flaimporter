@@ -40,15 +40,16 @@ namespace Assets.FlaExporter.Editor.Extentions
                 case FlaTransformPropertyEnum.TransformPointX:
                     if (element.CenterPoint3Dx != null && element.CenterPoint3Dx != 0)
                     {
-                        return element.CenterPoint3Dx - element.Matrix.Matrix.GetPosition().x;
+                        return element.CenterPoint3Dx / FlaExporterConstatns.PixelsPerUnits - element.Matrix.Matrix.GetPosition().x;
                     }
-                    return element.TransformationPoint.Point.X;
+                    return element.TransformationPoint.Point.X / FlaExporterConstatns.PixelsPerUnits;
+
                 case FlaTransformPropertyEnum.TransformPointY:
                     if (element.CenterPoint3Dy != null && element.CenterPoint3Dy != 0)
                     {
-                        return element.CenterPoint3Dy;
+                        return (-element.CenterPoint3Dy /FlaExporterConstatns.PixelsPerUnits) - element.Matrix.Matrix.GetPosition().y;;
                     }
-                    return element.TransformationPoint.Point.Y - element.Matrix.Matrix.GetPosition().y;
+                    return element.TransformationPoint.Point.Y/FlaExporterConstatns.PixelsPerUnits;
                 default:
                     return 0;
             }

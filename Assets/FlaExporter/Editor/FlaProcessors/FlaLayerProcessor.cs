@@ -51,7 +51,7 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                 var element = instances.FirstOrDefault(e => e.LibraryItemName == instanceName);
                 yield return FlaFrameElementProcessor.ProcessFlaElement(element, (elementGO) =>
                 {
-                    var order = (float)-elements.IndexOf(element) / 10.0f;
+                    var order = (float)elements.IndexOf(element) / 10.0f;
                     var pos = elementGO.transform.position;
                     pos.z = order;
                     elementGO.transform.position = pos;

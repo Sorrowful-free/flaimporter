@@ -10,15 +10,16 @@ namespace Assets.FlaExporter.FlaExporter
     {
         public readonly static Dictionary<FlaTransformPropertyEnum, string> ProperyNames = new Dictionary<FlaTransformPropertyEnum, string>
         {
-            { FlaTransformPropertyEnum.Rotation, "Rotation"},
-            { FlaTransformPropertyEnum.PositionX, "Position.x"},
-            { FlaTransformPropertyEnum.PositionY, "Position.y"},
             { FlaTransformPropertyEnum.ScaleX, "Scale.x"},
             { FlaTransformPropertyEnum.ScaleY, "Scale.y"},
-            { FlaTransformPropertyEnum.SkewX, "Skew.x"},
-            { FlaTransformPropertyEnum.SkewY, "Skew.y"},
+            { FlaTransformPropertyEnum.PositionX, "Position.x"},
+            { FlaTransformPropertyEnum.PositionY, "Position.y"},
             { FlaTransformPropertyEnum.TransformPointX, "TransformPoint.x"},
             { FlaTransformPropertyEnum.TransformPointY, "TransformPoint.y"},
+            { FlaTransformPropertyEnum.Rotation, "Rotation"},
+            { FlaTransformPropertyEnum.SkewX, "Skew.x"},
+            { FlaTransformPropertyEnum.SkewY, "Skew.y"},
+           
         };
 
         public readonly static Dictionary<FlaTransformPropertyEnum, float> ProperyDefaultValues = new Dictionary<FlaTransformPropertyEnum, float>
@@ -94,15 +95,15 @@ namespace Assets.FlaExporter.FlaExporter
 
     public enum FlaTransformPropertyEnum
     {
-        Rotation,
-        PositionX,
-        PositionY,
         ScaleX,
         ScaleY,
-        SkewX,
-        SkewY,
+        PositionX,
+        PositionY,
         TransformPointX,
         TransformPointY,
+        Rotation,
+        SkewX,
+        SkewY,
         Visible,
     }
 }

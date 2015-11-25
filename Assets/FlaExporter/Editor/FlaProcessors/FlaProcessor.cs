@@ -75,7 +75,18 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
         {
             foreach (var flaLayerRaw in timeLine.Layers)
             {
-                yield return FlaLayerProcessor.ProcessFlaLayerElement(flaLayerRaw, callback).StartAsEditorCoroutine();
+                var oredered = (float)timeLine.Layers.IndexOf(flaLayerRaw) / 10.0f;
+                yield return FlaLayerProcessor.ProcessFlaLayerElement(flaLayerRaw, (go) =>
+                {
+                    if (callback != null)
+                    {
+                        var pos = go.transform.position;
+                        pos.z = oredered;
+                        go.transform.position = pos;
+                        Debug.Log(flaLayerRaw.Name + " " + oredered + " " + timeLine.Layers.Count);
+                        callback(go);
+                    }
+                }).StartAsEditorCoroutine();
             }
             yield return null;
         }
