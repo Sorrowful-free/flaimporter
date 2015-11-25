@@ -14,6 +14,7 @@
 			"PreviewType"="Plane" 
 		}
 
+		
 		Cull Off
 		Lighting Off
 		ZWrite Off 

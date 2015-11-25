@@ -137,6 +137,7 @@
      <Compile Include="Assets\FlaExporter\Editor\Utils\FlaMathUtils.cs" />
      <Compile Include="Assets\FlaExporter\Editor\Utils\FlaMatrixUtils.cs" />
      <Compile Include="Assets\FlaExporter\Editor\Utils\FolderAndFileUtils.cs" />
+     <None Include="Assets\FlaExporter\Shader\ColorTransform\ColorTransform.shader" />
      <None Include="Assets\FlaExporter\Shader\FillStyle\RadialGradient.shader" />
      <None Include="Assets\FlaExporter\Shader\FillStyle\SolidColor.shader" />
      <None Include="Assets\FlaExporter\Shader\temp\grabColor.shader" />

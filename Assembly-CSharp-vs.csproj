@@ -53,6 +53,7 @@
      <Compile Include="Assets\FlaExporter\FlaExporter\Renderers\FillStyles\SolidColorFillStyle.cs" />
      <Compile Include="Assets\FlaExporter\FlaExporter\Renderers\FlaRenderer.cs" />
      <Compile Include="Assets\FlaExporter\Shader\TestShaderTransform.cs" />
+     <None Include="Assets\FlaExporter\Shader\ColorTransform\ColorTransform.shader" />
      <None Include="Assets\FlaExporter\Shader\FillStyle\RadialGradient.shader" />
      <None Include="Assets\FlaExporter\Shader\FillStyle\SolidColor.shader" />
      <None Include="Assets\FlaExporter\Shader\temp\grabColor.shader" />
