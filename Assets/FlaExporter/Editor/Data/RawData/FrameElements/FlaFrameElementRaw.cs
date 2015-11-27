@@ -1,4 +1,5 @@
 ﻿using System.Xml.Serialization;
+using Assets.FlaExporter.Editor.Data.RawData.Effects.Color;
 using Assets.FlaExporter.Editor.Data.RawData.Geom;
 
 namespace Assets.FlaExporter.Editor.Data.RawData.FrameElements
@@ -31,5 +32,8 @@ namespace Assets.FlaExporter.Editor.Data.RawData.FrameElements
 
         [XmlAttribute("matrix3D")]
         public string Matrix3D;
+
+        [XmlElement("color")]
+        public FlaColorElementRaw Color = new FlaColorElementRaw();
     }
 }

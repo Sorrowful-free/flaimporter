@@ -5,7 +5,7 @@ using Assets.FlaExporter.Editor.Data.RawData;
 using Assets.FlaExporter.Editor.EditorCoroutine;
 using Assets.FlaExporter.Editor.Utils;
 using Assets.FlaExporter.FlaExporter.ColorAndFilersHolder;
-using Assets.FlaExporter.FlaExporter.FlaTransorm;
+using Assets.FlaExporter.FlaExporter.Transorm;
 using UnityEditor;
 using UnityEngine;
 using AnimatorController = UnityEditor.Animations.AnimatorController;

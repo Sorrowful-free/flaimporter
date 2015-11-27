@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Assets.FlaExporter.FlaExporter.ColorAndFilersHolder.ColorTransform;
-using Assets.FlaExporter.FlaExporter.Renderers;
+using Assets.FlaExporter.FlaExporter.ColorAndFilersHolder.Enums;
+using Assets.FlaExporter.FlaExporter.Renderer;
 using UnityEngine;
 
 namespace Assets.FlaExporter.FlaExporter.ColorAndFilersHolder
@@ -8,6 +9,11 @@ namespace Assets.FlaExporter.FlaExporter.ColorAndFilersHolder
     [ExecuteInEditMode]
     public class FlaColorAndFiltersHolder : MonoBehaviour
     {
+        public static readonly Dictionary<FlaColorAndFiltersHolderPropertyTypeEnum,string> PropertyNames = new Dictionary<FlaColorAndFiltersHolderPropertyTypeEnum, string>
+        {
+            {FlaColorAndFiltersHolderPropertyTypeEnum.SelfColorTransform,"_selfColorTransform"}    
+        };
+
         [SerializeField]
         private FlaRenderer _flaRenderer;
         public FlaRenderer FlaRenderer
@@ -76,7 +82,7 @@ namespace Assets.FlaExporter.FlaExporter.ColorAndFilersHolder
          private void LateUpdate()
 #endif
         {
-            if (SelfColorTransform.IsChange)
+            if (_selfColorTransform.IsChange)
             {
                 UpdateChilds();
             }

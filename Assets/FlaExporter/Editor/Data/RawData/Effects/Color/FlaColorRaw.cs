@@ -14,24 +14,28 @@ namespace Assets.FlaExporter.Editor.Data.RawData.Effects.Color
         public string TintColor;
 
         [XmlAttribute("alphaMultiplier")]
-        public float AlphaMultiplier;
+        public float AlphaMultiplier = 1;
 
         [XmlAttribute("blueMultiplier")]
-        public float BlueMultiplier;
+        public float BlueMultiplier = 1;
 
         [XmlAttribute("greenMultiplier")]
-        public float GreenMultiplier;
+        public float GreenMultiplier = 1;
 
         [XmlAttribute("redMultiplier")]
-        public float RedMultiplier;
+        public float RedMultiplier = 1;
+
+        [XmlAttribute("alphaOffset")]
+        public int AlphaOffset = 0;
 
         [XmlAttribute("blueOffset")]
-        public int BlueOffset;
+        public int BlueOffset = 0;
 
         [XmlAttribute("greenOffset")]
-        public int GreenOffset;
+        public int GreenOffset = 0;
 
         [XmlAttribute("redOffset")]
-        public int RedOffset;
+        public int RedOffset = 0;
+
     }
 }

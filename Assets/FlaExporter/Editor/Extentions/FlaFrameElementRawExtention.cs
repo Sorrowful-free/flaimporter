@@ -1,7 +1,7 @@
 ﻿using Assets.FlaExporter.Editor.Data.RawData.FrameElements;
 using Assets.FlaExporter.Editor.Utils;
 using Assets.FlaExporter.FlaExporter;
-using Assets.FlaExporter.FlaExporter.FlaTransorm.Enums;
+using Assets.FlaExporter.FlaExporter.Transorm.Enums;
 
 namespace Assets.FlaExporter.Editor.Extentions
 {

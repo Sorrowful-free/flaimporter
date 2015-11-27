@@ -1,4 +1,4 @@
-namespace Assets.FlaExporter.FlaExporter.FlaTransorm.Enums
+namespace Assets.FlaExporter.FlaExporter.Transorm.Enums
 {
     public enum FlaTransformPropertyTypeEnum
     {

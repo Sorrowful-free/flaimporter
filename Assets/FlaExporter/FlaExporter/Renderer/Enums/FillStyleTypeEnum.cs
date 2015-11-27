@@ -1,4 +1,4 @@
-﻿namespace Assets.FlaExporter.FlaExporter.Renderers.Enums
+﻿namespace Assets.FlaExporter.FlaExporter.Renderer.Enums
 {
     public enum FillStyleTypeEnum
     {

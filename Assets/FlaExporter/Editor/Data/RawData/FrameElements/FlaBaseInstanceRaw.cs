@@ -13,8 +13,6 @@ namespace Assets.FlaExporter.Editor.Data.RawData.FrameElements
         [XmlAttribute("selected")]
         public bool Selected;
         
-      
-
         [XmlAttribute("blendMode")]
         public string BlendMode;
 
@@ -25,8 +23,7 @@ namespace Assets.FlaExporter.Editor.Data.RawData.FrameElements
         public string ReferenceId;
 
 
-        [XmlElement("color")]
-        public FlaColorElementRaw Color;
+        
 
         [XmlArray("filters")]
         [XmlArrayItem("DropShadowFilter", Type = typeof(FlaDropShadowFilterRaw))]

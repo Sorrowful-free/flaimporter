@@ -1,7 +1,7 @@
 ﻿using Assets.FlaExporter.FlaExporter.ColorAndFilersHolder.ColorTransform;
 using UnityEngine;
 
-namespace Assets.FlaExporter.FlaExporter.Renderers
+namespace Assets.FlaExporter.FlaExporter.Renderer
 {
     public class FlaRenderer : MonoBehaviour
     {
@@ -32,7 +32,6 @@ namespace Assets.FlaExporter.FlaExporter.Renderers
                 material.SetVector("_ColorMultipler",colorTransform.ColorMultipler);
                 material.SetVector("_ColorOffset", colorTransform.ColorOffset);
             }
-            
         }
 
        

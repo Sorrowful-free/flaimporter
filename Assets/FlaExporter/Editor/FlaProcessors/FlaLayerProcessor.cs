@@ -7,7 +7,10 @@ using Assets.FlaExporter.Editor.Data.RawData.FrameElements;
 using Assets.FlaExporter.Editor.EditorCoroutine;
 using Assets.FlaExporter.Editor.Extentions;
 using Assets.FlaExporter.FlaExporter;
-using Assets.FlaExporter.FlaExporter.FlaTransorm;
+using Assets.FlaExporter.FlaExporter.ColorAndFilersHolder;
+using Assets.FlaExporter.FlaExporter.ColorAndFilersHolder.ColorTransform;
+using Assets.FlaExporter.FlaExporter.ColorAndFilersHolder.Enums;
+using Assets.FlaExporter.FlaExporter.Transorm;
 using UnityEngine;
 
 namespace Assets.FlaExporter.Editor.FlaProcessors
@@ -145,13 +148,13 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                     
                     if (elementRaw != null)
                     {
-                        foreach (var key in FlaTransform.ProperyNames.Keys)
+                        foreach (var key in FlaTransform.PropertyNames.Keys)
                         {
                             var curve = default(AnimationCurve);
-                            if (!curveDictionary.TryGetValue(FlaTransform.ProperyNames[key], out curve))
+                            if (!curveDictionary.TryGetValue(FlaTransform.PropertyNames[key], out curve))
                             {
                                 curve = new AnimationCurve();
-                                curveDictionary.Add(FlaTransform.ProperyNames[key], curve);
+                                curveDictionary.Add(FlaTransform.PropertyNames[key], curve);
                             }
                             var lastKey = curve.keys.LastOrDefault();
                             var currentFrameValue = elementRaw.GetValueByPropertyType(key);
@@ -160,6 +163,35 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                             {
                                 curve.AddKey((float)frameRaw.Index / (float)frameRate, currentFrameValue);
                             }
+                        }
+
+                        foreach (var key in FlaColorAndFiltersHolder.PropertyNames.Keys)
+                        {
+                            switch (key)
+                            {
+                                case FlaColorAndFiltersHolderPropertyTypeEnum.SelfColorTransform:
+
+                                    foreach (var subKey in FlaColorTransform.PropertyNames.Keys)
+                                    {
+                                        var curve = default(AnimationCurve);
+                                        var curveName = FlaColorAndFiltersHolder.PropertyNames[key] + "." +
+                                                        FlaColorTransform.PropertyNames[subKey];
+                                        if (!curveDictionary.TryGetValue(curveName, out curve))
+                                        {
+                                            curve = new AnimationCurve();
+                                            curveDictionary.Add(curveName, curve);
+                                        }
+                                        var lastKey = curve.keys.LastOrDefault();
+                                        curve.AddKey((float)frameRaw.Index / (float)frameRate, currentFrameValue);
+
+                                    }
+                                     
+
+                                    break;
+                                default:
+                                    break;
+                            }
+                           
                         }
                     }
                     yield return null;
@@ -174,11 +206,11 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                         if (curve.Key == "m_IsActive")
                         {
                             curve.Value.SetCurveLinear();
-                            clip.SetCurve(curveDictionary.Key, typeof(GameObject), curve.Key, curve.Value);
+                            clip.SetCurve(curveDictionary.Key, typeof (GameObject), curve.Key, curve.Value);
                         }
                         else
                         {
-                            clip.SetCurve(curveDictionary.Key, typeof(FlaTransform), curve.Key, curve.Value);    
+                            clip.SetCurve(curveDictionary.Key, typeof (FlaTransform), curve.Key, curve.Value);
                         }
                     }
                 }

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using Assets.FlaExporter.FlaExporter.FlaTransorm.Enums;
+using Assets.FlaExporter.FlaExporter.Transorm.Enums;
 using UnityEngine;
 
-namespace Assets.FlaExporter.FlaExporter.FlaTransorm
+namespace Assets.FlaExporter.FlaExporter.Transorm
 {
     [ExecuteInEditMode]
     public class FlaTransform : MonoBehaviour
@@ -10,7 +10,7 @@ namespace Assets.FlaExporter.FlaExporter.FlaTransorm
         public static readonly Vector2 ZeroVec = Vector2.zero;
         public static readonly Vector3 ForwardVec = Vector3.forward;
 
-        public readonly static Dictionary<FlaTransformPropertyTypeEnum, string> ProperyNames = new Dictionary<FlaTransformPropertyTypeEnum, string>
+        public readonly static Dictionary<FlaTransformPropertyTypeEnum, string> PropertyNames = new Dictionary<FlaTransformPropertyTypeEnum, string>
         {
             { FlaTransformPropertyTypeEnum.ScaleX, "Scale.x"},
             { FlaTransformPropertyTypeEnum.ScaleY, "Scale.y"},
