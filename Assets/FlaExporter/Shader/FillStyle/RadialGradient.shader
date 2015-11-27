@@ -13,7 +13,7 @@
 		}
 
 		Cull Off
-		Lighting Off 
+		Lighting Off  
 		ZWrite Off
 		Blend One OneMinusSrcAlpha
 
@@ -72,7 +72,9 @@
 		
 				float delta = (radius - weight1)/(weight2-weight1); 
 				delta = max(0,min(1,delta));
-				return lerp(color1,color2,delta);
+				fixed4 color = lerp(color1,color2,delta); 
+				color = apply_color_transform(color); 
+				return color;
 
 			}
 			ENDCG

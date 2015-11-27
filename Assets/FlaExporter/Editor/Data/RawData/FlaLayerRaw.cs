@@ -38,6 +38,6 @@ namespace Assets.FlaExporter.Editor.Data.RawData
         [XmlArray("frames")] 
         [XmlArrayItem("DOMFrame")] 
         public List<FlaFrameRaw> Frames;
-
+        
     }
 }

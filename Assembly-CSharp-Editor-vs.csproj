@@ -140,11 +140,9 @@
      <None Include="Assets\FlaExporter\Shader\ColorTransform\ColorTransform.shader" />
      <None Include="Assets\FlaExporter\Shader\FillStyle\RadialGradient.shader" />
      <None Include="Assets\FlaExporter\Shader\FillStyle\SolidColor.shader" />
-     <None Include="Assets\FlaExporter\Shader\temp\grabColor.shader" />
      <None Include="Assets\FlaExporter\Shader\FillStyle\Bitmap.shader" />
      <None Include="Assets\FlaExporter\Editor\Plugins\LibTessDotNet\LibTessDotNet-LICENSE.txt" />
      <None Include="Assets\FlaExporter\Shader\FlaCG.cginc" />
-     <None Include="Assets\FlaExporter\Shader\temp\mainColor.shader" />
      <None Include="Assets\FlaExporter\Shader\FillStyle\LinearGradient.shader" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>

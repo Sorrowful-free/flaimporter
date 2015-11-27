@@ -10,6 +10,10 @@ using Assets.FlaExporter.Editor.Data.RawData.StorkeStyle.StorkeStyles;
 using Assets.FlaExporter.Editor.Extentions;
 using Assets.FlaExporter.Editor.Plugins.LibTessDotNet;
 using Assets.FlaExporter.Editor.Utils;
+using Assets.FlaExporter.FlaExporter.ColorAndFilersHolder;
+using Assets.FlaExporter.FlaExporter.ColorAndFilersHolder.ColorTransform;
+using Assets.FlaExporter.FlaExporter.FlaTransorm;
+using Assets.FlaExporter.FlaExporter.Renderers;
 using Assets.FlaExporter.FlaExporter.Renderers.Enums;
 using Assets.FlaExporter.FlaExporter.Renderers.FillStyles;
 using UnityEditor;
@@ -25,12 +29,16 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
         public static IEnumerator ProcessFlaShape(FlaShapeRaw shape,Action<GameObject> callback)
         {
             var shapeGO = new GameObject(shape.GetUniqueName());
+            
             if (shape.Matrix != null && shape.Matrix.Matrix != null)
             {
                 shape.Matrix.Matrix.CopyMatrix(shapeGO.transform);
             }
             var meshRenderer = shapeGO.AddComponent<MeshRenderer>();
             var meshFilter = shapeGO.AddComponent<MeshFilter>();
+            shapeGO.AddComponent<FlaRenderer>();
+            shapeGO.AddComponent<FlaColorAndFiltersHolder>();
+            shapeGO.AddComponent<FlaTransform>();
 
             var sharedMaterials = new List<Material>();
             foreach (var fillStyleRaw in shape.FillStyles)
@@ -50,9 +58,7 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                 }
                 yield break;
             }
-
-          
-
+            
             var matrix = new Matrix4x4();
             matrix.SetTRS(Vector3.zero, Quaternion.identity, new Vector3(1,-1,1));
             var shapeVertices = new List<Vector3>();

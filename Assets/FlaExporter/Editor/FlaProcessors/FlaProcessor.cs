@@ -4,8 +4,9 @@ using System.Linq;
 using Assets.FlaExporter.Editor.Data.RawData;
 using Assets.FlaExporter.Editor.EditorCoroutine;
 using Assets.FlaExporter.Editor.Utils;
+using Assets.FlaExporter.FlaExporter.ColorAndFilersHolder;
+using Assets.FlaExporter.FlaExporter.FlaTransorm;
 using UnityEditor;
-using UnityEditorInternal;
 using UnityEngine;
 using AnimatorController = UnityEditor.Animations.AnimatorController;
 
@@ -51,12 +52,16 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
         public static IEnumerator ProcessFlaSymbol(FlaSymbolItemRaw flaSymbolData)
         {
             var flaSymbolGO = new GameObject(flaSymbolData.Name);
+            var colorAndFilters = flaSymbolGO.AddComponent<FlaColorAndFiltersHolder>();
+            flaSymbolGO.AddComponent<FlaTransform>();
+
             _currentRoot = flaSymbolGO;
             
-
-            yield return ProcessFlaTimeLineElements(flaSymbolData.Timeline.Timeline, timeLineGO =>
+            yield return ProcessFlaTimeLineElements(flaSymbolData.Timeline.Timeline, elementGO =>
             {
-                timeLineGO.transform.SetParent(flaSymbolGO.transform);
+                elementGO.transform.SetParent(flaSymbolGO.transform);
+                var elementColorAndFilters = elementGO.GetComponent<FlaColorAndFiltersHolder>();
+                colorAndFilters.AddChild(elementColorAndFilters);
             }).StartAsEditorCoroutine();
             yield return null;
 
@@ -83,7 +88,6 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                         var pos = go.transform.position;
                         pos.z = oredered;
                         go.transform.position = pos;
-                        Debug.Log(flaLayerRaw.Name + " " + oredered + " " + timeLine.Layers.Count);
                         callback(go);
                     }
                 }).StartAsEditorCoroutine();

@@ -13,7 +13,7 @@
 		Cull Off
 		Lighting Off
 		ZWrite Off 
-		Blend One OneMinusSrcAlpha 
+		Blend SrcAlpha OneMinusSrcAlpha 
 		 
 		LOD 200
 
@@ -27,7 +27,9 @@
 			
 			fixed4 frag (fla_frag_data input) : SV_Target 
 			{ 
-				return _Color*_Color.a; 
+				fixed4 color = _Color*_Color.a; 
+				color = apply_color_transform(color); 
+				return color;				
 			}
 			ENDCG
 		}

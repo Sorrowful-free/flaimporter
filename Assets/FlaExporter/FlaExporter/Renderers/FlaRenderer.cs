@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
-using Assets.FlaExporter.FlaExporter.Renderers.FillStyles;
+﻿using Assets.FlaExporter.FlaExporter.ColorAndFilersHolder.ColorTransform;
 using UnityEngine;
 
 namespace Assets.FlaExporter.FlaExporter.Renderers
 {
-    [ExecuteInEditMode]
     public class FlaRenderer : MonoBehaviour
     {
         private MeshRenderer _meshRenderer;
@@ -27,13 +25,17 @@ namespace Assets.FlaExporter.FlaExporter.Renderers
             set { MeshRenderer.enabled = value; }
         }
 
-        [HideInInspector]
-        public List<BaseFillStyle> FillStyles = new List<BaseFillStyle>()
+        public void UpdateColorTranform(FlaColorTransform colorTransform)
         {
-            new SolidColorFillStyle(new Material("asd"){name = "test"}),
-            new SolidColorFillStyle(new Material("asd"){name = "test"}),
-            new SolidColorFillStyle(new Material("asd"){name = "test"}),
-        };
+            foreach (var material in MeshRenderer.sharedMaterials)
+            {
+                material.SetVector("_ColorMultipler",colorTransform.ColorMultipler);
+                material.SetVector("_ColorOffset", colorTransform.ColorOffset);
+            }
+            
+        }
+
+       
         
 
     }

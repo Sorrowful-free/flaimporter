@@ -14,7 +14,6 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
         public static IEnumerator ProcessFlaElement(FlaFrameElementRaw element, Action<GameObject> callback)
         {
             
-            var elementGO = default(GameObject);
             var shape = element as FlaShapeRaw;
             var instance = element as FlaBaseInstanceRaw;
             

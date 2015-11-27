@@ -12,14 +12,18 @@
 		Tags 
 		{
 			"IgnoreProjector"="True"
-			"Queue"="Transparent" 
+			"Queue"="Overlay" 
 			"RenderType"="Transparent" 			
 			"PreviewType"="Plane"
 		}	
-		ZTest Off
-		Blend One OneMinusSrcAlpha
+		Cull Off
+		Lighting Off
+	//	ZTest Off
+		Blend SrcAlpha OneMinusSrcAlpha
+		AlphaToMask True
+		Alphatest LEqual [_Cutoff]
 		//BlendOp LogicalClear
-
+		//ColorMask 0
 		GrabPass{"_OldColor"}		
 		 			
 		 Pass {

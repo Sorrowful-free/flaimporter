@@ -13,10 +13,10 @@ namespace Assets.FlaExporter.Editor.CustomEditors
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
-            foreach (var fillStyle in TargetRenderer.FillStyles)
-            {
-                fillStyle.DrawGUI();
-            }
+            //foreach (var fillStyle in TargetRenderer.FillStyles)
+          //  {
+          //      fillStyle.DrawGUI();
+          //  }
         }
     }
 }

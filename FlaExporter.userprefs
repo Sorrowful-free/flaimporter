@@ -1,12 +1,14 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="..\sweets\Assets\SVG Importer\Plugins\Shaders\Resources\Gradient Fill\GradientColorAdditive.shader">
+  <MonoDevelop.Ide.Workbench ActiveDocument="..\..\Users\user\AppData\Local\Temp\Rar$DIa0.630\UnityUI.cginc">
     <Files>
-      <File FileName="..\balloons\Assets\GAF\Resources\Shaders\GAFFilters.cginc" Line="1" Column="1" />
+      <File FileName="..\..\Users\user\AppData\Local\Temp\Rar$DIa0.630\UnityUI.cginc" Line="4" Column="1" />
+      <File FileName="..\balloons\Assets\GAF\Resources\Shaders\GAFBlur.shader" Line="1" Column="1" />
+      <File FileName="..\balloons\Assets\GAF\Resources\Shaders\GAFFilters.cginc" Line="94" Column="5" />
       <File FileName="Assets\FlaExporter\Shader\FlaCG.cginc" Line="1" Column="1" />
       <File FileName="..\balloons\Assets\GAF\Resources\Shaders\GAFShaderBase.cginc" Line="1" Column="1" />
       <File FileName="..\balloons\Assets\GAF\Resources\Shaders\GAFMask.shader" Line="1" Column="1" />
-      <File FileName="..\sweets\Assets\SVG Importer\Plugins\Shaders\Resources\Gradient Fill\GradientColorAdditive.shader" Line="9" Column="61" />
+      <File FileName="..\sweets\Assets\SVG Importer\Plugins\Shaders\Resources\Gradient Fill\GradientColorAdditive.shader" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

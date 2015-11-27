@@ -1,6 +1,7 @@
 ﻿using Assets.FlaExporter.Editor.Data.RawData.FrameElements;
 using Assets.FlaExporter.Editor.Utils;
 using Assets.FlaExporter.FlaExporter;
+using Assets.FlaExporter.FlaExporter.FlaTransorm.Enums;
 
 namespace Assets.FlaExporter.Editor.Extentions
 {
@@ -19,32 +20,32 @@ namespace Assets.FlaExporter.Editor.Extentions
             return "";
         }
 
-        public static float GetValueByPropertyType(this FlaFrameElementRaw element, FlaTransformPropertyEnum propertyType)
+        public static float GetValueByPropertyType(this FlaFrameElementRaw element, FlaTransformPropertyTypeEnum propertyTypeType)
         {
-            switch (propertyType)
+            switch (propertyTypeType)
             {
-                case FlaTransformPropertyEnum.Rotation:
+                case FlaTransformPropertyTypeEnum.Rotation:
                     return element.Matrix.Matrix.GetAngle();
-                case FlaTransformPropertyEnum.PositionX:
+                case FlaTransformPropertyTypeEnum.PositionX:
                     return element.Matrix.Matrix.GetPosition().x;
-                case FlaTransformPropertyEnum.PositionY:
+                case FlaTransformPropertyTypeEnum.PositionY:
                     return element.Matrix.Matrix.GetPosition().y;
-                case FlaTransformPropertyEnum.ScaleX:
+                case FlaTransformPropertyTypeEnum.ScaleX:
                     return element.Matrix.Matrix.GetScale().x;
-                case FlaTransformPropertyEnum.ScaleY:
+                case FlaTransformPropertyTypeEnum.ScaleY:
                     return element.Matrix.Matrix.GetScale().y;
-                case FlaTransformPropertyEnum.SkewX:
+                case FlaTransformPropertyTypeEnum.SkewX:
                     return element.Matrix.Matrix.GetSkewX();
-                case FlaTransformPropertyEnum.SkewY:
+                case FlaTransformPropertyTypeEnum.SkewY:
                     return element.Matrix.Matrix.GetSkewY();
-                case FlaTransformPropertyEnum.TransformPointX:
+                case FlaTransformPropertyTypeEnum.TransformPointX:
                     if (element.CenterPoint3Dx != null && element.CenterPoint3Dx != 0)
                     {
                         return element.CenterPoint3Dx / FlaExporterConstatns.PixelsPerUnits - element.Matrix.Matrix.GetPosition().x;
                     }
                     return element.TransformationPoint.Point.X / FlaExporterConstatns.PixelsPerUnits;
 
-                case FlaTransformPropertyEnum.TransformPointY:
+                case FlaTransformPropertyTypeEnum.TransformPointY:
                     if (element.CenterPoint3Dy != null && element.CenterPoint3Dy != 0)
                     {
                         return (-element.CenterPoint3Dy /FlaExporterConstatns.PixelsPerUnits) - element.Matrix.Matrix.GetPosition().y;;

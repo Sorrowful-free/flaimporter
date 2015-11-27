@@ -9,16 +9,15 @@
 	{
 		Tags 
 		{	
-			"Queue"="Transparent" 			
-			"RenderType"="Transparent"  
-			"PreviewType"="Plane" 
+			"Queue"="Transparent"
+			"IgnoreProjector"="True" 
+			"RenderType"="Transparent"
 		}
-
 		
 		Cull Off
-		Lighting Off
+		Lighting Off 
 		ZWrite Off 
-		Blend One OneMinusSrcAlpha
+		Blend SrcAlpha OneMinusSrcAlpha  
 
 		LOD 200
 		
@@ -33,8 +32,9 @@
 				
 			fixed4 frag (fla_frag_data input) : SV_Target 
 			{ 
-				fixed4 color = tex2D(_Bitmap,input.uv_0);   
+				fixed4 color = tex2D(_Bitmap,input.uv_0);  
 				color.rgb *=color.a; 
+				color = apply_color_transform(color); 				
 				return color;
 			}
 			ENDCG

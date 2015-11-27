@@ -6,6 +6,10 @@
 float _ShapeTweenDeltaKoef;
 const float PI = 3.14159;
 
+float4 _ColorMultipler = float4(1,0,0,1);
+float4 _ColorOffset = float4(1,0,0,1);
+
+
 float _TextureAspect = 1;
 float4 _TextureMatrixABCD = float4(1,0,0,1);
 float2 _TextureMatrixTXTY = float2(0,0); 
@@ -67,6 +71,12 @@ float2 get_transform_uv(float2 uv)//todo need write
 	uvResult.x = uv.x*_TextureMatrixABCD.x + uv.y*_TextureMatrixABCD.z + _TextureMatrixTXTY.x; 
 	uvResult.y = uv.x*_TextureMatrixABCD.y + uv.y*_TextureMatrixABCD.w + _TextureMatrixTXTY.y;
 	return uvResult; 
+}
+
+fixed4 apply_color_transform(fixed4 color)
+{
+	fixed4 resultColor = (color * _ColorMultipler)+_ColorOffset;
+	return resultColor;
 }
 
 fla_frag_data fla_vert_func(fla_vert_data input)

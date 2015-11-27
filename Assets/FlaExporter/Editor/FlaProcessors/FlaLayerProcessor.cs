@@ -7,6 +7,7 @@ using Assets.FlaExporter.Editor.Data.RawData.FrameElements;
 using Assets.FlaExporter.Editor.EditorCoroutine;
 using Assets.FlaExporter.Editor.Extentions;
 using Assets.FlaExporter.FlaExporter;
+using Assets.FlaExporter.FlaExporter.FlaTransorm;
 using UnityEngine;
 
 namespace Assets.FlaExporter.Editor.FlaProcessors
@@ -15,12 +16,11 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
     {
         public static IEnumerator ProcessFlaLayerElement(FlaLayerRaw layerData, Action<GameObject> callback)
         {
-            if (!layerData.Visible)
+            if (!layerData.Visible || layerData.Frames == null || layerData.Frames.Count <= 0 || !layerData.Frames.SelectMany(e=>e.Elements).Any())
             {
                 yield break;
             }
-
-            var layerGO = new GameObject(layerData.Name+layerData.GetHashCode());
+            
             var frames = layerData.Frames;
             var elements = frames.SelectMany(e => e.Elements).ToList();
            
@@ -40,8 +40,11 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                     var pos = elementGO.transform.position;
                     pos.z = order;
                     elementGO.transform.position = pos;
-                    elementGO.AddComponent<FlaTransform>();
-                    ApplyOffsets3d(elementGO, element).transform.SetParent(layerGO.transform);
+                    elementGO.name = layerData.Name + "_" + elementGO.name;
+                    if (callback != null)
+                    {
+                        callback(elementGO);
+                    }
 
                 }).StartAsEditorCoroutine();
             }
@@ -55,27 +58,16 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                     var pos = elementGO.transform.position;
                     pos.z = order;
                     elementGO.transform.position = pos;
-                    elementGO.AddComponent<FlaTransform>();
-                    ApplyOffsets3d(elementGO, element).transform.SetParent(layerGO.transform);
+                    elementGO.name = layerData.Name +"_"+ elementGO.name;
+                    if (callback != null)
+                    {
+                        callback(elementGO);
+                    }
 
                 }).StartAsEditorCoroutine();
             }
 
             yield return null;
-
-            if (callback != null)
-            {
-                callback(layerGO);
-            }
-        }
-
-        private static GameObject ApplyOffsets3d(GameObject elementGO,FlaFrameElementRaw element)
-        {
-            //var offsets3d = new GameObject(element.GetName() + "_offsets3d");
-          //  offsets3d.transform.position = new Vector3(element.CenterPoint3Dx, - element.CenterPoint3Dy, element.CenterPoint3Dz) / FlaExporterConstatns.PixelsPerUnits;
-          //  offsets3d.transform.eulerAngles = new Vector3(-element.RotationX, -element.RotationY,  -element.RotationZ);
-        //    elementGO.transform.SetParent(offsets3d.transform,true);
-            return elementGO;
         }
 
         public static IEnumerator ProcessFlaLayer(FlaLayerRaw layerData,int frameRate,AnimationClip clip)
@@ -121,7 +113,7 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
             {
                 foreach (var elementName in allElementsInLayerName)
                 {
-                    var elementPath = layerData.Name + layerData.GetHashCode() + "/" /*+ elementName + "_offsets3d/" */+ elementName;
+                    var elementPath = layerData.Name+"_"+ elementName;
                     var elementRaw = frameRaw.Elements.FirstOrDefault(e => e.GetName() == elementName);
                     var curveDictionary = default(Dictionary<string, AnimationCurve>);
                     if (!curves.TryGetValue(elementPath, out curveDictionary))
@@ -193,8 +185,5 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
             }
             yield return null;
         }
-
-        
-
     }
 }
