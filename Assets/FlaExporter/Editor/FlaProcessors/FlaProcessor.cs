@@ -5,6 +5,7 @@ using Assets.FlaExporter.Editor.Data.RawData;
 using Assets.FlaExporter.Editor.EditorCoroutine;
 using Assets.FlaExporter.Editor.Utils;
 using Assets.FlaExporter.FlaExporter.ColorAndFilersHolder;
+using Assets.FlaExporter.FlaExporter.Renderer;
 using Assets.FlaExporter.FlaExporter.Transorm;
 using UnityEditor;
 using UnityEngine;
@@ -61,7 +62,16 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
             {
                 elementGO.transform.SetParent(flaSymbolGO.transform);
                 var elementColorAndFilters = elementGO.GetComponent<FlaColorAndFiltersHolder>();
-                colorAndFilters.AddChild(elementColorAndFilters);
+                if (elementColorAndFilters != null)
+                {
+                    colorAndFilters.AddChild(elementColorAndFilters);    
+                }
+                var elementRenderer = elementGO.GetComponent<FlaRenderer>();
+                if (elementRenderer != null)
+                {
+                    colorAndFilters.FlaRenderer = elementRenderer;
+                }
+
             }).StartAsEditorCoroutine();
             yield return null;
 

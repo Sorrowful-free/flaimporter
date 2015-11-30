@@ -6,7 +6,6 @@ using Assets.FlaExporter.Editor.Data.RawData;
 using Assets.FlaExporter.Editor.Data.RawData.FrameElements;
 using Assets.FlaExporter.Editor.EditorCoroutine;
 using Assets.FlaExporter.Editor.Extentions;
-using Assets.FlaExporter.FlaExporter;
 using Assets.FlaExporter.FlaExporter.ColorAndFilersHolder;
 using Assets.FlaExporter.FlaExporter.ColorAndFilersHolder.ColorTransform;
 using Assets.FlaExporter.FlaExporter.ColorAndFilersHolder.Enums;
@@ -111,26 +110,27 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                 yield break;
             }
             var allElementsInLayerName = layerData.Frames.SelectMany(e => e.Elements).Select(e=>e.GetName()).Distinct();
-            var curves = new Dictionary<string, Dictionary<string,AnimationCurve>>();
+            var curvesTransform = new Dictionary<string, Dictionary<string,AnimationCurve>>();
+
             foreach (var frameRaw in layerData.Frames)
             {
                 foreach (var elementName in allElementsInLayerName)
                 {
                     var elementPath = layerData.Name+"_"+ elementName;
                     var elementRaw = frameRaw.Elements.FirstOrDefault(e => e.GetName() == elementName);
-                    var curveDictionary = default(Dictionary<string, AnimationCurve>);
-                    if (!curves.TryGetValue(elementPath, out curveDictionary))
+                    var curveTransformDictionary = default(Dictionary<string, AnimationCurve>);
+                    if (!curvesTransform.TryGetValue(elementPath, out curveTransformDictionary))
                     {
-                        curveDictionary = new Dictionary<string, AnimationCurve>();
-                        curves.Add(elementPath,curveDictionary);
+                        curveTransformDictionary = new Dictionary<string, AnimationCurve>();
+                        curvesTransform.Add(elementPath,curveTransformDictionary);
                     }
 
                     var isVisible = elementRaw != null;
                     var visibleCurve = default(AnimationCurve);
-                    if (!curveDictionary.TryGetValue("m_IsActive", out visibleCurve))
+                    if (!curveTransformDictionary.TryGetValue("m_IsActive", out visibleCurve))
                     {
                         visibleCurve = new AnimationCurve();
-                        curveDictionary.Add("m_IsActive", visibleCurve);
+                        curveTransformDictionary.Add("m_IsActive", visibleCurve);
                     }
 
                     var currentVisible = isVisible ? 1.0f : 0.0f;
@@ -146,25 +146,29 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                     }
                     visibleCurve.AddKey(((float)frameRaw.Index + (float)Mathf.Max(1.0f,frameRaw.Duration)-0.01f) / (float)frameRate, currentVisible);
                     
+
+
+
+
                     if (elementRaw != null)
                     {
                         foreach (var key in FlaTransform.PropertyNames.Keys)
                         {
                             var curve = default(AnimationCurve);
-                            if (!curveDictionary.TryGetValue(FlaTransform.PropertyNames[key], out curve))
+                            if (!curveTransformDictionary.TryGetValue(FlaTransform.PropertyNames[key], out curve))
                             {
                                 curve = new AnimationCurve();
-                                curveDictionary.Add(FlaTransform.PropertyNames[key], curve);
+                                curveTransformDictionary.Add(FlaTransform.PropertyNames[key], curve);
                             }
                             var lastKey = curve.keys.LastOrDefault();
                             var currentFrameValue = elementRaw.GetValueByPropertyType(key);
 
-                            if ((curve.keys.Length <= 0 && currentFrameValue != FlaTransform.ProperyDefaultValues[key]) || lastKey.value != currentFrameValue)
+                            if (curve.keys.Length <= 0 || currentFrameValue != FlaTransform.ProperyDefaultValues[key] || lastKey.value != currentFrameValue)
                             {
                                 curve.AddKey((float)frameRaw.Index / (float)frameRate, currentFrameValue);
                             }
                         }
-
+                        
                         foreach (var key in FlaColorAndFiltersHolder.PropertyNames.Keys)
                         {
                             switch (key)
@@ -176,12 +180,13 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                                         var curve = default(AnimationCurve);
                                         var curveName = FlaColorAndFiltersHolder.PropertyNames[key] + "." +
                                                         FlaColorTransform.PropertyNames[subKey];
-                                        if (!curveDictionary.TryGetValue(curveName, out curve))
+                                        if (!curveTransformDictionary.TryGetValue(curveName, out curve))
                                         {
                                             curve = new AnimationCurve();
-                                            curveDictionary.Add(curveName, curve);
+                                            curveTransformDictionary.Add(curveName, curve);
                                         }
                                         var lastKey = curve.keys.LastOrDefault();
+                                        var currentFrameValue = 0.0f;
                                         curve.AddKey((float)frameRaw.Index / (float)frameRate, currentFrameValue);
 
                                     }
@@ -197,7 +202,7 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                     yield return null;
                 }
             }
-            foreach (var curveDictionary in curves)
+            foreach (var curveDictionary in curvesTransform)
             {
                 foreach (var curve in curveDictionary.Value)
                 {
@@ -208,10 +213,15 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                             curve.Value.SetCurveLinear();
                             clip.SetCurve(curveDictionary.Key, typeof (GameObject), curve.Key, curve.Value);
                         }
+                        else if (curve.Key.Contains("_selfColorTransform"))
+                        {
+                            clip.SetCurve(curveDictionary.Key, typeof(FlaColorAndFiltersHolder), curve.Key, curve.Value);
+                        }
                         else
                         {
-                            clip.SetCurve(curveDictionary.Key, typeof (FlaTransform), curve.Key, curve.Value);
+                            clip.SetCurve(curveDictionary.Key, typeof(FlaTransform), curve.Key, curve.Value);
                         }
+                        
                     }
                 }
             }

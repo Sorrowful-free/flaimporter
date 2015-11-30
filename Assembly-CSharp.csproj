@@ -50,11 +50,13 @@
      <Compile Include="Assets\FlaExporter\FlaExporter\ColorAndFilersHolder\ColorTransform\FlaColorTransform.cs" />
      <Compile Include="Assets\FlaExporter\FlaExporter\ColorAndFilersHolder\Enums\FlaColorAndFiltersHolderPropertyTypeEnum.cs" />
      <Compile Include="Assets\FlaExporter\FlaExporter\ColorAndFilersHolder\FlaColorAndFiltersHolder.cs" />
+     <Compile Include="Assets\FlaExporter\FlaExporter\Geom\FlaMatrix2D.cs" />
      <Compile Include="Assets\FlaExporter\FlaExporter\Renderer\Enums\FillStyleTypeEnum.cs" />
+     <Compile Include="Assets\FlaExporter\FlaExporter\Renderer\FillStyles\FillStyleShadersNames.cs" />
+     <Compile Include="Assets\FlaExporter\FlaExporter\Renderer\FillStyles\FlaFillStyle.cs" />
      <Compile Include="Assets\FlaExporter\FlaExporter\Renderer\FlaRenderer.cs" />
      <Compile Include="Assets\FlaExporter\FlaExporter\Transorm\Enums\FlaTransformPropertyTypeEnum.cs" />
      <Compile Include="Assets\FlaExporter\FlaExporter\Transorm\FlaTransform.cs" />
-     <None Include="Assets\FlaExporter\Shader\ColorTransform\ColorTransform.shader" />
      <None Include="Assets\FlaExporter\Shader\FillStyle\RadialGradient.shader" />
      <None Include="Assets\FlaExporter\Shader\FillStyle\SolidColor.shader" />
      <None Include="Assets\FlaExporter\Shader\FillStyle\Bitmap.shader" />

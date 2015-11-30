@@ -10,8 +10,7 @@ using Assets.FlaExporter.Editor.Data.RawData.StorkeStyle.StorkeStyles;
 using Assets.FlaExporter.Editor.Extentions;
 using Assets.FlaExporter.Editor.Plugins.LibTessDotNet;
 using Assets.FlaExporter.Editor.Utils;
-using Assets.FlaExporter.FlaExporter.ColorAndFilersHolder;
-using Assets.FlaExporter.FlaExporter.ColorAndFilersHolder.ColorTransform;
+using Assets.FlaExporter.FlaExporter.Geom;
 using Assets.FlaExporter.FlaExporter.Renderer;
 using Assets.FlaExporter.FlaExporter.Renderer.Enums;
 using Assets.FlaExporter.FlaExporter.Renderer.FillStyles;
@@ -25,7 +24,7 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
     public static class FlaShapeProcessor
     {
         
-        public const float UnitsPerPixel = 20;//flash units
+        public const float UnitsPerPixel = 20;
         public static IEnumerator ProcessFlaShape(FlaShapeRaw shape,Action<GameObject> callback)
         {
             var shapeGO = new GameObject(shape.GetUniqueName());
@@ -36,18 +35,19 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
             }
             var meshRenderer = shapeGO.AddComponent<MeshRenderer>();
             var meshFilter = shapeGO.AddComponent<MeshFilter>();
-            shapeGO.AddComponent<FlaRenderer>();
-            shapeGO.AddComponent<FlaColorAndFiltersHolder>();
+            var flaRenderer = shapeGO.AddComponent<FlaRenderer>();
             shapeGO.AddComponent<FlaTransform>();
-
             var sharedMaterials = new List<Material>();
+            
             foreach (var fillStyleRaw in shape.FillStyles)
             {
-                sharedMaterials.Add(ProcessFlaFillStyle(fillStyleRaw));
+                var flaFillStyle = ProcessFlaFillStyle(fillStyleRaw);
+                sharedMaterials.Add(flaFillStyle.Material);
+                flaRenderer.FillStyles.Add(flaFillStyle);
                 yield return null;
             }
             meshRenderer.sharedMaterials = sharedMaterials.ToArray();
-
+            
             var mesh = AssetDatabase.LoadAssetAtPath<Mesh>(FolderAndFileUtils.GetAssetFolder(FoldersConstants.ShapesFolder) + shapeGO.name + ".asset");
             if (mesh != null)
             {
@@ -58,7 +58,6 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                 }
                 yield break;
             }
-            
             var matrix = new Matrix4x4();
             matrix.SetTRS(Vector3.zero, Quaternion.identity, new Vector3(1,-1,1));
             var shapeVertices = new List<Vector3>();
@@ -100,8 +99,6 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                     shapeTriangles.Add(tess.Elements.Select(e=>e+shapeVertices.Count).ToList());
                     shapeVertices.AddRange(tess.Vertices.Select(e => new Vector3(e.Position.X, e.Position.Y)/FlaExporterConstatns.PixelsPerUnits));
                     yield return null;
-
-                    
                 }
 
                 shapeMesh.vertices = shapeVertices.ToArray();
@@ -136,42 +133,46 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
 
             if (callback != null)
             {
-                callback(shapeGO);
+                callback(shapeGO); 
             }
         }
 
-        private static Material ProcessFlaFillStyle(FlaFillStyleRaw fillStyleRaw)
+        private static FlaFillStyle ProcessFlaFillStyle(FlaFillStyleRaw fillStyleRaw)
         {
             var fillStyle = fillStyleRaw.FillStyle;
             var material = default(Material);
+            var matrixRaw = fillStyle.Matrix.Matrix;
+            var flaMatrix2D = new FlaMatrix2D(new Vector4(matrixRaw.A, matrixRaw.B, matrixRaw.C, matrixRaw.D), new Vector2(matrixRaw.TX, matrixRaw.TY));
+            var flaFillStyle = default(FlaFillStyle);
             var needSaveMaterial = false;
+
             if (fillStyle is FlaSolidColorFillStyleRaw)
             {
-                
                 var solidColor = (FlaSolidColorFillStyleRaw)fillStyle;
                 var matName = "material" + solidColor.Color.GetHashCode();
                 material = TryLoadMaterial(matName);
                 if (material == null)
                 {
-                    material = new Material(UnityEngine.Shader.Find(FillStyleShadersNames.ShaderNames[FillStyleTypeEnum.SolidColor]));
+                    material = new Material(Shader.Find(FillStyleShadersNames.ShaderNames[FillStyleTypeEnum.SolidColor]));
                     var color = Color.black;
                     Color.TryParseHexString(solidColor.Color, out color);
                     material.SetColor("_Color", color);
                     material.name = matName;
                     needSaveMaterial = true;
                 }
-               
-               
-
+                flaFillStyle = new FlaFillStyle(material, 1, flaMatrix2D);
             }
             else if (fillStyle is FlaBitmapFillRaw)
             {
                 var bitmap = (FlaBitmapFillRaw)fillStyle;
+                Debug.Log(bitmap);
+                Debug.Log(bitmap.BitmapPath);
+                Debug.Log(bitmap.BitmapPath.GetHashCode());
                 var matName = "material" + bitmap.BitmapPath.GetHashCode();
                 material = TryLoadMaterial(matName);
                 if (material == null)
                 {
-                    material = new Material(UnityEngine.Shader.Find(FillStyleShadersNames.ShaderNames[FillStyleTypeEnum.Bitmap]));
+                    material = new Material(Shader.Find(FillStyleShadersNames.ShaderNames[FillStyleTypeEnum.Bitmap]));
                     var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(
                         FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) +
                         bitmap.BitmapPath);
@@ -180,6 +181,8 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                     material.name = matName;
                     needSaveMaterial = true;
                 }
+                var textureBitmap = material.GetTexture("_Bitmap");
+                flaFillStyle = new FlaFillStyle(material, (float)textureBitmap.width / (float)textureBitmap.height, flaMatrix2D);
             }
             else if (fillStyle is FlaLinearGradientFillStyleRaw)
             {
@@ -188,13 +191,12 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                 material = TryLoadMaterial(matName);
                 if (material == null)
                 {
-                    material = new Material(UnityEngine.Shader.Find(FillStyleShadersNames.ShaderNames[FillStyleTypeEnum.LinearGradient]));
+                    material = new Material(Shader.Find(FillStyleShadersNames.ShaderNames[FillStyleTypeEnum.LinearGradient]));
                     ProcessFlaGradientEntries(linearGradient.GradientEntries, ref material);
                     material.name = matName;
                     needSaveMaterial = true;
                 }
-                
-
+                flaFillStyle = new FlaFillStyle(material, 1, flaMatrix2D);
             }
             else if (fillStyle is FlaRadialGradientFillStyleRaw)
             {
@@ -203,28 +205,22 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                 material = TryLoadMaterial(matName);
                 if (material == null)
                 {
-                    material = new Material(UnityEngine.Shader.Find(FillStyleShadersNames.ShaderNames[FillStyleTypeEnum.RadialGradient]));
+                    material = new Material(Shader.Find(FillStyleShadersNames.ShaderNames[FillStyleTypeEnum.RadialGradient]));
                     Debug.Log(radialGradient.GradientEntries + " : " + material);
                     ProcessFlaGradientEntries(radialGradient.GradientEntries, ref material);
                     material.name = matName;
                     needSaveMaterial = true;
                 }
-                
+                flaFillStyle = new FlaFillStyle(material, 1, flaMatrix2D);
             }
-            var matrix = fillStyleRaw.FillStyle.Matrix.Matrix;
-
-            material.SetVector("_TextureMatrixABCD", new Vector4(matrix.A,matrix.B,matrix.C,matrix.D));// not work =(
-            material.SetVector("_TextureMatrixTXTY", new Vector4(matrix.TX, matrix.TY));// not work =(
-
+            
             if (needSaveMaterial)
             {
                 FolderAndFileUtils.CheckFolders(FoldersConstants.MaterialsFolder);
                 AssetDatabase.CreateAsset(material, FolderAndFileUtils.GetAssetFolder(FoldersConstants.MaterialsFolder) + material.name + ".mat");
                 AssetDatabase.Refresh();    
-                Debug.Log("save material "+ material.name);
             }
-
-            return material;
+            return flaFillStyle;
         }
 
         private static Material TryLoadMaterial(string name)

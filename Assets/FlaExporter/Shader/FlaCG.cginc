@@ -66,10 +66,18 @@ float4 get_vertex_position(float4 position, float2 delta)
 
 float2 get_transform_uv(float2 uv)//todo need write
 {
-	float2 uvResult = uv;
-	uv.y = uv.y * _TextureAspect; 
-	uvResult.x = uv.x*_TextureMatrixABCD.x + uv.y*_TextureMatrixABCD.z + _TextureMatrixTXTY.x; 
-	uvResult.y = uv.x*_TextureMatrixABCD.y + uv.y*_TextureMatrixABCD.w + _TextureMatrixTXTY.y;
+	float2 uvResult = uv - float2(0.5,0.5);
+	float aspectX = 1 *_TextureMatrixABCD.x/20 + _TextureAspect*_TextureMatrixABCD.z /20;
+	float aspectY = 1 *_TextureMatrixABCD.y/20 + _TextureAspect*_TextureMatrixABCD.w /20;
+	
+	uvResult.x /= aspectX;
+	uvResult.y /= aspectY;
+
+	//uvResult.y = uvResult.y * _TextureAspect; 
+	uvResult.x = uvResult.x*_TextureMatrixABCD.x/20 + uvResult.y*_TextureMatrixABCD.z /20 + _TextureMatrixTXTY.x; 
+	uvResult.y = uvResult.x*_TextureMatrixABCD.y/20 + uvResult.y*_TextureMatrixABCD.w /20 + _TextureMatrixTXTY.y;
+	uvResult += float2(0.5,0.5);
+	
 	return uvResult; 
 }
 

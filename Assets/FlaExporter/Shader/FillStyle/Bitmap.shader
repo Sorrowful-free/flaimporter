@@ -11,31 +11,31 @@
 		{	
 			"Queue"="Transparent"
 			"IgnoreProjector"="True" 
-			"RenderType"="Transparent"
+			"RenderType"="Transparent"  
 		}
 		
-		Cull Off
+		Cull Off  
 		Lighting Off 
-		ZWrite Off 
-		Blend SrcAlpha OneMinusSrcAlpha  
+		ZWrite Off  
+		Blend SrcAlpha OneMinusSrcAlpha   
 
 		LOD 200
 		
 		 Pass 
 		 {
-			CGPROGRAM
-			#include "../FlaCG.cginc" 
-			#pragma vertex fla_vert_func  
+			CGPROGRAM 
+			#include "../FlaCG.cginc"  
+			#pragma vertex fla_vert_func     
 			#pragma fragment frag 
-			
-			sampler2D _Bitmap;   
+			    
+			sampler2D _Bitmap;       
 				
 			fixed4 frag (fla_frag_data input) : SV_Target 
 			{ 
 				fixed4 color = tex2D(_Bitmap,input.uv_0);  
-				color.rgb *=color.a; 
+				color.rgb *=color.a;  
 				color = apply_color_transform(color); 				
-				return color;
+				return color; 
 			}
 			ENDCG
 		}

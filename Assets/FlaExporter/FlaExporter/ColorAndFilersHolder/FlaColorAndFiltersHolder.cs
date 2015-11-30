@@ -2,6 +2,7 @@
 using Assets.FlaExporter.FlaExporter.ColorAndFilersHolder.ColorTransform;
 using Assets.FlaExporter.FlaExporter.ColorAndFilersHolder.Enums;
 using Assets.FlaExporter.FlaExporter.Renderer;
+using UnityEditor;
 using UnityEngine;
 
 namespace Assets.FlaExporter.FlaExporter.ColorAndFilersHolder
@@ -14,19 +15,9 @@ namespace Assets.FlaExporter.FlaExporter.ColorAndFilersHolder
             {FlaColorAndFiltersHolderPropertyTypeEnum.SelfColorTransform,"_selfColorTransform"}    
         };
 
-        [SerializeField]
-        private FlaRenderer _flaRenderer;
-        public FlaRenderer FlaRenderer
-        {
-            get
-            {
-                if (_flaRenderer == null)
-                {
-                    _flaRenderer = GetComponent<FlaRenderer>();
-                }
-                return _flaRenderer;
-            }
-        }
+        [SerializeField] 
+        public FlaRenderer FlaRenderer;
+      
 
         [SerializeField]
         private FlaColorAndFiltersHolder _parent;
@@ -44,7 +35,7 @@ namespace Assets.FlaExporter.FlaExporter.ColorAndFilersHolder
         private List<FlaColorAndFiltersHolder> _childs = new List<FlaColorAndFiltersHolder>();
 
         [SerializeField]
-        private FlaColorTransform _selfColorTransform = new FlaColorTransform();
+        private FlaColorTransform _selfColorTransform = new FlaColorTransform(Vector4.zero, Color.white, new Color(0,0,0,0),0,0);
         public FlaColorTransform SelfColorTransform
         {
             get { return _selfColorTransform; }
@@ -54,10 +45,19 @@ namespace Assets.FlaExporter.FlaExporter.ColorAndFilersHolder
                 UpdateChilds();
             }
         }
-        
+
+        private FlaColorTransform _globalColorTransform = new FlaColorTransform(Vector4.zero, Color.white, new Color(0,0,0,0),0,0);
         public FlaColorTransform GlobalColorTransform
         {
-            get { return Parent == null ? SelfColorTransform : SelfColorTransform * Parent.GlobalColorTransform; }
+            get
+            {
+                _globalColorTransform.CopyFrom(SelfColorTransform);
+                if (_parent != null)
+                {
+                    _globalColorTransform.Concat(_parent.GlobalColorTransform); 
+                }
+                return _globalColorTransform;
+            }
         }
 
         public void AddChild(FlaColorAndFiltersHolder child)
@@ -82,7 +82,7 @@ namespace Assets.FlaExporter.FlaExporter.ColorAndFilersHolder
          private void LateUpdate()
 #endif
         {
-            if (_selfColorTransform.IsChange)
+            if (_selfColorTransform.UpdateTint() || _selfColorTransform.UpdateBrightness() || _selfColorTransform.UpdateColorTransform())
             {
                 UpdateChilds();
             }
