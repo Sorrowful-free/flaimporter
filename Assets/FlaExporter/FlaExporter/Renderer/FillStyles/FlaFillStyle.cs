@@ -21,16 +21,24 @@ namespace Assets.FlaExporter.FlaExporter.Renderer.FillStyles
             Matrix = matrix;
         }
         
+
+
         public void UpdateMaterial()
         {
             if (Matrix.UpdateMatrix())
             {
-                Material.SetVector("_TextureMatrixABCD", Matrix.ABCD);
-                Material.SetVector("_TextureMatrixTXTY", Matrix.TXTY);
-                Material.SetFloat("_TextureAspect", Aspect);
+                UpdateMaterialWithoutCheck();
             }
         }
 
+        public void UpdateMaterialWithoutCheck()
+        {
+            if (Material == null)
+                return;
+            Material.SetVector("_TextureMatrixABCD", Matrix.ABCD);
+            Material.SetVector("_TextureMatrixTXTY", Matrix.TXTY);
+            Material.SetFloat("_TextureAspect", Aspect);
+        }
 
     }
 }

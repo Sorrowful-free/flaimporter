@@ -54,7 +54,9 @@
      <Compile Include="Assets\FlaExporter\FlaExporter\Renderer\Enums\FillStyleTypeEnum.cs" />
      <Compile Include="Assets\FlaExporter\FlaExporter\Renderer\FillStyles\FillStyleShadersNames.cs" />
      <Compile Include="Assets\FlaExporter\FlaExporter\Renderer\FillStyles\FlaFillStyle.cs" />
-     <Compile Include="Assets\FlaExporter\FlaExporter\Renderer\FlaRenderer.cs" />
+     <Compile Include="Assets\FlaExporter\FlaExporter\Renderer\FlaEdge.cs" />
+     <Compile Include="Assets\FlaExporter\FlaExporter\Renderer\FlaShape.cs" />
+     <Compile Include="Assets\FlaExporter\FlaExporter\TestShader.cs" />
      <Compile Include="Assets\FlaExporter\FlaExporter\Transorm\Enums\FlaTransformPropertyTypeEnum.cs" />
      <Compile Include="Assets\FlaExporter\FlaExporter\Transorm\FlaTransform.cs" />
      <None Include="Assets\FlaExporter\Shader\FillStyle\RadialGradient.shader" />

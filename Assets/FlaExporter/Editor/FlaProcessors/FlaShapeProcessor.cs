@@ -6,8 +6,9 @@ using Assets.FlaExporter.Editor.Data.RawData.FillStyles;
 using Assets.FlaExporter.Editor.Data.RawData.FillStyles.FillStyles;
 using Assets.FlaExporter.Editor.Data.RawData.FillStyles.FillStyles.GradientFillStyles;
 using Assets.FlaExporter.Editor.Data.RawData.FrameElements;
+using Assets.FlaExporter.Editor.Data.RawData.Geom;
 using Assets.FlaExporter.Editor.Data.RawData.StorkeStyle.StorkeStyles;
-using Assets.FlaExporter.Editor.Extentions;
+using Assets.FlaExporter.Editor.Extentions.FlaExtentionsRaw;
 using Assets.FlaExporter.Editor.Plugins.LibTessDotNet;
 using Assets.FlaExporter.Editor.Utils;
 using Assets.FlaExporter.FlaExporter.Geom;
@@ -28,113 +29,199 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
         public static IEnumerator ProcessFlaShape(FlaShapeRaw shape,Action<GameObject> callback)
         {
             var shapeGO = new GameObject(shape.GetUniqueName());
+            var shapeComponent = shapeGO.AddComponent<FlaShape>();
+            shapeGO.AddComponent<FlaTransform>();
             
             if (shape.Matrix != null && shape.Matrix.Matrix != null)
             {
                 shape.Matrix.Matrix.CopyMatrix(shapeGO.transform);
             }
-            var meshRenderer = shapeGO.AddComponent<MeshRenderer>();
-            var meshFilter = shapeGO.AddComponent<MeshFilter>();
-            var flaRenderer = shapeGO.AddComponent<FlaRenderer>();
-            shapeGO.AddComponent<FlaTransform>();
-            var sharedMaterials = new List<Material>();
-            
-            foreach (var fillStyleRaw in shape.FillStyles)
+
+            foreach (var flaEdgeRaw in shape.Edges)
             {
-                var flaFillStyle = ProcessFlaFillStyle(fillStyleRaw);
-                sharedMaterials.Add(flaFillStyle.Material);
-                flaRenderer.FillStyles.Add(flaFillStyle);
-                yield return null;
-            }
-            meshRenderer.sharedMaterials = sharedMaterials.ToArray();
-            
-            var mesh = AssetDatabase.LoadAssetAtPath<Mesh>(FolderAndFileUtils.GetAssetFolder(FoldersConstants.ShapesFolder) + shapeGO.name + ".asset");
-            if (mesh != null)
-            {
-                meshFilter.mesh = mesh;
-                if (callback != null)
+                if (flaEdgeRaw == null || flaEdgeRaw.Edges == null || flaEdgeRaw.Edges == "" || flaEdgeRaw.FillStyle1 <= 0)
                 {
-                    callback(shapeGO);
+                   // Debug.Log("shape - edge = " + flaEdgeRaw + " " + flaEdgeRaw.Edges);
+                    continue;
                 }
-                yield break;
-            }
-            var matrix = new Matrix4x4();
-            matrix.SetTRS(Vector3.zero, Quaternion.identity, new Vector3(1,-1,1));
-            var shapeVertices = new List<Vector3>();
-            var shapeTriangles = new List<List<int>>();
-            var shapeMesh = new Mesh();
-            if (shape.Edges.Count > 0)
-            {
-                var groupByFill = new Dictionary<int, List<List<Vector3>>>();
-                foreach (var edge in shape.Edges)
-                {
-                    if (edge.Edges == null || edge.Edges == "" )
-                    {
-                        continue;
-                    }
-                    var list = default(List<List<Vector3>>);
-                    if (!groupByFill.TryGetValue(edge.FillStyle1, out list))
-                    {
-                        groupByFill.Add(edge.FillStyle1,new List<List<Vector3>>());
-                    }
-                    groupByFill[edge.FillStyle1].AddRange(ProcessFlaEdgeString(edge.Edges).Select(e => e.Select(v => (Vector3)v).ToList()));
-                    yield return null;
-                }
-                foreach (var pair in groupByFill)
-                {
-                   var tess = new Tess();
                     
-                    foreach (var polygon in pair.Value)
-                    {
-                        if (polygon.Count <= 0)
-                        {
-                            continue;
-                        }
-                        var transformPolygon = polygon.Select(e => matrix.MultiplyPoint(e));
-                        tess.AddContour(transformPolygon.Select(e => new ContourVertex { Position = new Vec3 { X = e.x, Y = e.y } }).ToArray(), ContourOrientation.Original);
-                        yield return null;
-                    }
-
-                    tess.Tessellate(WindingRule.NonZero, ElementType.Polygons, 3);
-                    shapeTriangles.Add(tess.Elements.Select(e=>e+shapeVertices.Count).ToList());
-                    shapeVertices.AddRange(tess.Vertices.Select(e => new Vector3(e.Position.X, e.Position.Y)/FlaExporterConstatns.PixelsPerUnits));
-                    yield return null;
-                }
-
-                shapeMesh.vertices = shapeVertices.ToArray();
-                for (int i = 0; i < shapeTriangles.Count; i++)
-                {
-                    shapeMesh.SetTriangles(shapeTriangles[i].ToArray(),i);
-                    yield return null;
-                }
-                #region uv0
-                var bounds = shapeMesh.bounds;
-                var uvs = new List<Vector2>();
-                var isHorisontal = bounds.size.x > bounds.size.y;
-                var yOffset = isHorisontal ? (bounds.size.x - bounds.size.y)/2 : 0;// pomestat menyami
-                var xOffset = isHorisontal ? 0 : (bounds.size.y - bounds.size.x)/2;
-                var offsets = new Vector3(xOffset,yOffset);
-                var maxSize = isHorisontal ? bounds.size.x : bounds.size.y;
-                for (var i = 0; i < shapeMesh.vertexCount; i++)
-                {
-                    var normalizedPosition = shapeMesh.vertices[i]+ offsets - bounds.min;
-                    var uv = Vector2.zero;
-                    uv.x = normalizedPosition.x / maxSize;
-                    uv.y = normalizedPosition.y / maxSize;
-                    uvs.Add(uv);
-                    yield return null;
-                }
-                shapeMesh.uv = uvs.ToArray();
-                #endregion
-                FolderAndFileUtils.CheckFolders(FoldersConstants.ShapesFolder);
-                AssetDatabase.CreateAsset(shapeMesh, FolderAndFileUtils.GetAssetFolder(FoldersConstants.ShapesFolder) + shapeGO.name + ".asset");
-                meshFilter.mesh = shapeMesh;
+                var ordered = (float)shape.Edges.IndexOf(flaEdgeRaw)/10.0f;
+                var flaEdge = ProsessFlaEdge(flaEdgeRaw);
+                var fillStyleRaw = shape.FillStyles.FirstOrDefault(e => e.Index == flaEdgeRaw.FillStyle1);
+                
+                flaEdge.FillStyle = ProcessFlaFillStyle(fillStyleRaw);
+                flaEdge.gameObject.GetComponent<MeshRenderer>().material = flaEdge.FillStyle.Material;
+                flaEdge.transform.SetParent(shapeGO.transform);
+                flaEdge.transform.localScale = Vector3.one;
+                flaEdge.transform.localPosition = Vector3.forward * ordered;
+                shapeComponent.Edges.Add(flaEdge);
             }
-
             if (callback != null)
             {
-                callback(shapeGO); 
+                callback(shapeGO);
             }
+            yield break;
+            //var meshRenderer = shapeGO.AddComponent<MeshRenderer>();
+            //var meshFilter = shapeGO.AddComponent<MeshFilter>();
+            //var flaRenderer = shapeGO.AddComponent<FlaEdge>();
+            //shapeGO.AddComponent<FlaTransform>();
+            //var sharedMaterials = new List<Material>();
+            
+            //foreach (var fillStyleRaw in shape.FillStyles)
+            //{
+            //    var flaFillStyle = ProcessFlaFillStyle(fillStyleRaw);
+            //    sharedMaterials.Add(flaFillStyle.Material);
+            //    flaRenderer.FillStyles.Add(flaFillStyle);
+            //    yield return null;
+            //}
+
+            //meshRenderer.sharedMaterials = sharedMaterials.ToArray();
+            
+            //var mesh = AssetDatabase.LoadAssetAtPath<Mesh>(FolderAndFileUtils.GetAssetFolder(FoldersConstants.ShapesFolder) + shapeGO.name + ".asset");
+            //if (mesh != null)
+            //{
+            //    meshFilter.mesh = mesh;
+            //    if (callback != null)
+            //    {
+            //        callback(shapeGO);
+            //    }
+            //    yield break;
+            //}
+            //var matrix = new Matrix4x4();
+            //matrix.SetTRS(Vector3.zero, Quaternion.identity, new Vector3(1,-1,1));
+            //var shapeVertices = new List<Vector3>();
+            //var shapeTriangles = new List<List<int>>();
+            //var shapeMesh = new Mesh();
+            //if (shape.Edges.Count > 0)
+            //{
+            //    var groupByFill = new Dictionary<int, List<List<Vector3>>>();
+            //    foreach (var edge in shape.Edges)
+            //    {
+            //        if (edge.Edges == null || edge.Edges == "" )
+            //        {
+            //            continue;
+            //        }
+            //        var list = default(List<List<Vector3>>);
+            //        if (!groupByFill.TryGetValue(edge.FillStyle1, out list))
+            //        {
+            //            groupByFill.Add(edge.FillStyle1,new List<List<Vector3>>());
+            //        }
+            //        groupByFill[edge.FillStyle1].AddRange(ProcessFlaEdgeString(edge.Edges).Select(e => e.Select(v => (Vector3)v).ToList()));
+            //        yield return null;
+            //    }
+            //    foreach (var pair in groupByFill)
+            //    {
+            //       var tess = new Tess();
+                    
+            //        foreach (var polygon in pair.Value)
+            //        {
+            //            if (polygon.Count <= 0)
+            //            {
+            //                continue;
+            //            }
+            //            var transformPolygon = polygon.Select(e => matrix.MultiplyPoint(e));
+            //            tess.AddContour(transformPolygon.Select(e => new ContourVertex { Position = new Vec3 { X = e.x, Y = e.y } }).ToArray(), ContourOrientation.Original);
+            //            yield return null;
+            //        }
+
+            //        tess.Tessellate(WindingRule.NonZero, ElementType.Polygons, 3);
+            //        shapeTriangles.Add(tess.Elements.Select(e=>e+shapeVertices.Count).ToList());
+            //        shapeVertices.AddRange(tess.Vertices.Select(e => new Vector3(e.Position.X, e.Position.Y)/FlaExporterConstatns.PixelsPerUnits));
+            //        yield return null;
+            //    }
+
+            //    shapeMesh.vertices = shapeVertices.ToArray();
+            //    for (int i = 0; i < shapeTriangles.Count; i++)
+            //    {
+            //        shapeMesh.SetTriangles(shapeTriangles[i].ToArray(),i);
+            //        yield return null;
+            //    }
+            //    #region uv0
+            //    var bounds = shapeMesh.bounds;
+            //    var uvs = new List<Vector2>();
+            //    var isHorisontal = bounds.size.x > bounds.size.y;
+            //    var yOffset = isHorisontal ? (bounds.size.x - bounds.size.y)/2 : 0;// pomestat menyami
+            //    var xOffset = isHorisontal ? 0 : (bounds.size.y - bounds.size.x)/2;
+            //    var offsets = new Vector3(xOffset,yOffset);
+            //    var maxSize = isHorisontal ? bounds.size.x : bounds.size.y;
+            //    for (var i = 0; i < shapeMesh.vertexCount; i++)
+            //    {
+            //        var normalizedPosition = shapeMesh.vertices[i]+ offsets - bounds.min;
+            //        var uv = Vector2.zero;
+            //        uv.x = normalizedPosition.x / maxSize;
+            //        uv.y = normalizedPosition.y / maxSize;
+            //        uvs.Add(uv);
+            //        yield return null;
+            //    }
+            //    shapeMesh.uv = uvs.ToArray();
+            //    #endregion
+            //    FolderAndFileUtils.CheckFolders(FoldersConstants.ShapesFolder);
+            //    AssetDatabase.CreateAsset(shapeMesh, FolderAndFileUtils.GetAssetFolder(FoldersConstants.ShapesFolder) + shapeGO.name + ".asset");
+            //    meshFilter.mesh = shapeMesh;
+            //}
+
+            //if (callback != null)
+            //{
+            //    callback(shapeGO); 
+            //}
+        }
+
+        private static FlaEdge ProsessFlaEdge(FlaEdgeRaw edgeRaw)
+        {
+            var edgeName = FolderAndFileUtils.RemoveUnacceptable("edge_" + edgeRaw.Edges.GetHashCode());
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>( FolderAndFileUtils.GetAssetFolder(FoldersConstants.EdgesFolder) + edgeName + "/" + edgeName);
+            var edgeGO = default(GameObject);
+            if (prefab != null)
+            {
+                edgeGO = GameObject.Instantiate(prefab);
+                return edgeGO.GetComponent<FlaEdge>();
+            }
+            edgeGO = new GameObject(edgeName);
+            var edgeMeshFilter = edgeGO.AddComponent<MeshFilter>();
+            var edgeMeshRenderer = edgeGO.AddComponent<MeshRenderer>();
+            var edge = edgeGO.AddComponent<FlaEdge>();
+            if (edgeRaw.Edges == null || edgeRaw.Edges == "")
+            {
+                return null;
+            }
+            var tess = new Tess();
+            var matrix = new Matrix4x4();
+            matrix.SetTRS(Vector3.zero, Quaternion.identity, new Vector3(1, -1, 1));
+            var polygons = ProcessFlaEdgeString(edgeRaw.Edges);
+            foreach (var polygon in polygons)
+            {
+                var transformPolygon = polygon.Select(e => matrix.MultiplyPoint(e));
+                tess.AddContour(transformPolygon.Select(e => new ContourVertex { Position = new Vec3 { X = e.x, Y = e.y } }).ToArray(), ContourOrientation.Original);
+            }
+            tess.Tessellate(WindingRule.NonZero, ElementType.Polygons, 3);
+            var mesh = new Mesh();
+            mesh.vertices = tess.Vertices.Select(e => new Vector3(e.Position.X, e.Position.Y)/FlaExporterConstatns.PixelsPerUnits).ToArray();
+            mesh.triangles = tess.Elements.ToArray();
+
+
+            #region uv0
+            var bounds = mesh.bounds;
+            var uvs = new List<Vector2>();
+            var isHorisontal = bounds.size.x > bounds.size.y;
+            var yOffset = isHorisontal ? (bounds.size.x - bounds.size.y) / 2 : 0;// pomestat menyami
+            var xOffset = isHorisontal ? 0 : (bounds.size.y - bounds.size.x) / 2;
+            var offsets = new Vector3(xOffset, yOffset);
+            var maxSize = isHorisontal ? bounds.size.x : bounds.size.y;
+            for (var i = 0; i < mesh.vertexCount; i++)
+            {
+                var normalizedPosition = mesh.vertices[i] + offsets - bounds.min;
+                var uv = Vector2.zero;
+                uv.x = normalizedPosition.x / maxSize;
+                uv.y = normalizedPosition.y / maxSize;
+                uvs.Add(uv);
+            }
+            mesh.uv = uvs.ToArray();
+            #endregion
+
+            FolderAndFileUtils.CheckFolders(FoldersConstants.EdgesFolder + edgeName);
+            AssetDatabase.CreateAsset(mesh, FolderAndFileUtils.GetAssetFolder(FoldersConstants.EdgesFolder) + edgeName + "/" + edgeName + ".asset");
+            edgeMeshFilter.mesh = mesh;
+            return edge;
         }
 
         private static FlaFillStyle ProcessFlaFillStyle(FlaFillStyleRaw fillStyleRaw)
@@ -146,7 +233,7 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
             var flaFillStyle = default(FlaFillStyle);
             var needSaveMaterial = false;
 
-            if (fillStyle is FlaSolidColorFillStyleRaw)
+            if (fillStyle is FlaSolidColorFillStyleRaw) 
             {
                 var solidColor = (FlaSolidColorFillStyleRaw)fillStyle;
                 var matName = "material" + solidColor.Color.GetHashCode();
@@ -165,17 +252,14 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
             else if (fillStyle is FlaBitmapFillRaw)
             {
                 var bitmap = (FlaBitmapFillRaw)fillStyle;
-                Debug.Log(bitmap);
-                Debug.Log(bitmap.BitmapPath);
-                Debug.Log(bitmap.BitmapPath.GetHashCode());
-                var matName = "material" + bitmap.BitmapPath.GetHashCode();
+                var matName = "material" + FolderAndFileUtils.RemoveUnacceptable(bitmap.BitmapPath).GetHashCode();
                 material = TryLoadMaterial(matName);
                 if (material == null)
                 {
                     material = new Material(Shader.Find(FillStyleShadersNames.ShaderNames[FillStyleTypeEnum.Bitmap]));
                     var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(
                         FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) +
-                        bitmap.BitmapPath);
+                        FolderAndFileUtils.RemoveUnacceptable(bitmap.BitmapPath));
                     material.SetTexture("_Bitmap", texture);
                     material.SetFloat("_TextureAspect", (float)texture.width / (float)texture.height);
                     material.name = matName;
@@ -217,7 +301,7 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
             if (needSaveMaterial)
             {
                 FolderAndFileUtils.CheckFolders(FoldersConstants.MaterialsFolder);
-                AssetDatabase.CreateAsset(material, FolderAndFileUtils.GetAssetFolder(FoldersConstants.MaterialsFolder) + material.name + ".mat");
+                AssetDatabase.CreateAsset(material, FolderAndFileUtils.GetAssetFolder(FoldersConstants.MaterialsFolder) + FolderAndFileUtils.RemoveUnacceptable(material.name) + ".mat");
                 AssetDatabase.Refresh();    
             }
             return flaFillStyle;
@@ -227,7 +311,7 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
         {
             return
                 AssetDatabase.LoadAssetAtPath<Material>(
-                    FolderAndFileUtils.GetAssetFolder(FoldersConstants.MaterialsFolder) + name+".mat");
+                    FolderAndFileUtils.GetAssetFolder(FoldersConstants.MaterialsFolder) + FolderAndFileUtils.RemoveUnacceptable(name)+".mat");
         }
 
         private static void ProcessFlaGradientEntries(List<FlaGradientEntryRaw> entries, ref Material material)

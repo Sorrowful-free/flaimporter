@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Assets.FlaExporter.Editor.Data.RawData.FrameElements;
 
-namespace Assets.FlaExporter.Editor.Extentions
+namespace Assets.FlaExporter.Editor.Extentions.FlaExtentionsRaw
 {
     public static class FlaShapeRawExtention
     {

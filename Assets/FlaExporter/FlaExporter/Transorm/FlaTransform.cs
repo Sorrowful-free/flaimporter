@@ -57,11 +57,7 @@ namespace Assets.FlaExporter.FlaExporter.Transorm
         public Vector2 TransformPoint = Vector2.zero;
         private Vector2 _oldTransformPoint = Vector2.zero;
 
-#if UNITY_EDITOR
-         private void Update()
-#elif
-         private void LateUpdate()
-#endif
+        private void LateUpdate()
         {
             if (_oldScale != Scale)
             {
@@ -73,7 +69,10 @@ namespace Assets.FlaExporter.FlaExporter.Transorm
 
             if (_oldPosition != Position)
             {
-                transform.localPosition = Position;
+                var oldPosition = transform.localPosition;
+                oldPosition.x = Position.x;
+                oldPosition.y = Position.y;
+                transform.localPosition = oldPosition;
                 _oldPosition = Position;
             }
 

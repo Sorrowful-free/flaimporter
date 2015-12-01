@@ -88,10 +88,10 @@ namespace Assets.FlaExporter.Editor
                         continue;
                     }
                     FolderAndFileUtils.CheckFolders(FoldersConstants.BitmapSymbolsTextureFolderFolder);
-                    if (!File.Exists(FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) +includeBitmap.Href))
+                    if (!File.Exists(FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) + FolderAndFileUtils.RemoveUnacceptable(includeBitmap.Href)))
                     {
-                        File.Copy(filePath, FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) + includeBitmap.Href);
-                        AssetDatabase.ImportAsset(FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) + includeBitmap.Href);
+                        File.Copy(filePath, FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) +  FolderAndFileUtils.RemoveUnacceptable(includeBitmap.Href));
+                        AssetDatabase.ImportAsset(FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) +  FolderAndFileUtils.RemoveUnacceptable(includeBitmap.Href));
                         AssetDatabase.Refresh();
                     }
                     ProgressLog("parse bitmap", "import bitmap include", (float)flaDocument.IncludeBitmaps.IndexOf(includeBitmap) / (float)flaDocument.IncludeBitmaps.Count);
@@ -162,13 +162,13 @@ namespace Assets.FlaExporter.Editor
                 var zipFileEntry = flaFile.FirstOrDefault(e => e.FileName.EndsWith(includeBitmap.Href));
 
                 FolderAndFileUtils.CheckFolders(FoldersConstants.BitmapSymbolsTextureFolderFolder);
-                if (!File.Exists(FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) +includeBitmap.Href))
+                if (!File.Exists(FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) +FolderAndFileUtils.RemoveUnacceptable(includeBitmap.Href)))
                 {
-                    var file = File.Open(FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) + includeBitmap.Href, FileMode.OpenOrCreate);
+                    var file = File.Open(FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) + FolderAndFileUtils.RemoveUnacceptable(includeBitmap.Href), FileMode.OpenOrCreate);
                     var bytes = zipFileEntry.ToByteArray();
                     file.Write(bytes, 0, bytes.Length);
                     file.Close();
-                    AssetDatabase.ImportAsset(FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) + includeBitmap.Href);
+                    AssetDatabase.ImportAsset(FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) + FolderAndFileUtils.RemoveUnacceptable(includeBitmap.Href));
                     AssetDatabase.Refresh();
                 }
 

@@ -6,6 +6,7 @@ using Assets.FlaExporter.Editor.Data.RawData;
 using Assets.FlaExporter.Editor.Data.RawData.FrameElements;
 using Assets.FlaExporter.Editor.EditorCoroutine;
 using Assets.FlaExporter.Editor.Extentions;
+using Assets.FlaExporter.Editor.Extentions.FlaExtentionsRaw;
 using Assets.FlaExporter.FlaExporter.ColorAndFilersHolder;
 using Assets.FlaExporter.FlaExporter.ColorAndFilersHolder.ColorTransform;
 using Assets.FlaExporter.FlaExporter.ColorAndFilersHolder.Enums;
@@ -146,10 +147,6 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                     }
                     visibleCurve.AddKey(((float)frameRaw.Index + (float)Mathf.Max(1.0f,frameRaw.Duration)-0.01f) / (float)frameRate, currentVisible);
                     
-
-
-
-
                     if (elementRaw != null)
                     {
                         foreach (var key in FlaTransform.PropertyNames.Keys)
@@ -161,7 +158,7 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                                 curveTransformDictionary.Add(FlaTransform.PropertyNames[key], curve);
                             }
                             var lastKey = curve.keys.LastOrDefault();
-                            var currentFrameValue = elementRaw.GetValueByPropertyType(key);
+                            var currentFrameValue = elementRaw.GetTransformValueByPropertyType(key);
 
                             if (curve.keys.Length <= 0 || currentFrameValue != FlaTransform.ProperyDefaultValues[key] || lastKey.value != currentFrameValue)
                             {
@@ -185,13 +182,11 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                                             curve = new AnimationCurve();
                                             curveTransformDictionary.Add(curveName, curve);
                                         }
-                                        var lastKey = curve.keys.LastOrDefault();
-                                        var currentFrameValue = 0.0f;
+                                        var currentFrameValue = elementRaw.GetColorValueByPropertyType(subKey);
                                         curve.AddKey((float)frameRaw.Index / (float)frameRate, currentFrameValue);
 
                                     }
-                                     
-
+                                    
                                     break;
                                 default:
                                     break;

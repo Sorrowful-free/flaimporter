@@ -38,7 +38,9 @@ namespace Assets.FlaExporter.Editor.Utils
         {
             transform.eulerAngles = Vector3.forward*flaMatrix.GetAngle();
             transform.position = flaMatrix.GetPosition();
-            transform.localScale = flaMatrix.GetScale();
+            var scale = (Vector3) flaMatrix.GetScale();
+            scale.z = 1;
+            transform.localScale = scale;
         }
 
        

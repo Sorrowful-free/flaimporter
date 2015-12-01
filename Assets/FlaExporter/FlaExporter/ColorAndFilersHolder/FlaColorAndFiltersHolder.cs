@@ -16,7 +16,7 @@ namespace Assets.FlaExporter.FlaExporter.ColorAndFilersHolder
         };
 
         [SerializeField] 
-        public FlaRenderer FlaRenderer;
+        public FlaShape FlaShape;
       
 
         [SerializeField]
@@ -76,11 +76,8 @@ namespace Assets.FlaExporter.FlaExporter.ColorAndFilersHolder
             child.Parent = null;
         }
         
-#if UNITY_EDITOR
-         private void Update()
-#elif
-         private void LateUpdate()
-#endif
+
+        private void LateUpdate()
         {
             if (_selfColorTransform.UpdateTint() || _selfColorTransform.UpdateBrightness() || _selfColorTransform.UpdateColorTransform())
             {
@@ -103,9 +100,9 @@ namespace Assets.FlaExporter.FlaExporter.ColorAndFilersHolder
                 filtersHolder.UpdateChilds();
             }
 
-            if (FlaRenderer != null)
+            if (FlaShape != null)
             {
-                FlaRenderer.UpdateColorTranform(GlobalColorTransform);
+                FlaShape.UpdateColorTranform(GlobalColorTransform);
             }
         }
 

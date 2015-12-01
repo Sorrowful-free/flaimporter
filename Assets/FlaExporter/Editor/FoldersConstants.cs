@@ -11,6 +11,7 @@ namespace Assets.FlaExporter.Editor
         public const string AnimatorControllerFolder = LibraryFolder + "/AnimatorControllers/";
         public const string AnimationClipsFolder = LibraryFolder + "/AnimationClips/";
         public const string MaterialsFolder = LibraryFolder + "/Materials/";
+        public const string EdgesFolder = LibraryFolder + "/Edges/";
 
         public const string LibraryDataBaseFile = "libraryDataDase.asset";
     }

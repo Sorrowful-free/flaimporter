@@ -54,8 +54,8 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
 
         private static GameObject ProcessFlaSymbolInstance(FlaSymbolInstanceRaw instance)
         {
-            var symbolGO = GameObject.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(FolderAndFileUtils.GetAssetFolder(FoldersConstants.SymbolsFolder) + instance.LibraryItemName + ".prefab"));
-            symbolGO.name = instance.LibraryItemName;
+            var symbolGO = GameObject.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(FolderAndFileUtils.GetAssetFolder(FoldersConstants.SymbolsFolder) + FolderAndFileUtils.RemoveUnacceptable(instance.LibraryItemName) + ".prefab"));
+            symbolGO.name = FolderAndFileUtils.RemoveUnacceptable(instance.LibraryItemName);
             if (instance.Matrix != null && instance.Matrix.Matrix != null)
             {
                 instance.Matrix.Matrix.CopyMatrix(symbolGO.transform);
@@ -65,13 +65,12 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
 
         private static GameObject ProcessFlaBitmapInstance(FlaBitmapInstanceRaw instance)
         {
-            var bitmapSymbolGO = new GameObject(instance.LibraryItemName);
+            var bitmapSymbolGO = new GameObject(FolderAndFileUtils.RemoveUnacceptable(instance.LibraryItemName));
             var bitmapSriteRenderer = bitmapSymbolGO.AddComponent<SpriteRenderer>();
-            var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) + instance.LibraryItemName);
+            var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) + FolderAndFileUtils.RemoveUnacceptable(instance.LibraryItemName));
             var spritesAsObjects = AssetDatabase.LoadAllAssetRepresentationsAtPath(AssetDatabase.GetAssetPath(texture));
             var sprite = spritesAsObjects.FirstOrDefault(e => e.name == FolderAndFileUtils.RemoveExtention(instance.LibraryItemName)) as Sprite;
             bitmapSriteRenderer.sprite = sprite;
-
             instance.Matrix.Matrix.CopyMatrix(bitmapSymbolGO.transform);
             return bitmapSymbolGO;
         }

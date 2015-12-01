@@ -3,12 +3,12 @@ using UnityEditor;
 
 namespace Assets.FlaExporter.Editor.CustomEditors
 {
-    [CustomEditor(typeof(FlaRenderer))]
+    [CustomEditor(typeof(FlaEdge))]
     public class FlaRendererCustomEditor : UnityEditor.Editor
     {
-        public FlaRenderer TargetRenderer
+        public FlaEdge TargetRenderer
         {
-            get { return (FlaRenderer) target; }
+            get { return (FlaEdge) target; }
         }
         public override void OnInspectorGUI()
         {

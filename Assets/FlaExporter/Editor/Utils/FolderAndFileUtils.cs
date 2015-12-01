@@ -38,6 +38,20 @@ namespace Assets.FlaExporter.Editor.Utils
             return "Assets/" + path;
         }
 
+        public static string RemoveUnacceptable(string source)
+        {
+            return source.Replace("@", "")
+                .Replace("#", "")
+                .Replace("$", "")
+                .Replace("%", "")
+                .Replace("^", "")
+                .Replace("&", "")
+                .Replace("*", "")
+                .Replace("/", "_")
+                .Replace("\\", "_"); 
+        }
+
+
         public static string RemoveExtention(string filePath)
         {
             var index = filePath.LastIndexOf(".");

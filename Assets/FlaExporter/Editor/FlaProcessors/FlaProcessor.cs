@@ -30,7 +30,7 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
             {
                 yield return ProcessFlaTimeLineElements(timeline, elementGO =>
                 {
-                    elementGO.transform.SetParent(documentGO.transform);
+                    elementGO.transform.SetParent(documentGO.transform,false);
                 }).StartAsEditorCoroutine();
             }
             yield return null;
@@ -60,16 +60,16 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
             
             yield return ProcessFlaTimeLineElements(flaSymbolData.Timeline.Timeline, elementGO =>
             {
-                elementGO.transform.SetParent(flaSymbolGO.transform);
+                elementGO.transform.SetParent(flaSymbolGO.transform,false);
                 var elementColorAndFilters = elementGO.GetComponent<FlaColorAndFiltersHolder>();
                 if (elementColorAndFilters != null)
                 {
                     colorAndFilters.AddChild(elementColorAndFilters);    
                 }
-                var elementRenderer = elementGO.GetComponent<FlaRenderer>();
-                if (elementRenderer != null)
+                var flaShape = elementGO.GetComponent<FlaShape>();
+                if (flaShape != null)
                 {
-                    colorAndFilters.FlaRenderer = elementRenderer;
+                    colorAndFilters.FlaShape = flaShape;
                 }
 
             }).StartAsEditorCoroutine();
@@ -81,7 +81,7 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
 
 
             FolderAndFileUtils.CheckFolders(FoldersConstants.SymbolsFolder);
-            PrefabUtility.CreatePrefab(FolderAndFileUtils.GetAssetFolder(FoldersConstants.SymbolsFolder) + flaSymbolData.Name + ".prefab", flaSymbolGO);
+            PrefabUtility.CreatePrefab(FolderAndFileUtils.GetAssetFolder(FoldersConstants.SymbolsFolder) + FolderAndFileUtils.RemoveUnacceptable(flaSymbolData.Name) + ".prefab", flaSymbolGO);
             GameObject.DestroyImmediate(flaSymbolGO);
             yield return null;
         }
@@ -113,11 +113,11 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                 yield break;
             }
             FolderAndFileUtils.CheckFolders(FoldersConstants.AnimatorControllerFolder);
-            var animationController = AnimatorController.CreateAnimatorControllerAtPath(FolderAndFileUtils.GetAssetFolder(FoldersConstants.AnimatorControllerFolder) + root.name + "_AC.controller");
+            var animationController = AnimatorController.CreateAnimatorControllerAtPath(FolderAndFileUtils.GetAssetFolder(FoldersConstants.AnimatorControllerFolder) + FolderAndFileUtils.RemoveUnacceptable(root.name) + "_AC.controller");
             root.AddComponent<Animator>().runtimeAnimatorController = animationController;
             FolderAndFileUtils.CheckFolders(FoldersConstants.AnimationClipsFolder);
             var animationClip = new AnimationClip() { name = "clip" };
-            AssetDatabase.CreateAsset(animationClip,FolderAndFileUtils.GetAssetFolder(FoldersConstants.AnimationClipsFolder) + animationController.name + ".anim");
+            AssetDatabase.CreateAsset(animationClip,FolderAndFileUtils.GetAssetFolder(FoldersConstants.AnimationClipsFolder) + FolderAndFileUtils.RemoveUnacceptable(animationController.name) + ".anim");
 
             animationController.AddMotion(animationClip);
 

@@ -5,9 +5,9 @@
 	SubShader {
 		Tags 
 		{
-			"Queue"="Transparent" 						
-			"RenderType"="Transparent" 			
-			"PreviewType"="Plane"
+			"Queue"="Transparent"			
+			"IgnoreProjector"="True" 
+			"RenderType"="Transparent" 
 		}
 
 		Cull Off
