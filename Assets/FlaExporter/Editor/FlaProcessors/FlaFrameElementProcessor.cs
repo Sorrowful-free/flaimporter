@@ -11,7 +11,7 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
 {
     public static class FlaFrameElementProcessor
     {
-        public static IEnumerator ProcessFlaElement(FlaFrameElementRaw element, Action<GameObject> callback)
+        public static IEnumerator ProcessFlaElement(FlaFrameElementRaw element,Action<GameObject> callback)
         {
             
             var shape = element as FlaShapeRaw;

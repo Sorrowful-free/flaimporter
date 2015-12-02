@@ -39,10 +39,16 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                 var element = shapes.FirstOrDefault(e => e.GetUniqueName() == shapesName);
                 yield return FlaFrameElementProcessor.ProcessFlaElement(element, (elementGO) =>
                 {
-                    var order = (float)elements.IndexOf(element)/10.0f;
-                    var pos = elementGO.transform.position;
+                    var order = -(float)elements.IndexOf(element) / (float)elements.Count;
+                  
+                    var pos = elementGO.transform.localPosition;
                     pos.z = order;
-                    elementGO.transform.position = pos;
+                    elementGO.transform.localPosition = pos;
+
+                    var scale = elementGO.transform.localScale;
+                    scale.z = 1 / (float)elements.Count;
+                    elementGO.transform.localScale = scale;
+
                     elementGO.name = layerData.Name + "_" + elementGO.name;
                     if (callback != null)
                     {
@@ -57,10 +63,18 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                 var element = instances.FirstOrDefault(e => e.LibraryItemName == instanceName);
                 yield return FlaFrameElementProcessor.ProcessFlaElement(element, (elementGO) =>
                 {
-                    var order = (float)elements.IndexOf(element) / 10.0f;
-                    var pos = elementGO.transform.position;
+                    var order = -(float)elements.IndexOf(element) / (float)elements.Count;
+                    var pos = elementGO.transform.localPosition;
+
+                    Debug.Log(order + " " + elements.IndexOf(element) + " " + elements.Count);
+
                     pos.z = order;
-                    elementGO.transform.position = pos;
+                    elementGO.transform.localPosition = pos;
+                    
+                    var scale = elementGO.transform.localScale ;
+                    scale.z = 1/(float) elements.Count;
+                    elementGO.transform.localScale = scale;
+
                     elementGO.name = layerData.Name +"_"+ elementGO.name;
                     if (callback != null)
                     {
@@ -100,6 +114,21 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
             }
         }
 
+        private static void WriteDuratibleKeys(float currentValue,AnimationCurve curve,FlaFrameRaw frameRaw,float frameRate)
+        {
+           // var currentVisible = isVisible ? 1.0f : 0.0f;
+            var lastVisible = curve.keys.Length > 0 ? curve.keys[curve.keys.Length - 1].value : 1;
+            if (curve.keys.Length > 1 && lastVisible == currentValue)
+            {
+                curve.RemoveKey(curve.keys.Length - 1);
+            }
+
+            if (curve.keys.Length <= 0 || currentValue != lastVisible)
+            {
+                curve.AddKey((float)frameRaw.Index / (float)frameRate, currentValue);
+            }
+            curve.AddKey(((float)frameRaw.Index + (float)Mathf.Max(1.0f, frameRaw.Duration)) / (float)frameRate - 1.0f / frameRate, currentValue);
+        }
         private static IEnumerator ProcessDefaultFlaLayer(FlaLayerRaw layerData, int frameRate, AnimationClip clip)
         {
             if (!layerData.Visible)
@@ -135,17 +164,18 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                     }
 
                     var currentVisible = isVisible ? 1.0f : 0.0f;
-                    var lastVisible = visibleCurve.keys.Length>0?visibleCurve.keys[visibleCurve.keys.Length - 1].value:1;
-                    if (visibleCurve.keys.Length > 1 && lastVisible == currentVisible)
-                    {
-                        visibleCurve.RemoveKey(visibleCurve.keys.Length-1);
-                    }
+                    WriteDuratibleKeys(currentVisible, visibleCurve, frameRaw, frameRate);
+                    //var lastVisible = visibleCurve.keys.Length>0?visibleCurve.keys[visibleCurve.keys.Length - 1].value:1;
+                    //if (visibleCurve.keys.Length > 1 && lastVisible == currentVisible)
+                    //{
+                    //    visibleCurve.RemoveKey(visibleCurve.keys.Length-1);
+                    //}
 
-                    if (visibleCurve.keys.Length <= 0 || currentVisible != lastVisible)
-                    {
-                        visibleCurve.AddKey((float)frameRaw.Index / (float)frameRate, currentVisible);
-                    }
-                    visibleCurve.AddKey(((float)frameRaw.Index + (float)Mathf.Max(1.0f,frameRaw.Duration)-0.01f) / (float)frameRate, currentVisible);
+                    //if (visibleCurve.keys.Length <= 0 || currentVisible != lastVisible)
+                    //{
+                    //    visibleCurve.AddKey((float)frameRaw.Index / (float)frameRate, currentVisible);
+                    //}
+                    //visibleCurve.AddKey(((float)frameRaw.Index + (float)Mathf.Max(1.0f,frameRaw.Duration)-0.01f) / (float)frameRate, currentVisible);
                     
                     if (elementRaw != null)
                     {
@@ -160,10 +190,18 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                             var lastKey = curve.keys.LastOrDefault();
                             var currentFrameValue = elementRaw.GetTransformValueByPropertyType(key);
 
-                            if (curve.keys.Length <= 0 || currentFrameValue != FlaTransform.ProperyDefaultValues[key] || lastKey.value != currentFrameValue)
+                            if (frameRaw.Duration > 0 && frameRaw.TweenType != "motion")
                             {
-                                curve.AddKey((float)frameRaw.Index / (float)frameRate, currentFrameValue);
+                                WriteDuratibleKeys(currentFrameValue, curve, frameRaw, frameRate);
                             }
+                            else
+                            {
+                                if (curve.keys.Length <= 0 || currentFrameValue != FlaTransform.ProperyDefaultValues[key] || lastKey.value != currentFrameValue)
+                                {
+                                    curve.AddKey((float)frameRaw.Index / (float)frameRate, currentFrameValue);
+                                }    
+                            }
+                            
                         }
                         
                         foreach (var key in FlaColorAndFiltersHolder.PropertyNames.Keys)
@@ -183,8 +221,18 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                                             curveTransformDictionary.Add(curveName, curve);
                                         }
                                         var currentFrameValue = elementRaw.GetColorValueByPropertyType(subKey);
-                                        curve.AddKey((float)frameRaw.Index / (float)frameRate, currentFrameValue);
-
+                                        var lastKey = curve.keys.LastOrDefault();
+                                        if (frameRaw.Duration > 0 && frameRaw.TweenType != "motion" )
+                                        {
+                                            WriteDuratibleKeys(currentFrameValue, curve, frameRaw, frameRate);
+                                        }
+                                        else
+                                        {
+                                            if (curve.keys.Length <= 0 || lastKey.value != currentFrameValue)
+                                            {
+                                                curve.AddKey((float) frameRaw.Index/(float) frameRate, currentFrameValue);
+                                            }
+                                        }
                                     }
                                     
                                     break;
@@ -210,10 +258,12 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                         }
                         else if (curve.Key.Contains("_selfColorTransform"))
                         {
+                            curve.Value.SetCurveLinear();
                             clip.SetCurve(curveDictionary.Key, typeof(FlaColorAndFiltersHolder), curve.Key, curve.Value);
                         }
                         else
                         {
+                            curve.Value.SetCurveLinear();
                             clip.SetCurve(curveDictionary.Key, typeof(FlaTransform), curve.Key, curve.Value);
                         }
                         

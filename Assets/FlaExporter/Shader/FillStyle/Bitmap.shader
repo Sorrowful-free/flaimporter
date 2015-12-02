@@ -11,21 +11,22 @@
 		{	
 			"Queue"="Transparent"			
 			"IgnoreProjector"="True" 
-			"RenderType"="Transparent"  
+			"RenderType"="Transparent"
 		}
 		
-		Cull Off  
-		Lighting Off 
-		ZWrite Off              
-		Blend SrcAlpha OneMinusSrcAlpha
+		Cull Off
+		Lighting Off   
+		ZWrite Off             
+		ZTest LEqual 
+		Blend SrcAlpha OneMinusSrcAlpha 
 
 		LOD 200
-		
+		 
 		 Pass 
 		 {
 			CGPROGRAM 
 			#include "../FlaCG.cginc"  
-			#pragma vertex fla_vert_func     
+			#pragma vertex fla_vert_func      
 			#pragma fragment frag 
 			    
 			sampler2D _Bitmap;       

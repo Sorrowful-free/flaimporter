@@ -14,10 +14,11 @@
 
 		Cull Off
 		Lighting Off  
-		ZWrite Off
+		ZWrite Off 
+		ZTest LEqual 
 		Blend One OneMinusSrcAlpha 
 
-		LOD 200
+		LOD 200  
 
 		 Pass {
 			CGPROGRAM	 		

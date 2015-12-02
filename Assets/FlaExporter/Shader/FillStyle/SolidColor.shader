@@ -12,14 +12,15 @@
 
 		Cull Off
 		Lighting Off
-		ZWrite Off 
+		ZWrite Off
+		ZTest LEqual  
 		Blend SrcAlpha OneMinusSrcAlpha  
 		 
 		LOD 200
 
 		 Pass {
 			CGPROGRAM			
-			#include "../FlaCG.cginc"
+			#include "../FlaCG.cginc" 
 			#pragma vertex fla_vert_func 
 			#pragma fragment frag 
 
@@ -28,10 +29,10 @@
 			fixed4 frag (fla_frag_data input) : SV_Target 
 			{ 
 				fixed4 color = _Color*_Color.a; 
-				color = apply_color_transform(color); 
-				return color;				
+				color = apply_color_transform(_Color); 				
+				return color * _Color.a ;				
 			}
-			ENDCG
+			ENDCG 
 		}
 	} 
 	FallBack "Diffuse"

@@ -23,6 +23,7 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
             _currentFlaDocumentRaw = flaDocumentData;
             var name = "FlaDocument" + flaDocumentData.GetHashCode();
             var documentGO = new GameObject(name);
+            var colorAndFilters = documentGO.AddComponent<FlaColorAndFiltersHolder>();
             _currentRoot = documentGO;
             
 
@@ -31,6 +32,16 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                 yield return ProcessFlaTimeLineElements(timeline, elementGO =>
                 {
                     elementGO.transform.SetParent(documentGO.transform,false);
+                    var elementColorAndFilters = elementGO.GetComponent<FlaColorAndFiltersHolder>();
+                    if (elementColorAndFilters != null)
+                    {
+                        colorAndFilters.AddChild(elementColorAndFilters);
+                    }
+                    var flaShape = elementGO.GetComponent<FlaShape>();
+                    if (flaShape != null)
+                    {
+                        colorAndFilters.AddShape(flaShape);
+                    }
                 }).StartAsEditorCoroutine();
             }
             yield return null;
@@ -69,7 +80,7 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                 var flaShape = elementGO.GetComponent<FlaShape>();
                 if (flaShape != null)
                 {
-                    colorAndFilters.FlaShape = flaShape;
+                    colorAndFilters.AddShape(flaShape);
                 }
 
             }).StartAsEditorCoroutine();
@@ -90,14 +101,19 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
         {
             foreach (var flaLayerRaw in timeLine.Layers)
             {
-                var oredered = (float)timeLine.Layers.IndexOf(flaLayerRaw) / 10.0f;
+                var oredered = -(float)timeLine.Layers.IndexOf(flaLayerRaw);
                 yield return FlaLayerProcessor.ProcessFlaLayerElement(flaLayerRaw, (go) =>
                 {
                     if (callback != null)
                     {
-                        var pos = go.transform.position;
-                        pos.z = oredered;
-                        go.transform.position = pos;
+                        var pos = go.transform.localPosition;
+                        pos.z += oredered;
+                        go.transform.localPosition = pos;
+
+                        var scale = go.transform.localScale;
+                        scale.z = 1 / (float)flaLayerRaw.Frames.SelectMany(e=>e.Elements).ToList().Count * 0.8f;
+                        go.transform.localScale = scale;
+
                         callback(go);
                     }
                 }).StartAsEditorCoroutine();

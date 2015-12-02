@@ -26,28 +26,61 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
     {
         
         public const float UnitsPerPixel = 20;
-        public static IEnumerator ProcessFlaShape(FlaShapeRaw shape,Action<GameObject> callback)
+        public static IEnumerator ProcessFlaShape(FlaShapeRaw shape, Action<GameObject> callback)
         {
-            var shapeGO = new GameObject(shape.GetUniqueName());
+            var shapeName = shape.GetUniqueName();
+
+
+            var shapeGO = default(GameObject);
+            var prefab =
+                AssetDatabase.LoadAssetAtPath<GameObject>(
+                    FolderAndFileUtils.GetAssetFolder(FoldersConstants.ShapesFolder) + shapeName + ".prefab");
+            
+            if (prefab != null)
+            {
+                shapeGO = GameObject.Instantiate(prefab);
+                if (callback != null)
+                {
+                    callback(shapeGO);
+                }
+                yield break;
+            }
+
+           
+            shapeGO = new GameObject(shapeName);
+
             var shapeComponent = shapeGO.AddComponent<FlaShape>();
             shapeGO.AddComponent<FlaTransform>();
+            //var scale = shapeGO.transform.localScale;
+            //scale.z = 1.0f/(float) shape.Edges.Count;
+            //shapeGO.transform.localScale = scale;
+
+            
             
             if (shape.Matrix != null && shape.Matrix.Matrix != null)
             {
                 shape.Matrix.Matrix.CopyMatrix(shapeGO.transform);
             }
-
+            
             foreach (var flaEdgeRaw in shape.Edges)
             {
-                if (flaEdgeRaw == null || flaEdgeRaw.Edges == null || flaEdgeRaw.Edges == "" || flaEdgeRaw.FillStyle1 <= 0)
+                if (flaEdgeRaw == null || flaEdgeRaw.Edges == null || flaEdgeRaw.Edges == "")
                 {
-                   // Debug.Log("shape - edge = " + flaEdgeRaw + " " + flaEdgeRaw.Edges);
                     continue;
                 }
-                    
-                var ordered = (float)shape.Edges.IndexOf(flaEdgeRaw)/10.0f;
-                var flaEdge = ProsessFlaEdge(flaEdgeRaw);
                 var fillStyleRaw = shape.FillStyles.FirstOrDefault(e => e.Index == flaEdgeRaw.FillStyle1);
+                if (fillStyleRaw == null)
+                {
+                    fillStyleRaw = shape.FillStyles.FirstOrDefault(e => e.Index == flaEdgeRaw.FillStyle0);
+                }
+
+                if (fillStyleRaw == null)
+                {
+                    continue;
+                }
+
+                var ordered = -(float)shape.Edges.IndexOf(flaEdgeRaw) / (float)shape.Edges.Count;
+                var flaEdge = ProsessFlaEdge(flaEdgeRaw);
                 
                 flaEdge.FillStyle = ProcessFlaFillStyle(fillStyleRaw);
                 flaEdge.gameObject.GetComponent<MeshRenderer>().material = flaEdge.FillStyle.Material;
@@ -60,6 +93,9 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
             {
                 callback(shapeGO);
             }
+
+            FolderAndFileUtils.CheckFolders(FoldersConstants.ShapesFolder);
+            PrefabUtility.CreatePrefab(FolderAndFileUtils.GetAssetFolder(FoldersConstants.ShapesFolder) + shapeName + ".prefab", shapeGO);
             yield break;
             //var meshRenderer = shapeGO.AddComponent<MeshRenderer>();
             //var meshFilter = shapeGO.AddComponent<MeshFilter>();
@@ -198,10 +234,10 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
             mesh.vertices = tess.Vertices.Select(e => new Vector3(e.Position.X, e.Position.Y)/FlaExporterConstatns.PixelsPerUnits).ToArray();
             mesh.triangles = tess.Elements.ToArray();
 
-
-            #region uv0
+            #region uv0 and uv1
             var bounds = mesh.bounds;
-            var uvs = new List<Vector2>();
+            var uvs0 = new List<Vector2>();
+            var uvs1 = new List<Vector2>();
             var isHorisontal = bounds.size.x > bounds.size.y;
             var yOffset = isHorisontal ? (bounds.size.x - bounds.size.y) / 2 : 0;// pomestat menyami
             var xOffset = isHorisontal ? 0 : (bounds.size.y - bounds.size.x) / 2;
@@ -209,14 +245,23 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
             var maxSize = isHorisontal ? bounds.size.x : bounds.size.y;
             for (var i = 0; i < mesh.vertexCount; i++)
             {
-                var normalizedPosition = mesh.vertices[i] + offsets - bounds.min;
-                var uv = Vector2.zero;
-                uv.x = normalizedPosition.x / maxSize;
-                uv.y = normalizedPosition.y / maxSize;
-                uvs.Add(uv);
+                var normalizedPosition0 = mesh.vertices[i] + offsets - bounds.min;
+                var uv0 = Vector2.zero;
+                uv0.x = normalizedPosition0.x / maxSize;
+                uv0.y = normalizedPosition0.y / maxSize;
+                uvs0.Add(uv0);
+
+                var normalizedPosition1 = mesh.vertices[i] - bounds.min;
+                var uv1 = Vector2.zero;
+                uv1.x = normalizedPosition1.x / bounds.size.x;
+                uv1.y = normalizedPosition1.y / bounds.size.y;
+                uvs1.Add(uv1);
             }
-            mesh.uv = uvs.ToArray();
+            mesh.uv = uvs0.ToArray();
+            mesh.uv2 = uvs1.ToArray();
             #endregion
+
+
 
             FolderAndFileUtils.CheckFolders(FoldersConstants.EdgesFolder + edgeName);
             AssetDatabase.CreateAsset(mesh, FolderAndFileUtils.GetAssetFolder(FoldersConstants.EdgesFolder) + edgeName + "/" + edgeName + ".asset");
@@ -247,26 +292,30 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                     material.name = matName;
                     needSaveMaterial = true;
                 }
-                flaFillStyle = new FlaFillStyle(material, 1, flaMatrix2D);
+                flaFillStyle = new FlaFillStyle(material, flaMatrix2D,1, false);
             }
             else if (fillStyle is FlaBitmapFillRaw)
             {
                 var bitmap = (FlaBitmapFillRaw)fillStyle;
                 var matName = "material" + FolderAndFileUtils.RemoveUnacceptable(bitmap.BitmapPath).GetHashCode();
+                var texture = default(Texture2D);
                 material = TryLoadMaterial(matName);
+                
                 if (material == null)
                 {
                     material = new Material(Shader.Find(FillStyleShadersNames.ShaderNames[FillStyleTypeEnum.Bitmap]));
-                    var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(
+                    texture = AssetDatabase.LoadAssetAtPath<Texture2D>(
                         FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) +
                         FolderAndFileUtils.RemoveUnacceptable(bitmap.BitmapPath));
                     material.SetTexture("_Bitmap", texture);
-                    material.SetFloat("_TextureAspect", (float)texture.width / (float)texture.height);
                     material.name = matName;
                     needSaveMaterial = true;
                 }
-                var textureBitmap = material.GetTexture("_Bitmap");
-                flaFillStyle = new FlaFillStyle(material, (float)textureBitmap.width / (float)textureBitmap.height, flaMatrix2D);
+                else
+                {
+                    texture = (Texture2D) material.GetTexture("_Bitmap");
+                }
+                flaFillStyle = new FlaFillStyle(material, flaMatrix2D, (float)texture.width / (float)texture.height, bitmap.BitmapIsClipped);
             }
             else if (fillStyle is FlaLinearGradientFillStyleRaw)
             {
@@ -280,7 +329,7 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                     material.name = matName;
                     needSaveMaterial = true;
                 }
-                flaFillStyle = new FlaFillStyle(material, 1, flaMatrix2D);
+                flaFillStyle = new FlaFillStyle(material,flaMatrix2D,1,false);
             }
             else if (fillStyle is FlaRadialGradientFillStyleRaw)
             {
@@ -295,7 +344,7 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                     material.name = matName;
                     needSaveMaterial = true;
                 }
-                flaFillStyle = new FlaFillStyle(material, 1, flaMatrix2D);
+                flaFillStyle = new FlaFillStyle(material,flaMatrix2D,1,false);
             }
             
             if (needSaveMaterial)
@@ -358,13 +407,19 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                     .Replace("   "," ");
             if (edgeString.EndsWith(" "))
                 edgeString = edgeString.Substring(0, edgeString.Length - 1);
-            var commands = edgeString.Split(' ');
+            var commands = edgeString.Split(' ').ToList();
             var operationIndex = 0;
-            while (operationIndex < commands.Length)
+          
+            while (operationIndex < commands.Count)
             {
                 switch (commands[operationIndex])
                 {
                     case "!":
+                        if (commands[operationIndex + 3].Contains("!"))
+                        {
+                            operationIndex += 3;
+                            break;
+                        }
                         var moveToPos = TryParseFlaVector2(commands[operationIndex + 1], commands[operationIndex + 2]);
                         if(list.Count <= 0) 
                             list.Add(new List<Vector2>());
@@ -421,6 +476,7 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
             var length = (point1 - controlpoint).magnitude;
             length += (point2 - controlpoint).magnitude;
             var countOfPoints = (int) (length/FlaExporterConstatns.CurveQuality);
+            countOfPoints = Math.Max(3, countOfPoints);
             for (int i = 1; i < countOfPoints ; i++)
             {
                 var delta = (float)i / (float)countOfPoints;

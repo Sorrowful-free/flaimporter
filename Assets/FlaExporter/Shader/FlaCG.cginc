@@ -11,6 +11,7 @@ float4 _ColorOffset = float4(1,0,0,1);
 
 
 float _TextureAspect = 1;
+float _TextureIsCliped = 1;
 float4 _TextureMatrixABCD = float4(1,0,0,1);
 float2 _TextureMatrixTXTY = float2(0,0); 
 
@@ -18,7 +19,8 @@ struct fla_vert_data
 {
 	float4 position				:POSITION;
 	float2 uv_0 				:TEXCOORD0;
-	float2 shape_tween_delta 	:TEXCOORD1; 
+	float2 uv_1 				:TEXCOORD1;
+	float2 shape_tween_delta 	:TEXCOORD3; 
 };
 
 struct fla_frag_data
@@ -69,8 +71,8 @@ float2 get_transform_uv(float2 uv)
 	float2 uvTemp = uv - float2(0.5,0.5);
 	float2 uvResult = uv;
 
-	uvResult.x = uvTemp.x*_TextureMatrixABCD.x/20 + uvTemp.y*_TextureMatrixABCD.z/20 + _TextureMatrixTXTY.x; 
-	uvResult.y = uvTemp.x*_TextureMatrixABCD.y/20 + uvTemp.y*_TextureMatrixABCD.w/20 + _TextureMatrixTXTY.y;
+	uvResult.x = uvTemp.x*_TextureMatrixABCD.x + uvTemp.y*_TextureMatrixABCD.z + _TextureMatrixTXTY.x/100; 
+	uvResult.y = uvTemp.x*_TextureMatrixABCD.y + uvTemp.y*_TextureMatrixABCD.w + _TextureMatrixTXTY.y/100;
 
 	uvResult.y *= _TextureAspect;  
 	uvResult += float2(0.5,0.5);
@@ -80,8 +82,7 @@ float2 get_transform_uv(float2 uv)
 
 fixed4 apply_color_transform(fixed4 color)
 {
-	fixed4 resultColor = (color * _ColorMultipler)+_ColorOffset;
-	return resultColor;
+	return (color * _ColorMultipler)+_ColorOffset;
 }
 
 fla_frag_data fla_vert_func(fla_vert_data input)
@@ -89,7 +90,15 @@ fla_frag_data fla_vert_func(fla_vert_data input)
 	fla_frag_data output;
 	float4 position = get_vertex_position(input.position,input.shape_tween_delta);
 	output.position = mul (UNITY_MATRIX_MVP, position);
-	output.uv_0 = get_transform_uv(input.uv_0); 
+	if(_TextureIsCliped > 0)
+	{
+		output.uv_0 = input.uv_1;
+	}
+	else
+	{
+		output.uv_0 = get_transform_uv(input.uv_0); 
+	}
+	
 	return output;
 }
 
@@ -101,6 +110,5 @@ fla_frag_data fla_grab_vert_func(fla_vert_data input)
 	output.uv_0 = get_screen_uv(output.position);	
 	return output;
 }
-
 
 #endif

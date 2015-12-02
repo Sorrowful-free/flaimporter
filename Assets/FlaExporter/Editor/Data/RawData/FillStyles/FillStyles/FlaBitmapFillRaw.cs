@@ -6,5 +6,8 @@ namespace Assets.FlaExporter.Editor.Data.RawData.FillStyles.FillStyles
     {
         [XmlAttribute("bitmapPath")]
         public string BitmapPath;
+
+        [XmlAttribute("bitmapIsClipped")]
+        public bool BitmapIsClipped;
     }
 }

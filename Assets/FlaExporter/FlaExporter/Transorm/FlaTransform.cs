@@ -61,8 +61,9 @@ namespace Assets.FlaExporter.FlaExporter.Transorm
         {
             if (_oldScale != Scale)
             {
-                var scale = (Vector3)Scale;
-                scale.z = 1;
+                var scale = transform.localScale;
+                scale.x = Scale.x;
+                scale.y = Scale.y;
                 transform.localScale = scale;
                 _oldScale = Scale;
             }

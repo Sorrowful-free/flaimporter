@@ -15,9 +15,6 @@ namespace Assets.FlaExporter.FlaExporter.ColorAndFilersHolder
             {FlaColorAndFiltersHolderPropertyTypeEnum.SelfColorTransform,"_selfColorTransform"}    
         };
 
-        [SerializeField] 
-        public FlaShape FlaShape;
-      
 
         [SerializeField]
         private FlaColorAndFiltersHolder _parent;
@@ -33,6 +30,9 @@ namespace Assets.FlaExporter.FlaExporter.ColorAndFilersHolder
 
         [SerializeField]
         private List<FlaColorAndFiltersHolder> _childs = new List<FlaColorAndFiltersHolder>();
+
+        [SerializeField]
+        private List<FlaShape> _shapes = new List<FlaShape>();
 
         [SerializeField]
         private FlaColorTransform _selfColorTransform = new FlaColorTransform(Vector4.zero, Color.white, new Color(0,0,0,0),0,0);
@@ -75,7 +75,21 @@ namespace Assets.FlaExporter.FlaExporter.ColorAndFilersHolder
             _childs.Remove(child);
             child.Parent = null;
         }
-        
+
+        public void AddShape(FlaShape shape)
+        {
+            if (_shapes == null)
+            {
+                _shapes = new List<FlaShape>();
+            }
+            _shapes.Add(shape);
+            shape.UpdateColorTranform(GlobalColorTransform);
+        }
+
+        public void RemoveShape(FlaShape shape)
+        {
+            _shapes.Remove(shape);
+        }
 
         private void LateUpdate()
         {
@@ -100,9 +114,12 @@ namespace Assets.FlaExporter.FlaExporter.ColorAndFilersHolder
                 filtersHolder.UpdateChilds();
             }
 
-            if (FlaShape != null)
+            if (_shapes != null && _shapes.Count > 0)
             {
-                FlaShape.UpdateColorTranform(GlobalColorTransform);
+                for (int i = 0; i < _shapes.Count; i++)
+                {
+                    _shapes[i].UpdateColorTranform(GlobalColorTransform);
+                }
             }
         }
 
