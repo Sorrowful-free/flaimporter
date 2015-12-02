@@ -26,7 +26,6 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
             var colorAndFilters = documentGO.AddComponent<FlaColorAndFiltersHolder>();
             _currentRoot = documentGO;
             
-
             foreach (var timeline in flaDocumentData.Timelines)
             {
                 yield return ProcessFlaTimeLineElements(timeline, elementGO =>
@@ -101,7 +100,7 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
         {
             foreach (var flaLayerRaw in timeLine.Layers)
             {
-                var oredered = -(float)timeLine.Layers.IndexOf(flaLayerRaw);
+                var oredered = (float)timeLine.Layers.IndexOf(flaLayerRaw);
                 yield return FlaLayerProcessor.ProcessFlaLayerElement(flaLayerRaw, (go) =>
                 {
                     if (callback != null)
