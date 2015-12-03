@@ -74,8 +74,9 @@
 				float delta = (radius - weight1)/(weight2-weight1); 
 				delta = max(0,min(1,delta));
 				fixed4 color = lerp(color1,color2,delta); 
-				color = apply_color_transform(color); 
-				return color;
+				fixed4 resultColor = apply_color_transform(color); 
+				resultColor *= color.a;
+				return resultColor;
 
 			}
 			ENDCG

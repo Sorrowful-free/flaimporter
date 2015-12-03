@@ -29,8 +29,9 @@
 			fixed4 frag (fla_frag_data input) : SV_Target 
 			{ 
 				fixed4 color = _Color*_Color.a; 
-				color = apply_color_transform(_Color); 				
-				return color * _Color.a ;				
+				fixed4 resultColor = apply_color_transform(color); 
+				resultColor *= color.a;
+				return resultColor;				
 			}
 			ENDCG 
 		}
