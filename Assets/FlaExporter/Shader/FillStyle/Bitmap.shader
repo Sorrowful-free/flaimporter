@@ -34,9 +34,9 @@
 			fixed4 frag (fla_frag_data input) : SV_Target 
 			{ 
 				fixed4 color = tex2D(_Bitmap,input.uv_0); 
-				color.rgb *=color.a;
-				color = apply_color_transform(color); 			
-				return color; 
+				fixed4 resultColor = apply_color_transform(color); 			
+				resultColor *= color.a;
+				return resultColor; 
 			}
 			ENDCG
 		}
