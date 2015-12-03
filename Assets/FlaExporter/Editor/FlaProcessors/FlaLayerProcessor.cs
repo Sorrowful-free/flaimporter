@@ -39,7 +39,7 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                 var element = shapes.FirstOrDefault(e => e.GetUniqueName() == shapesName);
                 yield return FlaFrameElementProcessor.ProcessFlaElement(element, (elementGO) =>
                 {
-                    var order = -(float)elements.IndexOf(element) / (float)elements.Count;
+                    var order = (float)elements.IndexOf(element) / (float)elements.Count;
                   
                     var pos = elementGO.transform.localPosition;
                     pos.z = order;
@@ -63,7 +63,7 @@ namespace Assets.FlaExporter.Editor.FlaProcessors
                 var element = instances.FirstOrDefault(e => e.LibraryItemName == instanceName);
                 yield return FlaFrameElementProcessor.ProcessFlaElement(element, (elementGO) =>
                 {
-                    var order = -(float)elements.IndexOf(element) / (float)elements.Count;
+                    var order = (float)elements.IndexOf(element) / (float)elements.Count;
                     var pos = elementGO.transform.localPosition;
 
                     Debug.Log(order + " " + elements.IndexOf(element) + " " + elements.Count);
