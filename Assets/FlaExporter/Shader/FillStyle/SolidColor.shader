@@ -30,7 +30,7 @@
 			{ 
 				fixed4 color = _Color*_Color.a; 
 				fixed4 resultColor = apply_color_transform(color); 
-				resultColor *= color.a;
+				resultColor.a *= color.a;
 				return resultColor;				
 			}
 			ENDCG 

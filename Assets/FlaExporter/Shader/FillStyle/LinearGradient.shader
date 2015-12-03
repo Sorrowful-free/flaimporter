@@ -73,7 +73,7 @@
 				delta = max(0,min(1,delta)); 
 				fixed4 color = lerp(color1,color2,delta); 
 				fixed4 resultColor = apply_color_transform(color); 
-				resultColor *= color.a;
+				resultColor.a *= color.a;
 				return resultColor;
 
 			}

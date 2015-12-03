@@ -35,7 +35,7 @@
 			{ 
 				fixed4 color = tex2D(_Bitmap,input.uv_0); 
 				fixed4 resultColor = apply_color_transform(color); 			
-				resultColor *= color.a;
+				resultColor.a *= color.a;
 				return resultColor; 
 			}
 			ENDCG
