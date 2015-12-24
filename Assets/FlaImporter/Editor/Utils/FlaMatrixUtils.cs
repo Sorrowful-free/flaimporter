@@ -23,7 +23,7 @@ namespace Assets.FlaImporter.Editor.Utils
         
         public static Vector2 GetPosition(this FlaMatrixRaw flaMatrix)
         {
-            return new Vector2(flaMatrix.TX,-flaMatrix.TY)/FlaExporterConstatns.PixelsPerUnits;//-ty for convert to unity
+            return new Vector2(flaMatrix.TX,-flaMatrix.TY)/FlaImporterConstatns.PixelsPerUnits;//-ty for convert to unity
         }
 
         public static Vector2 GetScale(this FlaMatrixRaw flaMatrix)
