@@ -5,7 +5,7 @@
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
 	<ProductVersion>10.0.20506</ProductVersion>
 	<SchemaVersion>2.0</SchemaVersion>
-	<ProjectGuid>{BD0BD731-5A67-F263-4EFE-05333DBD29A3}</ProjectGuid>
+	<ProjectGuid>{6FB3218B-41E7-F200-E86C-A1FDAD4E4C48}</ProjectGuid>
 	<OutputType>Library</OutputType>
 	<AppDesignerFolder>Properties</AppDesignerFolder>
 	<RootNamespace></RootNamespace>
@@ -39,43 +39,43 @@
 	<Reference Include="System.Core" />
 	<Reference Include="System.Xml.Linq" />
 	<Reference Include="UnityEngine">
-	  <HintPath>D:/GameDev/Unity/Editor/Data/Managed/UnityEngine.dll</HintPath>
+	  <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine.dll</HintPath>
 	</Reference>
 	<Reference Include="UnityEditor">
-	  <HintPath>D:/GameDev/Unity/Editor/Data/Managed/UnityEditor.dll</HintPath>
+	  <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEditor.dll</HintPath>
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\FlaExporter\FlaExporter\ColorAndFilersHolder\ColorTransform\Enums\FlaColorTransformPropertyTypeEnum.cs" />
-     <Compile Include="Assets\FlaExporter\FlaExporter\ColorAndFilersHolder\ColorTransform\FlaColorTransform.cs" />
-     <Compile Include="Assets\FlaExporter\FlaExporter\ColorAndFilersHolder\Enums\FlaColorAndFiltersHolderPropertyTypeEnum.cs" />
-     <Compile Include="Assets\FlaExporter\FlaExporter\ColorAndFilersHolder\FlaColorAndFiltersHolder.cs" />
-     <Compile Include="Assets\FlaExporter\FlaExporter\Geom\FlaMatrix2D.cs" />
-     <Compile Include="Assets\FlaExporter\FlaExporter\Renderer\Enums\FillStyleTypeEnum.cs" />
-     <Compile Include="Assets\FlaExporter\FlaExporter\Renderer\FillStyles\FillStyleShadersNames.cs" />
-     <Compile Include="Assets\FlaExporter\FlaExporter\Renderer\FillStyles\FlaFillStyle.cs" />
-     <Compile Include="Assets\FlaExporter\FlaExporter\Renderer\FlaEdge.cs" />
-     <Compile Include="Assets\FlaExporter\FlaExporter\Renderer\FlaShape.cs" />
-     <Compile Include="Assets\FlaExporter\FlaExporter\TestShader.cs" />
-     <Compile Include="Assets\FlaExporter\FlaExporter\Transorm\Enums\FlaTransformPropertyTypeEnum.cs" />
-     <Compile Include="Assets\FlaExporter\FlaExporter\Transorm\FlaTransform.cs" />
-     <None Include="Assets\FlaExporter\Shader\FillStyle\RadialGradient.shader" />
-     <None Include="Assets\FlaExporter\Shader\FillStyle\SolidColor.shader" />
-     <None Include="Assets\FlaExporter\Shader\FillStyle\Bitmap.shader" />
-     <None Include="Assets\FlaExporter\Editor\Plugins\LibTessDotNet\LibTessDotNet-LICENSE.txt" />
-     <None Include="Assets\FlaExporter\Shader\FlaCG.cginc" />
-     <None Include="Assets\FlaExporter\Shader\FillStyle\LinearGradient.shader" />
+     <Compile Include="Assets\FlaImporter\FlaImporter\ColorAndFilersHolder\ColorTransform\Enums\FlaColorTransformPropertyTypeEnum.cs" />
+     <Compile Include="Assets\FlaImporter\FlaImporter\ColorAndFilersHolder\ColorTransform\FlaColorTransform.cs" />
+     <Compile Include="Assets\FlaImporter\FlaImporter\ColorAndFilersHolder\Enums\FlaColorAndFiltersHolderPropertyTypeEnum.cs" />
+     <Compile Include="Assets\FlaImporter\FlaImporter\ColorAndFilersHolder\FlaColorAndFiltersHolder.cs" />
+     <Compile Include="Assets\FlaImporter\FlaImporter\Geom\FlaMatrix2D.cs" />
+     <Compile Include="Assets\FlaImporter\FlaImporter\Renderer\Enums\FillStyleTypeEnum.cs" />
+     <Compile Include="Assets\FlaImporter\FlaImporter\Renderer\FillStyles\FillStyleShadersNames.cs" />
+     <Compile Include="Assets\FlaImporter\FlaImporter\Renderer\FillStyles\FlaFillStyle.cs" />
+     <Compile Include="Assets\FlaImporter\FlaImporter\Renderer\FlaEdge.cs" />
+     <Compile Include="Assets\FlaImporter\FlaImporter\Renderer\FlaShape.cs" />
+     <Compile Include="Assets\FlaImporter\FlaImporter\TestShader.cs" />
+     <Compile Include="Assets\FlaImporter\FlaImporter\Transorm\Enums\FlaTransformPropertyTypeEnum.cs" />
+     <Compile Include="Assets\FlaImporter\FlaImporter\Transorm\FlaTransform.cs" />
+     <None Include="Assets\FlaImporter\Shader\FillStyle\RadialGradient.shader" />
+     <None Include="Assets\FlaImporter\Shader\FillStyle\SolidColor.shader" />
+     <None Include="Assets\FlaImporter\Shader\FillStyle\Bitmap.shader" />
+     <None Include="Assets\FlaImporter\Editor\Plugins\LibTessDotNet\LibTessDotNet-LICENSE.txt" />
+     <None Include="Assets\FlaImporter\Shader\FlaCG.cginc" />
+     <None Include="Assets\FlaImporter\Shader\FillStyle\LinearGradient.shader" />
  <Reference Include="UnityEngine.UI">
- <HintPath>D:/GameDev/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.Networking">
- <HintPath>D:/GameDev/Unity/Editor/Data/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.Analytics">
- <HintPath>D:/GameDev/Unity/Editor/Data/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.iOS.Extensions.Xcode">
- <HintPath>D:/GameDev/Unity/Editor/Data/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
  </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

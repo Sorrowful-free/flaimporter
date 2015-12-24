@@ -5,7 +5,7 @@
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
 	<ProductVersion>10.0.20506</ProductVersion>
 	<SchemaVersion>2.0</SchemaVersion>
-	<ProjectGuid>{8EFCC762-3A32-63A4-11FD-A8DD841E392D}</ProjectGuid>
+	<ProjectGuid>{B0DB93A8-E463-E382-CD69-D052E714B74F}</ProjectGuid>
 	<OutputType>Library</OutputType>
 	<AppDesignerFolder>Properties</AppDesignerFolder>
 	<RootNamespace></RootNamespace>
@@ -39,165 +39,165 @@
 	<Reference Include="System.Core" />
 	<Reference Include="System.Xml.Linq" />
 	<Reference Include="UnityEngine">
-	  <HintPath>D:/GameDev/Unity/Editor/Data/Managed/UnityEngine.dll</HintPath>
+	  <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine.dll</HintPath>
 	</Reference>
 	<Reference Include="UnityEditor">
-	  <HintPath>D:/GameDev/Unity/Editor/Data/Managed/UnityEditor.dll</HintPath>
+	  <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEditor.dll</HintPath>
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\FlaExporter\Editor\CurveHelper\CurveHelper.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\CustomEditors\FlaRendererCustomEditor.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\Effects\Color\FlaColorElementRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\Effects\Color\FlaColorRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\Effects\Filters\FlaAdjustColorFilterRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\Effects\Filters\FlaBaseFilterRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\Effects\Filters\FlaBevelFilterRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\Effects\Filters\FlaBlurFilterRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\Effects\Filters\FlaDropShadowFilterRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\Effects\Filters\FlaGlowFilterRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\Effects\Filters\FlaGradientBevelFilterRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\Effects\Filters\FlaGradientGlowFilterRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\FillStyles\FillStyles\FlaBaseFillStyleRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\FillStyles\FillStyles\FlaBitmapFillRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\FillStyles\FillStyles\FlaSolidColorFillStyleRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\FillStyles\FillStyles\GradientFillStyles\FlaBaseGradientRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\FillStyles\FillStyles\GradientFillStyles\FlaGradientEntryRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\FillStyles\FillStyles\GradientFillStyles\FlaLinearGradientFillStyleRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\FillStyles\FillStyles\GradientFillStyles\FlaRadialGradientFillStyleRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\FillStyles\FlaFillStyleRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\FlaBitmapItemRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\FlaDocumentRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\FlaFolderRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\FlaFrameRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\FlaIncludeRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\FlaKeyFrame.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\FlaLayerRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\FlaPersistentDataRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\FlaSymbolItemRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\FlaTimeLineRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\FlaTimelineElementRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\FrameElements\FlaBaseInstanceRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\FrameElements\FlaBitmapInstanceRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\FrameElements\FlaFrameElementRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\FrameElements\FlaShapeRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\FrameElements\FlaSymbolInstanceRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\Geom\FlaEdgeRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\Geom\FlaMatrixElemetRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\Geom\FlaMatrixRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\Geom\FlaPointRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\Geom\FlaTransformationPointElementRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\IKTree\FlaDataPointRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\IKTree\FlaIKTreeRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\IKTree\FlaIkContourRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\IKTree\FlaIkNodeRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\IKTree\FlaIkStateRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\MotionTween\FlaAnimationCoreRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\MotionTween\FlaMotionObjectXMLRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\MotionTween\FlaPropertyContainerRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\MotionTween\FlaPropertyRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\MotionTween\FlaTimeMapRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\ShapeTween\FlaMorphCurvesRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\ShapeTween\FlaMorphSegmentRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\ShapeTween\FlaMorphShapeRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\StorkeStyle\FlaStorkeFillRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\StorkeStyle\FlaStorkeStyleRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\StorkeStyle\StorkeStyles\FlaBaseStorkyStyleRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\StorkeStyle\StorkeStyles\FlaDashedStrokeStyleRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\StorkeStyle\StorkeStyles\FlaDottedStrokeStyleRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\StorkeStyle\StorkeStyles\FlaRaggedStrokeStyleRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\StorkeStyle\StorkeStyles\FlaSolidStrokeStyleRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\StorkeStyle\StorkeStyles\FlaStippleStrokeStyleRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Data\RawData\StorkeStyle\StorkeStyles\FlaVariablePointWidthRaw.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\EditorCoroutine\EditorCoroutine.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\EditorCoroutine\EditorCoroutineExtention.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Extentions\AnimationCurveExtention.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Extentions\FlaExtentionsRaw\FlaFrameElementRawExtention.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Extentions\FlaExtentionsRaw\FlaShapeRawExtention.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Extentions\PrettyPrintExtention.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Extentions\StringExtention.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Extentions\TransformExtention.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Extentions\XMLExtention.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Extentions\ZipExtention.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\FlaExporterConstatns.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\FlaExporterEditorWindow.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\FlaProcessors\FlaFrameElementProcessor.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\FlaProcessors\FlaLayerProcessor.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\FlaProcessors\FlaProcessor.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\FlaProcessors\FlaShapeProcessor.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\FoldersConstants.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Plugins\LibTessDotNet\Dict.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Plugins\LibTessDotNet\Geom.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Plugins\LibTessDotNet\Mesh.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Plugins\LibTessDotNet\MeshUtils.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Plugins\LibTessDotNet\PriorityHeap.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Plugins\LibTessDotNet\PriorityQueue.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Plugins\LibTessDotNet\Sweep.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Plugins\LibTessDotNet\Tess.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Utils\FlaMathUtils.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Utils\FlaMatrixUtils.cs" />
-     <Compile Include="Assets\FlaExporter\Editor\Utils\FolderAndFileUtils.cs" />
-     <None Include="Assets\FlaExporter\Shader\FillStyle\RadialGradient.shader" />
-     <None Include="Assets\FlaExporter\Shader\FillStyle\SolidColor.shader" />
-     <None Include="Assets\FlaExporter\Shader\FillStyle\Bitmap.shader" />
-     <None Include="Assets\FlaExporter\Editor\Plugins\LibTessDotNet\LibTessDotNet-LICENSE.txt" />
-     <None Include="Assets\FlaExporter\Shader\FlaCG.cginc" />
-     <None Include="Assets\FlaExporter\Shader\FillStyle\LinearGradient.shader" />
+     <Compile Include="Assets\FlaImporter\Editor\CurveHelper\CurveHelper.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\CustomEditors\FlaRendererCustomEditor.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\Effects\Color\FlaColorElementRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\Effects\Color\FlaColorRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\Effects\Filters\FlaAdjustColorFilterRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\Effects\Filters\FlaBaseFilterRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\Effects\Filters\FlaBevelFilterRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\Effects\Filters\FlaBlurFilterRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\Effects\Filters\FlaDropShadowFilterRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\Effects\Filters\FlaGlowFilterRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\Effects\Filters\FlaGradientBevelFilterRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\Effects\Filters\FlaGradientGlowFilterRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\FillStyles\FillStyles\FlaBaseFillStyleRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\FillStyles\FillStyles\FlaBitmapFillRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\FillStyles\FillStyles\FlaSolidColorFillStyleRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\FillStyles\FillStyles\GradientFillStyles\FlaBaseGradientRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\FillStyles\FillStyles\GradientFillStyles\FlaGradientEntryRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\FillStyles\FillStyles\GradientFillStyles\FlaLinearGradientFillStyleRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\FillStyles\FillStyles\GradientFillStyles\FlaRadialGradientFillStyleRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\FillStyles\FlaFillStyleRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\FlaBitmapItemRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\FlaDocumentRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\FlaFolderRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\FlaFrameRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\FlaIncludeRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\FlaKeyFrame.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\FlaLayerRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\FlaPersistentDataRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\FlaSymbolItemRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\FlaTimeLineRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\FlaTimelineElementRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\FrameElements\FlaBaseInstanceRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\FrameElements\FlaBitmapInstanceRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\FrameElements\FlaFrameElementRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\FrameElements\FlaShapeRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\FrameElements\FlaSymbolInstanceRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\Geom\FlaEdgeRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\Geom\FlaMatrixElemetRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\Geom\FlaMatrixRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\Geom\FlaPointRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\Geom\FlaTransformationPointElementRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\IKTree\FlaDataPointRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\IKTree\FlaIKTreeRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\IKTree\FlaIkContourRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\IKTree\FlaIkNodeRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\IKTree\FlaIkStateRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\MotionTween\FlaAnimationCoreRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\MotionTween\FlaMotionObjectXMLRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\MotionTween\FlaPropertyContainerRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\MotionTween\FlaPropertyRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\MotionTween\FlaTimeMapRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\ShapeTween\FlaMorphCurvesRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\ShapeTween\FlaMorphSegmentRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\ShapeTween\FlaMorphShapeRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\StorkeStyle\FlaStorkeFillRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\StorkeStyle\FlaStorkeStyleRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\StorkeStyle\StorkeStyles\FlaBaseStorkyStyleRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\StorkeStyle\StorkeStyles\FlaDashedStrokeStyleRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\StorkeStyle\StorkeStyles\FlaDottedStrokeStyleRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\StorkeStyle\StorkeStyles\FlaRaggedStrokeStyleRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\StorkeStyle\StorkeStyles\FlaSolidStrokeStyleRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\StorkeStyle\StorkeStyles\FlaStippleStrokeStyleRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\StorkeStyle\StorkeStyles\FlaVariablePointWidthRaw.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\EditorCoroutine\EditorCoroutine.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\EditorCoroutine\EditorCoroutineExtention.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Extentions\AnimationCurveExtention.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Extentions\FlaExtentionsRaw\FlaFrameElementRawExtention.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Extentions\FlaExtentionsRaw\FlaShapeRawExtention.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Extentions\PrettyPrintExtention.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Extentions\StringExtention.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Extentions\TransformExtention.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Extentions\XMLExtention.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Extentions\ZipExtention.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\FlaImporterConstatns.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\FlaImporterEditorWindow.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\FlaProcessors\FlaFrameElementProcessor.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\FlaProcessors\FlaLayerProcessor.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\FlaProcessors\FlaProcessor.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\FlaProcessors\FlaShapeProcessor.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\FoldersConstants.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Plugins\LibTessDotNet\Dict.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Plugins\LibTessDotNet\Geom.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Plugins\LibTessDotNet\Mesh.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Plugins\LibTessDotNet\MeshUtils.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Plugins\LibTessDotNet\PriorityHeap.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Plugins\LibTessDotNet\PriorityQueue.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Plugins\LibTessDotNet\Sweep.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Plugins\LibTessDotNet\Tess.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Utils\FlaMathUtils.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Utils\FlaMatrixUtils.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Utils\FolderAndFileUtils.cs" />
+     <None Include="Assets\FlaImporter\Shader\FillStyle\RadialGradient.shader" />
+     <None Include="Assets\FlaImporter\Shader\FillStyle\SolidColor.shader" />
+     <None Include="Assets\FlaImporter\Shader\FillStyle\Bitmap.shader" />
+     <None Include="Assets\FlaImporter\Editor\Plugins\LibTessDotNet\LibTessDotNet-LICENSE.txt" />
+     <None Include="Assets\FlaImporter\Shader\FlaCG.cginc" />
+     <None Include="Assets\FlaImporter\Shader\FillStyle\LinearGradient.shader" />
  <Reference Include="UnityEngine.UI">
- <HintPath>D:/GameDev/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.UI">
- <HintPath>D:/GameDev/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/Editor/UnityEditor.UI.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/Editor/UnityEditor.UI.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.Networking">
- <HintPath>D:/GameDev/Unity/Editor/Data/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.Networking">
- <HintPath>D:/GameDev/Unity/Editor/Data/UnityExtensions/Unity/Networking/Editor/UnityEditor.Networking.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Networking/Editor/UnityEditor.Networking.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.Analytics">
- <HintPath>D:/GameDev/Unity/Editor/Data/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>
- </Reference>
- <Reference Include="Ionic.Zip">
- <HintPath>D:/Repositories/FlaExporter/Assets/FlaExporter/Editor/Library/Ionic.Zip.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.Graphs">
- <HintPath>D:/GameDev/Unity/Editor/Data/Managed/UnityEditor.Graphs.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEditor.Graphs.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.Android.Extensions">
- <HintPath>D:/GameDev/Unity/Editor/Data/PlaybackEngines/androidplayer/UnityEditor.Android.Extensions.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/androidplayer/UnityEditor.Android.Extensions.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.iOS.Extensions">
- <HintPath>D:/GameDev/Unity/Editor/Data/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.WP8.Extensions">
- <HintPath>D:/GameDev/Unity/Editor/Data/PlaybackEngines/wp8support/UnityEditor.WP8.Extensions.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/wp8support/UnityEditor.WP8.Extensions.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.Metro.Extensions">
- <HintPath>D:/GameDev/Unity/Editor/Data/PlaybackEngines/metrosupport/UnityEditor.Metro.Extensions.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/metrosupport/UnityEditor.Metro.Extensions.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.BB10.Extensions">
- <HintPath>D:/GameDev/Unity/Editor/Data/PlaybackEngines/blackberryplayer/UnityEditor.BB10.Extensions.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/blackberryplayer/UnityEditor.BB10.Extensions.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.WebGL.Extensions">
- <HintPath>D:/GameDev/Unity/Editor/Data/PlaybackEngines/webglsupport/UnityEditor.WebGL.Extensions.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/webglsupport/UnityEditor.WebGL.Extensions.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.LinuxStandalone.Extensions">
- <HintPath>D:/GameDev/Unity/Editor/Data/PlaybackEngines/linuxstandalonesupport/UnityEditor.LinuxStandalone.Extensions.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/linuxstandalonesupport/UnityEditor.LinuxStandalone.Extensions.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.WindowsStandalone.Extensions">
- <HintPath>D:/GameDev/Unity/Editor/Data/PlaybackEngines/windowsstandalonesupport/UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/windowsstandalonesupport/UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.OSXStandalone.Extensions">
- <HintPath>D:/GameDev/Unity/Editor/Data/PlaybackEngines/macstandalonesupport/UnityEditor.OSXStandalone.Extensions.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/macstandalonesupport/UnityEditor.OSXStandalone.Extensions.dll</HintPath>
+ </Reference>
+ <Reference Include="Ionic.Zip">
+ <HintPath>C:/projects/flaimporter/Assets/FlaImporter/Editor/Library/Ionic.Zip.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.iOS.Extensions.Xcode">
- <HintPath>D:/GameDev/Unity/Editor/Data/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
  </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Assembly-CSharp.csproj">
-      <Project>{BD0BD731-5A67-F263-4EFE-05333DBD29A3}</Project>      <Name>Assembly-CSharp</Name>    </ProjectReference>
+      <Project>{6FB3218B-41E7-F200-E86C-A1FDAD4E4C48}</Project>      <Name>Assembly-CSharp</Name>    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
