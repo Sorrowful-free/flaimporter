@@ -23,6 +23,30 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
             {
                 yield break;
             }
+
+            var lastObjects = new List<GameObject>();
+            foreach (var frameRaw in layerData.Frames) 
+            {
+                foreach (var lastObject in lastObjects)
+                {
+                    FlaObjectManager.Objects.ReleaseObject(lastObject);
+                }
+                foreach (var element in frameRaw.Elements)
+                {
+                    yield return FlaObjectManager.Objects.GetFreeObject(element, (go) =>
+                    {
+                        lastObjects.Add(go);
+                        if (callback != null)
+                        {
+                            callback(go);
+                        }
+                    }).StartAsEditorCoroutine();
+                }
+                
+            }
+            
+
+            yield break;
             
             var frames = layerData.Frames;
             var elements = frames.SelectMany(e => e.Elements).ToList();
@@ -125,6 +149,8 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
             }
             curve.AddKey(((float)frameRaw.Index + (float)Mathf.Max(1.0f, frameRaw.Duration)) / (float)frameRate - 1.0f / frameRate, currentValue);
         }
+
+
         private static IEnumerator ProcessDefaultFlaLayer(FlaLayerRaw layerData, int frameRate, AnimationClip clip)
         {
             if (!layerData.Visible)
@@ -175,30 +201,30 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
                     
                     if (elementRaw != null)
                     {
-                        foreach (var key in FlaTransform.PropertyNames.Keys)
-                        {
-                            var curve = default(AnimationCurve);
-                            if (!curveTransformDictionary.TryGetValue(FlaTransform.PropertyNames[key], out curve))
-                            {
-                                curve = new AnimationCurve();
-                                curveTransformDictionary.Add(FlaTransform.PropertyNames[key], curve);
-                            }
-                            var lastKey = curve.keys.LastOrDefault();
-                            var currentFrameValue = elementRaw.GetTransformValueByPropertyType(key);
+                        //foreach (var key in FlaTransform.PropertyNames.Keys)
+                        //{
+                        //    var curve = default(AnimationCurve);
+                        //    if (!curveTransformDictionary.TryGetValue(FlaTransform.PropertyNames[key], out curve))
+                        //    {
+                        //        curve = new AnimationCurve();
+                        //        curveTransformDictionary.Add(FlaTransform.PropertyNames[key], curve);
+                        //    }
+                        //    var lastKey = curve.keys.LastOrDefault();
+                        //    var currentFrameValue = elementRaw.GetTransformValueByPropertyType(key);
 
-                            if (frameRaw.Duration > 0 && frameRaw.TweenType != "motion")
-                            {
-                                WriteDuratibleKeys(currentFrameValue, curve, frameRaw, frameRate);
-                            }
-                            else
-                            {
-                                if (curve.keys.Length <= 0 || currentFrameValue != FlaTransform.ProperyDefaultValues[key] || lastKey.value != currentFrameValue)
-                                {
-                                    curve.AddKey((float)frameRaw.Index / (float)frameRate, currentFrameValue);
-                                }    
-                            }
+                        //    if (frameRaw.Duration > 0 && frameRaw.TweenType != "motion")
+                        //    {
+                        //        WriteDuratibleKeys(currentFrameValue, curve, frameRaw, frameRate);
+                        //    }
+                        //    else
+                        //    {
+                        //        if (curve.keys.Length <= 0 || currentFrameValue != FlaTransform.ProperyDefaultValues[key] || lastKey.value != currentFrameValue)
+                        //        {
+                        //            curve.AddKey((float)frameRaw.Index / (float)frameRate, currentFrameValue);
+                        //        }    
+                        //    }
                             
-                        }
+                      //  }
                         
                         foreach (var key in FlaColorAndFiltersHolder.PropertyNames.Keys)
                         {

@@ -5,7 +5,7 @@ namespace Assets.FlaImporter.Editor.Data.RawData.FillStyles.FillStyles
 {
     public class FlaBaseFillStyleRaw
     {
-        [XmlElement("matrix", Type = typeof(FlaMatrixElemetRaw))]
+        [XmlElement("Matrix4X4", Type = typeof(FlaMatrixElemetRaw))]
         public FlaMatrixElemetRaw Matrix = new FlaMatrixElemetRaw();
     }
 }

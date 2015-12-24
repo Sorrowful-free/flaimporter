@@ -80,13 +80,13 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
                 flaEdge.transform.localScale = Vector3.one;
                 flaEdge.transform.localPosition = Vector3.forward * ordered;
                 flaEdge.Parent = shapeComponent;
+                AssetDataBaseUtility.SaveEdge(flaEdge.gameObject);
                 shapeComponent.Edges.Add(flaEdge);
             }
             if (callback != null)
             {
                 callback(shapeGO);
             }
-
             AssetDataBaseUtility.SaveShape(shapeGO);
         }
 
@@ -97,7 +97,9 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
             var edgeGO = default(GameObject);
             if (prefab != null)
             {
+                
                 edgeGO = GameObject.Instantiate(prefab);
+                edgeGO.name = edgeName;
                 return edgeGO.GetComponent<FlaEdge>();
             }
             edgeGO = new GameObject(edgeName);
@@ -152,8 +154,7 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
             mesh.name = edgeName;
             AssetDataBaseUtility.SaveEdgeMesh(mesh);
             edgeMeshFilter.mesh = mesh;
-
-            AssetDataBaseUtility.SaveEdge(edgeGO);
+            
             return edge;
         }
 

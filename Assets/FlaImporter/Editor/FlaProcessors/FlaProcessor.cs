@@ -98,6 +98,7 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
         {
             foreach (var flaLayerRaw in timeLine.Layers)
             {
+                
                 var oredered = (float)timeLine.Layers.IndexOf(flaLayerRaw);
                 yield return FlaLayerProcessor.ProcessFlaLayerElement(flaLayerRaw, (go) =>
                 {

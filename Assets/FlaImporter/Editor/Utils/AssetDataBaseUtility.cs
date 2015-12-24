@@ -93,7 +93,7 @@ namespace Assets.FlaImporter.Editor.Utils
         }
         public static void SaveEdgeMesh(Mesh edge)
         {
-            FolderAndFileUtils.CheckFolders(FoldersConstants.EdgesFolder + edge.name);
+            FolderAndFileUtils.CheckFolders(FoldersConstants.EdgesFolder);
             AssetDatabase.CreateAsset(edge, FolderAndFileUtils.GetAssetFolder(FoldersConstants.EdgesFolder) + edge.name + ".asset");
         }
 

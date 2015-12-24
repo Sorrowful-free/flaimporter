@@ -13,7 +13,6 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
     {
         public static IEnumerator ProcessFlaElement(FlaFrameElementRaw element,Action<GameObject> callback)
         {
-            
             var shape = element as FlaShapeRaw;
             var instance = element as FlaBaseInstanceRaw;
             

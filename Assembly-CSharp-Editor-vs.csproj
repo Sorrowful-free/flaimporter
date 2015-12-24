@@ -5,7 +5,7 @@
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
 	<ProductVersion>10.0.20506</ProductVersion>
 	<SchemaVersion>2.0</SchemaVersion>
-	<ProjectGuid>{1C4B96FA-A32E-323F-3EC5-D7BA6F53EE0D}</ProjectGuid>
+	<ProjectGuid>{B0DB93A8-E463-E382-CD69-D052E714B74F}</ProjectGuid>
 	<OutputType>Library</OutputType>
 	<AppDesignerFolder>Properties</AppDesignerFolder>
 	<RootNamespace></RootNamespace>
@@ -39,10 +39,10 @@
 	<Reference Include="System.Core" />
 	<Reference Include="System.Xml.Linq" />
 	<Reference Include="UnityEngine">
-	  <HintPath>D:/GameDev/Unity/Editor/Data/Managed/UnityEngine.dll</HintPath>
+	  <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine.dll</HintPath>
 	</Reference>
 	<Reference Include="UnityEditor">
-	  <HintPath>D:/GameDev/Unity/Editor/Data/Managed/UnityEditor.dll</HintPath>
+	  <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEditor.dll</HintPath>
 	</Reference>
   </ItemGroup>
   <ItemGroup>
@@ -113,6 +113,7 @@
      <Compile Include="Assets\FlaImporter\Editor\EditorCoroutine\EditorCoroutineExtention.cs" />
      <Compile Include="Assets\FlaImporter\Editor\Extentions\AnimationCurveExtention.cs" />
      <Compile Include="Assets\FlaImporter\Editor\Extentions\FlaExtentionsRaw\FlaFrameElementRawExtention.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Extentions\FlaExtentionsRaw\FlaMatrixRawExtention.cs" />
      <Compile Include="Assets\FlaImporter\Editor\Extentions\FlaExtentionsRaw\FlaShapeRawExtention.cs" />
      <Compile Include="Assets\FlaImporter\Editor\Extentions\PrettyPrintExtention.cs" />
      <Compile Include="Assets\FlaImporter\Editor\Extentions\StringExtention.cs" />
@@ -120,9 +121,11 @@
      <Compile Include="Assets\FlaImporter\Editor\Extentions\XMLExtention.cs" />
      <Compile Include="Assets\FlaImporter\Editor\Extentions\ZipExtention.cs" />
      <Compile Include="Assets\FlaImporter\Editor\FlaExporterConstatns.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\FlaImporterConstatns.cs" />
      <Compile Include="Assets\FlaImporter\Editor\FlaImporterEditorWindow.cs" />
      <Compile Include="Assets\FlaImporter\Editor\FlaProcessors\FlaFrameElementProcessor.cs" />
      <Compile Include="Assets\FlaImporter\Editor\FlaProcessors\FlaLayerProcessor.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\FlaProcessors\FlaObjectManager.cs" />
      <Compile Include="Assets\FlaImporter\Editor\FlaProcessors\FlaPreProcessor.cs" />
      <Compile Include="Assets\FlaImporter\Editor\FlaProcessors\FlaProcessor.cs" />
      <Compile Include="Assets\FlaImporter\Editor\FlaProcessors\FlaShapeProcessor.cs" />
@@ -137,7 +140,6 @@
      <Compile Include="Assets\FlaImporter\Editor\Plugins\LibTessDotNet\Tess.cs" />
      <Compile Include="Assets\FlaImporter\Editor\Utils\AssetDataBaseUtility.cs" />
      <Compile Include="Assets\FlaImporter\Editor\Utils\FlaMathUtils.cs" />
-     <Compile Include="Assets\FlaImporter\Editor\Utils\FlaMatrixUtils.cs" />
      <Compile Include="Assets\FlaImporter\Editor\Utils\FolderAndFileUtils.cs" />
      <None Include="Assets\FlaImporter\Shader\FillStyle\RadialGradient.shader" />
      <None Include="Assets\FlaImporter\Shader\FillStyle\SolidColor.shader" />
@@ -146,60 +148,60 @@
      <None Include="Assets\FlaImporter\Shader\FlaCG.cginc" />
      <None Include="Assets\FlaImporter\Shader\FillStyle\LinearGradient.shader" />
  <Reference Include="UnityEngine.UI">
- <HintPath>D:/GameDev/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.UI">
- <HintPath>D:/GameDev/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/Editor/UnityEditor.UI.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/Editor/UnityEditor.UI.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.Networking">
- <HintPath>D:/GameDev/Unity/Editor/Data/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.Networking">
- <HintPath>D:/GameDev/Unity/Editor/Data/UnityExtensions/Unity/Networking/Editor/UnityEditor.Networking.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Networking/Editor/UnityEditor.Networking.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.Analytics">
- <HintPath>D:/GameDev/Unity/Editor/Data/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>
  </Reference>
  <Reference Include="Ionic.Zip">
- <HintPath>D:/Repositories/FlaImporter/Assets/FlaImporter/Editor/Library/Ionic.Zip.dll</HintPath>
+ <HintPath>C:/projects/flaimporter/Assets/FlaImporter/Editor/Library/Ionic.Zip.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.Graphs">
- <HintPath>D:/GameDev/Unity/Editor/Data/Managed/UnityEditor.Graphs.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEditor.Graphs.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.Android.Extensions">
- <HintPath>D:/GameDev/Unity/Editor/Data/PlaybackEngines/androidplayer/UnityEditor.Android.Extensions.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/androidplayer/UnityEditor.Android.Extensions.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.iOS.Extensions">
- <HintPath>D:/GameDev/Unity/Editor/Data/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.WP8.Extensions">
- <HintPath>D:/GameDev/Unity/Editor/Data/PlaybackEngines/wp8support/UnityEditor.WP8.Extensions.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/wp8support/UnityEditor.WP8.Extensions.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.Metro.Extensions">
- <HintPath>D:/GameDev/Unity/Editor/Data/PlaybackEngines/metrosupport/UnityEditor.Metro.Extensions.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/metrosupport/UnityEditor.Metro.Extensions.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.BB10.Extensions">
- <HintPath>D:/GameDev/Unity/Editor/Data/PlaybackEngines/blackberryplayer/UnityEditor.BB10.Extensions.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/blackberryplayer/UnityEditor.BB10.Extensions.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.WebGL.Extensions">
- <HintPath>D:/GameDev/Unity/Editor/Data/PlaybackEngines/webglsupport/UnityEditor.WebGL.Extensions.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/webglsupport/UnityEditor.WebGL.Extensions.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.LinuxStandalone.Extensions">
- <HintPath>D:/GameDev/Unity/Editor/Data/PlaybackEngines/linuxstandalonesupport/UnityEditor.LinuxStandalone.Extensions.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/linuxstandalonesupport/UnityEditor.LinuxStandalone.Extensions.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.WindowsStandalone.Extensions">
- <HintPath>D:/GameDev/Unity/Editor/Data/PlaybackEngines/windowsstandalonesupport/UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/windowsstandalonesupport/UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.OSXStandalone.Extensions">
- <HintPath>D:/GameDev/Unity/Editor/Data/PlaybackEngines/macstandalonesupport/UnityEditor.OSXStandalone.Extensions.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/macstandalonesupport/UnityEditor.OSXStandalone.Extensions.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.iOS.Extensions.Xcode">
- <HintPath>D:/GameDev/Unity/Editor/Data/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
+ <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
  </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Assembly-CSharp-vs.csproj">
-      <Project>{96AD8D8D-EFAA-3C32-E763-0C6014168CDE}</Project>      <Name>Assembly-CSharp-vs</Name>    </ProjectReference>
+      <Project>{6FB3218B-41E7-F200-E86C-A1FDAD4E4C48}</Project>      <Name>Assembly-CSharp-vs</Name>    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Assets.FlaImporter.FlaImporter.Transorm.Enums;
+﻿using Assets.FlaImporter.FlaImporter.Geom;
 using UnityEngine;
 
 namespace Assets.FlaImporter.FlaImporter.Transorm
@@ -7,90 +6,45 @@ namespace Assets.FlaImporter.FlaImporter.Transorm
     [ExecuteInEditMode]
     public class FlaTransform : MonoBehaviour
     {
-        public static readonly Vector2 ZeroVec = Vector2.zero;
-        public static readonly Vector3 ForwardVec = Vector3.forward;
-
-        public readonly static Dictionary<FlaTransformPropertyTypeEnum, string> PropertyNames = new Dictionary<FlaTransformPropertyTypeEnum, string>
-        {
-            { FlaTransformPropertyTypeEnum.ScaleX, "Scale.x"},
-            { FlaTransformPropertyTypeEnum.ScaleY, "Scale.y"},
-            { FlaTransformPropertyTypeEnum.PositionX, "Position.x"},
-            { FlaTransformPropertyTypeEnum.PositionY, "Position.y"},
-            { FlaTransformPropertyTypeEnum.TransformPointX, "TransformPoint.x"},
-            { FlaTransformPropertyTypeEnum.TransformPointY, "TransformPoint.y"},
-            { FlaTransformPropertyTypeEnum.Rotation, "Rotation"},
-            { FlaTransformPropertyTypeEnum.SkewX, "Skew.x"},
-            { FlaTransformPropertyTypeEnum.SkewY, "Skew.y"},
-           
-        };
-
-        public readonly static Dictionary<FlaTransformPropertyTypeEnum, float> ProperyDefaultValues = new Dictionary<FlaTransformPropertyTypeEnum, float>
-        {
-            { FlaTransformPropertyTypeEnum.Rotation, 0},
-            { FlaTransformPropertyTypeEnum.PositionX, 0},
-            { FlaTransformPropertyTypeEnum.PositionY, 0},
-            { FlaTransformPropertyTypeEnum.ScaleX, 1},
-            { FlaTransformPropertyTypeEnum.ScaleY, 1},
-            { FlaTransformPropertyTypeEnum.SkewX, 0},
-            { FlaTransformPropertyTypeEnum.SkewY, 0},
-            { FlaTransformPropertyTypeEnum.TransformPointX, 0},
-            { FlaTransformPropertyTypeEnum.TransformPointY, 0},
-        };
+        private static readonly Vector2 ZeroVec2d = Vector2.zero;
+        private static readonly Vector3 ForwardVec  = Vector3.forward;
 
         [SerializeField]
-        public float Rotation = 0;
-        private float _oldRotation = 0;
+        private Vector2 _transformPoint;
 
         [SerializeField]
-        public Vector2 Position = Vector2.zero;
-        private Vector2 _oldPosition = Vector2.zero;
-
-        [SerializeField]
-        public  Vector2 Scale = Vector2.one;
-        private Vector2 _oldScale = Vector2.one;
-
-        [SerializeField]
-        public Vector2 Skew = Vector2.zero;
-        private Vector2 _oldSkew = Vector2.zero;
-
-        [SerializeField]
-        public Vector2 TransformPoint = Vector2.zero;
-        private Vector2 _oldTransformPoint = Vector2.zero;
+        private FlaMatrix2D _matrix2D;
 
         private void LateUpdate()
         {
-            if (_oldScale != Scale)
+            if (_matrix2D.UpdateMatrix())
             {
-                var scale = transform.localScale;
-                scale.x = Scale.x;
-                scale.y = Scale.y;
-                transform.localScale = scale;
-                _oldScale = Scale;
-            }
+                var scale2d = _matrix2D.GetScale();
+                var scale3d = transform.localScale;
+                scale3d.x = scale2d.x;
+                scale3d.y = scale2d.y;
+                transform.localScale = scale3d;
 
-            if (_oldPosition != Position)
-            {
-                var oldPosition = transform.localPosition;
-                oldPosition.x = Position.x;
-                oldPosition.y = Position.y;
-                transform.localPosition = oldPosition;
-                _oldPosition = Position;
-            }
+                var position2d = _matrix2D.GetPosition();
+                var position3d = transform.localPosition;
+                position3d.x = position2d.x;
+                position3d.y = position2d.y;
+                transform.localPosition = position3d;
 
-            if (_oldRotation != Rotation)
-            {
-                if (TransformPoint != ZeroVec)
+                var rotation2d = _matrix2D.GetAngle();
+                var rotation3d = transform.localEulerAngles;
+                rotation3d.z = rotation2d;
+                
+                if (_transformPoint != ZeroVec2d)
                 {
-                    var deltaAngle = Rotation - transform.eulerAngles.z;
-                    var localToGlobal = transform.TransformPoint(TransformPoint);
+                    var deltaAngle = rotation2d - rotation3d.z;
+                    var localToGlobal = transform.TransformPoint(_transformPoint);
                     transform.RotateAround(localToGlobal, ForwardVec, deltaAngle);
-                    Position = _oldPosition = transform.position;
                 }
                 else
                 {
-                    transform.eulerAngles = ForwardVec * Rotation;
+                    transform.localEulerAngles = rotation3d;
                 }
-                _oldRotation = Rotation;
             }
         }
     }
