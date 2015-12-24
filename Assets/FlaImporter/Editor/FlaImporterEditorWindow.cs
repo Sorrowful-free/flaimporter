@@ -21,8 +21,12 @@ namespace Assets.FlaImporter.Editor
         [MenuItem("FlaImporter/FlaImporter")]
         public static void ShowWindow()
         {
-            _windowInstance = CreateInstance<FlaImporterEditorWindow>();
-            _windowInstance.titleContent = new GUIContent("FlaImporter");
+            if (_windowInstance == null)
+            {
+                _windowInstance = CreateInstance<FlaImporterEditorWindow>();
+                _windowInstance.titleContent = new GUIContent("FlaImporter");
+            }
+            
             _windowInstance.Show();
         }
         
@@ -40,10 +44,10 @@ namespace Assets.FlaImporter.Editor
             }
             if (GUILayout.Button("Open Xml (*.Xml)"))
             {
-                var path = EditorUtility.OpenFilePanel("open flash file (*.Xml)", "Assets", "Xml");
+                var path = EditorUtility.OpenFilePanel("open flash file (*.xml)", "Assets", "xml");
                 if (path == "")
                 {
-                    return;
+                    return; 
                 }
                 ProcessPath(path);
             }
