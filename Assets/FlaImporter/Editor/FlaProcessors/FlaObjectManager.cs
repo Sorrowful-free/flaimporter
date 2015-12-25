@@ -1,38 +1,51 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.FlaImporter.Editor.Data.RawData.FrameElements;
-using Assets.FlaImporter.Editor.EditorCoroutine;
-using Assets.FlaImporter.Editor.Extentions.FlaExtentionsRaw;
-using Assets.FlaImporter.FlaImporter.Transorm;
+using Assets.FlaImporter.Editor.Utils;
+using UnityEditor;
 using UnityEngine;
 
 namespace Assets.FlaImporter.Editor.FlaProcessors
 {
     public static class FlaObjectManager
     {
-       public static FlaObjectsHolder Objects = new FlaObjectsHolder(FlaFrameElementProcessor.ProcessFlaElement);
+        public readonly static FlaObjectsHolder Symbols = new FlaObjectsHolder(AssetDataBaseUtility.LoadSymbol);
+        public readonly static FlaObjectsHolder BitmapInstance = new FlaObjectsHolder(AssetDataBaseUtility.LoadBitmapInstance);
+        public readonly static FlaObjectsHolder Shapes = new FlaObjectsHolder(AssetDataBaseUtility.LoadShape);
+
+        public static void Clear()
+        {
+            Symbols.Clear();
+            BitmapInstance.Clear();
+            Shapes.Clear();
+        }
+
+        public static void ReleaseAll()
+        {
+            Symbols.ReleaseAll();
+            BitmapInstance.ReleaseAll();
+            Shapes.ReleaseAll();
+        }
     }
 
     public class FlaObjectsHolder
     {
         private Dictionary<string, List<GameObject>> _freeObjects = new Dictionary<string, List<GameObject>>();
         private Dictionary<string, List<GameObject>> _allObjects = new Dictionary<string, List<GameObject>>();
-        private Func<FlaFrameElementRaw, Action<GameObject>, IEnumerator> _loadDelegate;
+        private Func<string,GameObject> _loadDelegate;
 
-        public FlaObjectsHolder(Func<FlaFrameElementRaw,Action<GameObject>, IEnumerator> loadDelegate)
+        public FlaObjectsHolder(Func<string,GameObject> loadDelegate)
         {
             _loadDelegate = loadDelegate;
         }
 
-        public IEnumerator GetFreeObject(FlaFrameElementRaw element,Action<GameObject> callback)
+        public GameObject GetFreeObject(string name)
         {
             var freeList = default(List<GameObject>);
-            if (!_freeObjects.TryGetValue(element.GetName(), out freeList))
+            if (!_freeObjects.TryGetValue(name, out freeList))
             {
                 freeList = new List<GameObject>();
-                _freeObjects.Add(element.GetName(), freeList);
+                _freeObjects.Add(name, freeList);
             }
             var go = freeList.FirstOrDefault();
             if (go != null)
@@ -41,37 +54,68 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
             }
             else
             {
-                yield return _loadDelegate(element, (goResources) =>
+                go = (GameObject)PrefabUtility.InstantiatePrefab(_loadDelegate(name));
+                var allList = default(List<GameObject>);
+                if (!_allObjects.TryGetValue(name, out allList))
                 {
-                    go = goResources;//GameObject.Instantiate(goResources);
-                    var allList = default(List<GameObject>);
-                    if (!_allObjects.TryGetValue(element.GetName(), out allList))
-                    {
-                        allList = new List<GameObject>();
-                        _allObjects.Add(element.GetName().ToLower(), allList);
-                    }
-                    go.name = element.GetName()+"_"+allList.Count;
-                    allList.Add(go);
-                    go.GetComponent<FlaTransform>();
-                    if (callback != null)
-                    {
-                        callback(go);
-                    }
-                }).StartAsEditorCoroutine();
+                    allList = new List<GameObject>();
+                    _allObjects.Add(name, allList);
+                }
+                go.name = name + "_" + allList.Count;
+                allList.Add(go);
             }
+            return go;
         }
 
         public void ReleaseObject(GameObject @object)
         {
-            var objectName = _allObjects.Keys.FirstOrDefault(e => @object.name.ToLower().StartsWith(e.ToLower())).ToLower();
-            Debug.Log("release object : "+objectName+" :"+@object.name);
+            var objectName = _allObjects.Keys.FirstOrDefault(e => @object.name.ToLower().StartsWith(e.ToLower()));
             var freeList = default(List<GameObject>);
             if (!_freeObjects.TryGetValue(objectName, out freeList))
             {
                 freeList = new List<GameObject>();
                 _freeObjects.Add(objectName, freeList);
             }
-            freeList.Add(@object);
+            if (!freeList.Contains(@object))
+                freeList.Add(@object);
+        }
+
+        public void Clear()
+        {
+            if (_freeObjects != null)
+            {
+                foreach (var freeObject in _freeObjects)
+                {
+                    if (freeObject.Value != null)
+                    {
+                        freeObject.Value.Clear();
+                    }
+                }
+                _freeObjects.Clear();
+            }
+
+            if (_allObjects != null)
+            {
+                foreach (var allObject in _allObjects)
+                {
+                    if (allObject.Value != null)
+                    {
+                        allObject.Value.Clear();
+                    }
+                }
+                _allObjects.Clear();
+            }
+        }
+
+        public void ReleaseAll()
+        {
+            foreach (var key in _allObjects.Keys.ToList())
+            {
+                foreach (var gameObject in _allObjects[key])
+                {
+                    ReleaseObject(gameObject);
+                }
+            }
         }
 
     }

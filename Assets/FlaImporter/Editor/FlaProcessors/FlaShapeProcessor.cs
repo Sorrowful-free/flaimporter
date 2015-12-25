@@ -83,11 +83,11 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
                 AssetDataBaseUtility.SaveEdge(flaEdge.gameObject);
                 shapeComponent.Edges.Add(flaEdge);
             }
+            AssetDataBaseUtility.SaveShape(shapeGO);
             if (callback != null)
             {
                 callback(shapeGO);
             }
-            AssetDataBaseUtility.SaveShape(shapeGO);
         }
 
         private static FlaEdge ProsessFlaEdge(FlaEdgeRaw edgeRaw)
@@ -194,7 +194,7 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
                 {
                     material = new Material(Shader.Find(FillStyleShadersNames.ShaderNames[FillStyleTypeEnum.Bitmap]));
                     texture = AssetDatabase.LoadAssetAtPath<Texture2D>(
-                        FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) +
+                        FolderAndFileUtils.GetAssetFolder(FoldersConstants.TexturesFolder) +
                         FolderAndFileUtils.RemoveUnacceptable(bitmap.BitmapPath));
                     material.SetTexture("_Bitmap", texture);
                     material.name = matName;

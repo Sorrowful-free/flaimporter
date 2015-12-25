@@ -2,7 +2,7 @@ using System.Xml.Serialization;
 
 namespace Assets.FlaImporter.Editor.Data.RawData
 {
-    public class FlaKeyFrame
+    public class FlaKeyFrameRaw
     {
         //<Keyframe anchor="0,0" next="0,0" previous="0,0" roving="0" timevalue="0"/>
         [XmlAttribute("anchor")]

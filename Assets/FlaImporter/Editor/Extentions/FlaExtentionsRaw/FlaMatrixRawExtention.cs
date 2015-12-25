@@ -42,6 +42,14 @@ namespace Assets.FlaImporter.Editor.Utils
             transform.localScale = scale;
         }
 
-       
+        public static Vector4 GetABCD(this FlaMatrixRaw flaMatrix)
+        {
+            return new Vector4(flaMatrix.A, flaMatrix.B, flaMatrix.C, flaMatrix.D);
+        }
+
+        public static Vector2 GetTXTY(this FlaMatrixRaw flaMatrix)
+        {
+            return new Vector2(flaMatrix.TX, flaMatrix.TY);
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Xml.Serialization;
 using Assets.FlaImporter.Editor.Data.RawData.FrameElements;
 using Assets.FlaImporter.Editor.Data.RawData.Geom;
@@ -13,7 +14,7 @@ namespace Assets.FlaImporter.Editor.Data.RawData
         public int Index;
 
         [XmlAttribute("duration")] 
-        public int Duration;
+        public int Duration = 1;
 
         [XmlAttribute("tweenType")] 
         public string TweenType;
@@ -64,5 +65,9 @@ namespace Assets.FlaImporter.Editor.Data.RawData
         [XmlArrayItem("Matrix")]
         public List<FlaMatrixRaw> BetweenFrameMatrixList;
 
+        public override string ToString()
+        {
+            return string.Format("F(i:{0},d:{1})",Index,Duration);
+        }
     }
 }

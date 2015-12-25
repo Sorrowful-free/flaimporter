@@ -2,7 +2,9 @@
 using System.Collections;
 using System.Linq;
 using Assets.FlaImporter.Editor.Data.RawData;
+using Assets.FlaImporter.Editor.Data.RawData.FrameElements;
 using Assets.FlaImporter.Editor.EditorCoroutine;
+using Assets.FlaImporter.Editor.Extentions.FlaExtentionsRaw;
 using Assets.FlaImporter.Editor.Utils;
 using Assets.FlaImporter.FlaImporter.ColorAndFilersHolder;
 using Assets.FlaImporter.FlaImporter.Renderer;
@@ -49,7 +51,8 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
             {
                 yield return
                    ProcessFlaTimeLine(timeline,
-                       _currentFlaDocumentRaw == null ? 30 : _currentFlaDocumentRaw.FrameRate, _currentRoot).StartAsEditorCoroutine(); 
+                       _currentFlaDocumentRaw == null ? 30 : _currentFlaDocumentRaw.FrameRate, documentGO).StartAsEditorCoroutine();
+                yield return 0; 
             }
 
             PrefabUtility.CreatePrefab(FolderAndFileUtils.GetAssetFolder(FoldersConstants.ExportedOutputFolder) + name + ".prefab", documentGO);
@@ -93,51 +96,58 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
             GameObject.DestroyImmediate(flaSymbolGO);
             yield return null;
         }
-        
+
+        public static IEnumerator ProcessFlaLayerElement(FlaLayerRaw layerData)
+        {
+            if (!layerData.Visible || layerData.Frames == null || layerData.Frames.Count <= 0 || !layerData.Frames.SelectMany(e => e.Elements).Any())
+            {
+                yield break;
+            }
+
+            var frames = layerData.Frames;
+            var elements = frames.SelectMany(e => e.Elements).ToList();
+
+            var instances = elements.OfType<FlaBaseInstanceRaw>();
+            var instancesNames = instances.Select(e => e.LibraryItemName).Distinct();
+
+            var shapes = elements.OfType<FlaShapeRaw>();
+            var shapesNames = shapes.Select(e => e.GetUniqueName()).Distinct();
+
+
+            foreach (var shapesName in shapesNames)
+            {
+                var element = shapes.FirstOrDefault(e => e.GetUniqueName() == shapesName);
+                yield return FlaFrameElementProcessor.ProcessFlaElement(element, (elementGO) =>
+                {
+                    GameObject.DestroyImmediate(elementGO);
+                }).StartAsEditorCoroutine();
+            }
+
+            foreach (var instanceName in instancesNames)
+            {
+                var element = instances.FirstOrDefault(e => e.LibraryItemName == instanceName);
+                yield return FlaFrameElementProcessor.ProcessFlaElement(element, (elementGO) =>
+                {
+                    GameObject.DestroyImmediate(elementGO);
+                }).StartAsEditorCoroutine();
+            }
+
+            yield return null;
+        }
+
         private static IEnumerator ProcessFlaTimeLineElements(FlaTimeLineRaw timeLine,Action<GameObject> callback)
         {
             foreach (var flaLayerRaw in timeLine.Layers)
             {
-                
-                var oredered = (float)timeLine.Layers.IndexOf(flaLayerRaw);
-                yield return FlaLayerProcessor.ProcessFlaLayerElement(flaLayerRaw, (go) =>
-                {
-                    if (callback != null)
-                    {
-                        var pos = go.transform.localPosition;
-                        pos.z += oredered;
-                        go.transform.localPosition = pos;
-
-                        var scale = go.transform.localScale;
-                        scale.z = 1 / (float)flaLayerRaw.Frames.SelectMany(e=>e.Elements).ToList().Count * 0.8f;
-                        go.transform.localScale = scale;
-
-                        callback(go);
-                    }
-                }).StartAsEditorCoroutine();
+                yield return ProcessFlaLayerElement(flaLayerRaw).StartAsEditorCoroutine();
             }
             yield return null;
         }
 
         private static IEnumerator ProcessFlaTimeLine(FlaTimeLineRaw timeLine, int frameRate, GameObject root)
         {
-            var frames = timeLine.Layers.SelectMany(e => e.Frames);
-            if (frames.Max(e => e.Index) <= 0 && frames.Max(e => e.Duration) <= 0)
-            {
-                yield break;
-            }
-            var animationController = AssetDataBaseUtility.CreateAnimatorController(root.name);
-            root.AddComponent<Animator>().runtimeAnimatorController = animationController;
-            var animationClip = new AnimationClip() { name = "clip" };
-            AssetDataBaseUtility.SaveAnimationClip(animationClip);
 
-            animationController.AddMotion(animationClip);
-
-            foreach (var flaLayerRaw in timeLine.Layers)
-            {
-                yield return FlaLayerProcessor.ProcessFlaLayer(flaLayerRaw, frameRate, animationClip).StartAsEditorCoroutine();
-            }
-            yield return null;
+            yield return FlaTimeLineProcessor.ProcessFlaTimeLine(timeLine, root, frameRate).StartAsEditorCoroutine();
         }
 
     }

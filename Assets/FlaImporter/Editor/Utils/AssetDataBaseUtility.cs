@@ -26,6 +26,19 @@ namespace Assets.FlaImporter.Editor.Utils
                     FolderAndFileUtils.RemoveUnacceptable(symbolName) + ".prefab");
         }
 
+        public static void SaveBitmapInstance(GameObject bitmapInstance)
+        {
+            FolderAndFileUtils.CheckFolders(FoldersConstants.BitmapInstancesFolder);
+            PrefabUtility.CreatePrefab(FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapInstancesFolder) + FolderAndFileUtils.RemoveUnacceptable(bitmapInstance.name) + ".prefab", bitmapInstance);
+        }
+
+        public static GameObject LoadBitmapInstance(string bitmapInstanceName)
+        {
+            return
+                AssetDatabase.LoadAssetAtPath<GameObject>(
+                    FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapInstancesFolder) +
+                    FolderAndFileUtils.RemoveUnacceptable(bitmapInstanceName) + ".prefab");
+        }
 
         public static AnimatorController CreateAnimatorController(string name)
         {
@@ -55,14 +68,14 @@ namespace Assets.FlaImporter.Editor.Utils
 
         public static void SaveBitmapTo(byte[] bitmapData,string bitmapName)
         {
-            FolderAndFileUtils.CheckFolders(FoldersConstants.BitmapSymbolsTextureFolderFolder);
-            if (!File.Exists(FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) + FolderAndFileUtils.RemoveUnacceptable(bitmapName)))
+            FolderAndFileUtils.CheckFolders(FoldersConstants.TexturesFolder);
+            if (!File.Exists(FolderAndFileUtils.GetAssetFolder(FoldersConstants.TexturesFolder) + FolderAndFileUtils.RemoveUnacceptable(bitmapName)))
             {
-                var file = File.Open(FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) + FolderAndFileUtils.RemoveUnacceptable(bitmapName), FileMode.OpenOrCreate);
+                var file = File.Open(FolderAndFileUtils.GetAssetFolder(FoldersConstants.TexturesFolder) + FolderAndFileUtils.RemoveUnacceptable(bitmapName), FileMode.OpenOrCreate);
              //   var bytes = zipFileEntry.ToByteArray();
                 file.Write(bitmapData, 0, bitmapData.Length);
                 file.Close();
-                AssetDatabase.ImportAsset(FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) + FolderAndFileUtils.RemoveUnacceptable(bitmapName));
+                AssetDatabase.ImportAsset(FolderAndFileUtils.GetAssetFolder(FoldersConstants.TexturesFolder) + FolderAndFileUtils.RemoveUnacceptable(bitmapName));
                 AssetDatabase.Refresh();
             }
 
@@ -97,6 +110,8 @@ namespace Assets.FlaImporter.Editor.Utils
             AssetDatabase.CreateAsset(edge, FolderAndFileUtils.GetAssetFolder(FoldersConstants.EdgesFolder) + edge.name + ".asset");
         }
 
+
+       
 
     }
 }

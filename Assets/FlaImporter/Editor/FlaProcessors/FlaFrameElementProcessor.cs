@@ -64,13 +64,23 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
 
         private static GameObject ProcessFlaBitmapInstance(FlaBitmapInstanceRaw instance)
         {
-            var bitmapSymbolGO = new GameObject(FolderAndFileUtils.RemoveUnacceptable(instance.LibraryItemName));
+            var bitmapInstanceName = FolderAndFileUtils.RemoveUnacceptable(instance.LibraryItemName);
+            var bitmapResource = AssetDataBaseUtility.LoadBitmapInstance(bitmapInstanceName);
+            var bitmapSymbolGO = default(GameObject);
+            if (bitmapResource != null)
+            {
+                bitmapSymbolGO = GameObject.Instantiate(bitmapResource);
+                bitmapSymbolGO.name = bitmapInstanceName;
+                return bitmapSymbolGO;
+            }
+            bitmapSymbolGO = new GameObject(bitmapInstanceName);
             var bitmapSriteRenderer = bitmapSymbolGO.AddComponent<SpriteRenderer>();
-            var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(FolderAndFileUtils.GetAssetFolder(FoldersConstants.BitmapSymbolsTextureFolderFolder) + FolderAndFileUtils.RemoveUnacceptable(instance.LibraryItemName));
+            var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(FolderAndFileUtils.GetAssetFolder(FoldersConstants.TexturesFolder) + FolderAndFileUtils.RemoveUnacceptable(instance.LibraryItemName));
             var spritesAsObjects = AssetDatabase.LoadAllAssetRepresentationsAtPath(AssetDatabase.GetAssetPath(texture));
             var sprite = spritesAsObjects.FirstOrDefault(e => e.name == FolderAndFileUtils.RemoveExtention(instance.LibraryItemName)) as Sprite;
             bitmapSriteRenderer.sprite = sprite;
             instance.Matrix.Matrix.CopyMatrix(bitmapSymbolGO.transform);
+            AssetDataBaseUtility.SaveBitmapInstance(bitmapSymbolGO);
             return bitmapSymbolGO;
         }
 

@@ -71,7 +71,7 @@
      <Compile Include="Assets\FlaImporter\Editor\Data\RawData\FlaFolderRaw.cs" />
      <Compile Include="Assets\FlaImporter\Editor\Data\RawData\FlaFrameRaw.cs" />
      <Compile Include="Assets\FlaImporter\Editor\Data\RawData\FlaIncludeRaw.cs" />
-     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\FlaKeyFrame.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Data\RawData\FlaKeyFrameRaw.cs" />
      <Compile Include="Assets\FlaImporter\Editor\Data\RawData\FlaLayerRaw.cs" />
      <Compile Include="Assets\FlaImporter\Editor\Data\RawData\FlaPersistentDataRaw.cs" />
      <Compile Include="Assets\FlaImporter\Editor\Data\RawData\FlaSymbolItemRaw.cs" />
@@ -114,6 +114,7 @@
      <Compile Include="Assets\FlaImporter\Editor\Extentions\AnimationCurveExtention.cs" />
      <Compile Include="Assets\FlaImporter\Editor\Extentions\FlaExtentionsRaw\FlaFrameElementRawExtention.cs" />
      <Compile Include="Assets\FlaImporter\Editor\Extentions\FlaExtentionsRaw\FlaMatrixRawExtention.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Extentions\FlaExtentionsRaw\FlaPointRawExtention.cs" />
      <Compile Include="Assets\FlaImporter\Editor\Extentions\FlaExtentionsRaw\FlaShapeRawExtention.cs" />
      <Compile Include="Assets\FlaImporter\Editor\Extentions\PrettyPrintExtention.cs" />
      <Compile Include="Assets\FlaImporter\Editor\Extentions\StringExtention.cs" />
@@ -123,12 +124,14 @@
      <Compile Include="Assets\FlaImporter\Editor\FlaExporterConstatns.cs" />
      <Compile Include="Assets\FlaImporter\Editor\FlaImporterConstatns.cs" />
      <Compile Include="Assets\FlaImporter\Editor\FlaImporterEditorWindow.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\FlaProcessors\FlaAnimationRecorder.cs" />
      <Compile Include="Assets\FlaImporter\Editor\FlaProcessors\FlaFrameElementProcessor.cs" />
      <Compile Include="Assets\FlaImporter\Editor\FlaProcessors\FlaLayerProcessor.cs" />
      <Compile Include="Assets\FlaImporter\Editor\FlaProcessors\FlaObjectManager.cs" />
      <Compile Include="Assets\FlaImporter\Editor\FlaProcessors\FlaPreProcessor.cs" />
      <Compile Include="Assets\FlaImporter\Editor\FlaProcessors\FlaProcessor.cs" />
      <Compile Include="Assets\FlaImporter\Editor\FlaProcessors\FlaShapeProcessor.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\FlaProcessors\FlaTimeLineProcessor.cs" />
      <Compile Include="Assets\FlaImporter\Editor\FoldersConstants.cs" />
      <Compile Include="Assets\FlaImporter\Editor\Plugins\LibTessDotNet\Dict.cs" />
      <Compile Include="Assets\FlaImporter\Editor\Plugins\LibTessDotNet\Geom.cs" />

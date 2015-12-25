@@ -65,8 +65,11 @@ namespace Assets.FlaImporter.FlaImporter.ColorAndFilersHolder
             {
                 _childs = new List<FlaColorAndFiltersHolder>();
             }
-            _childs.Add(child);
-            child.Parent = this;
+            if (!_childs.Contains(child))
+            {
+                _childs.Add(child);
+                child.Parent = this;    
+            }
         }
 
         public void RemoveChild(FlaColorAndFiltersHolder child)
@@ -81,8 +84,11 @@ namespace Assets.FlaImporter.FlaImporter.ColorAndFilersHolder
             {
                 _shapes = new List<FlaShape>();
             }
-            _shapes.Add(shape);
-            shape.UpdateColorTranform(GlobalColorTransform);
+            if (!_shapes.Contains(shape))
+            {
+                _shapes.Add(shape);
+                shape.UpdateColorTranform(GlobalColorTransform);
+            }
         }
 
         public void RemoveShape(FlaShape shape)

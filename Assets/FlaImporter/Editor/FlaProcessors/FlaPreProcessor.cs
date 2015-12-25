@@ -7,6 +7,7 @@ using Assets.FlaImporter.Editor.Data.RawData;
 using Assets.FlaImporter.Editor.Data.RawData.FrameElements;
 using Assets.FlaImporter.Editor.EditorCoroutine;
 using Assets.FlaImporter.Editor.Extentions;
+using Assets.FlaImporter.Editor.Extentions.FlaExtentionsRaw;
 using Assets.FlaImporter.Editor.Utils;
 using Ionic.Zip;
 using UnityEditor;
@@ -167,6 +168,8 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
             EditorUtility.DisplayProgressBar(title, text, percents);
             //  Debug.Log(string.Format("{0}.{1}({2}%)", title, text, percents * 100.0f));
         }
+
+       
 
     }
 }

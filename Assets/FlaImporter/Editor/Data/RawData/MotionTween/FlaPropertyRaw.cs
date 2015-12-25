@@ -21,7 +21,7 @@ namespace Assets.FlaImporter.Editor.Data.RawData.MotionTween
         [XmlAttribute("visible")]
         public int Visible;
 
-        [XmlElement("Keyframe", Type = typeof(FlaKeyFrame))]
-        public List<FlaKeyFrame> KeyFrames;
+        [XmlElement("Keyframe", Type = typeof(FlaKeyFrameRaw))]
+        public List<FlaKeyFrameRaw> KeyFrames;
     }
 }

@@ -115,10 +115,10 @@ namespace Assets.FlaImporter.FlaImporter.ColorAndFilersHolder.ColorTransform
 
         public void Concat(FlaColorTransform other)
         {
-            ColorOffset.x = ColorOffset.x + ColorMultipler.r * ColorOffset.x;
-            ColorOffset.y = ColorOffset.y + ColorMultipler.g * ColorOffset.y;
-            ColorOffset.z = ColorOffset.z + ColorMultipler.b * ColorOffset.z;
-            ColorOffset.w = ColorOffset.w + ColorMultipler.a * ColorOffset.w;
+            ColorOffset.x = other.ColorOffset.x + ColorMultipler.r * ColorOffset.x;
+            ColorOffset.y = other.ColorOffset.y + ColorMultipler.g * ColorOffset.y;
+            ColorOffset.z = other.ColorOffset.z + ColorMultipler.b * ColorOffset.z;
+            ColorOffset.w = other.ColorOffset.w + ColorMultipler.a * ColorOffset.w;
             ColorMultipler = ColorMultipler*other.ColorMultipler;
         }
 
