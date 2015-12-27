@@ -104,7 +104,7 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
             }
             edgeGO = new GameObject(edgeName);
             var edgeMeshFilter = edgeGO.AddComponent<MeshFilter>();
-            var edgeMeshRenderer = edgeGO.AddComponent<MeshRenderer>();
+            edgeGO.AddComponent<MeshRenderer>();
             var edge = edgeGO.AddComponent<FlaEdge>();
             if (edgeRaw.Edges == null || edgeRaw.Edges == "")
             {
@@ -163,7 +163,7 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
             var fillStyle = fillStyleRaw.FillStyle;
             var material = default(Material);
             var matrixRaw = fillStyle.Matrix.Matrix;
-            var flaMatrix2D = new FlaMatrix2D(new Vector4(matrixRaw.A, matrixRaw.B, matrixRaw.C, matrixRaw.D), new Vector2(matrixRaw.TX, matrixRaw.TY));
+            var flaMatrix2D = new FlaMatrix2D(matrixRaw.GetABCD(), matrixRaw.GetTXTY());
             var flaFillStyle = default(FlaFillStyle);
             var needSaveMaterial = false;
 

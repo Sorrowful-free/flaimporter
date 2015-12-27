@@ -14,14 +14,16 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
 {
     public static class FlaTimeLineProcessor
     {
-        private static List<FlaFrameRaw> _lastFrames = new List<FlaFrameRaw>();
+       
+
         public static IEnumerator ProcessFlaTimeLine(FlaTimeLineRaw flaTimeLine, GameObject rootGO,int frameRate)
         {
+      //      Debug.LogWarning("start record animation");
             FlaObjectManager.Clear();
             FlaAnimationRecorder.Clear();
             var animationController = AssetDataBaseUtility.CreateAnimatorController(rootGO.name);
             rootGO.AddComponent<Animator>().runtimeAnimatorController = animationController;
-            var animationClip = new AnimationClip() { name = "clip" };
+            var animationClip = new AnimationClip() { name = rootGO.name+"_clip" };
             AssetDataBaseUtility.SaveAnimationClip(animationClip);
 
             animationController.AddMotion(animationClip);
@@ -35,52 +37,48 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
                 var elements = GetElementsInFrame(flaTimeLine, i);
                 foreach (var elementRaw in elements)
                 {
-                    var elementGO = default(GameObject);
-                    if (elementRaw is FlaShapeRaw)
+                    var elementGO = FlaObjectManager.GetFreeObject(elementRaw);
+                    var shape = elementGO.GetComponent<FlaShape>();
+                    var colorAndFilterHolder = elementGO.GetComponent<FlaColorAndFiltersHolder>();
+                    if (shape != null)
                     {
-                        elementGO = FlaObjectManager.Shapes.GetFreeObject(elementRaw.GetName());
-                        rootColorAndFilterHolder.AddShape(elementGO.GetComponent<FlaShape>());
+                        rootColorAndFilterHolder.AddShape(shape);
                     }
-                    else if (elementRaw is FlaBitmapInstanceRaw)
+                    else if (colorAndFilterHolder != null)
                     {
-                        elementGO = FlaObjectManager.BitmapInstance.GetFreeObject(elementRaw.GetName());
-                        rootColorAndFilterHolder.AddChild(elementGO.GetComponent<FlaColorAndFiltersHolder>());
-                    }
-                    else if (elementRaw is FlaSymbolInstanceRaw)
-                    {
-                        elementGO = FlaObjectManager.Symbols.GetFreeObject(elementRaw.GetName());
-                        rootColorAndFilterHolder.AddChild(elementGO.GetComponent<FlaColorAndFiltersHolder>());
-                    }
-                    else
-                    {
-                        Debug.Log("some element cannot parce " + elementRaw);
+                        rootColorAndFilterHolder.AddChild(colorAndFilterHolder);
                     }
                     elementGO.transform.SetParent(rootGO.transform, false);
                     yield return 0;
                 }
                 yield return 0;
             }
-#endregion
+            #endregion
 
-#region apply anaimation
+            #region apply anaimation
+            List<FlaFrameRaw> lastFrames = new List<FlaFrameRaw>();
             for (int i = 0; i <= lastFrameIndex; i++)
             {
                 var temp = GetFramesByIndex(flaTimeLine, i);
-                var needRecordedFrames = temp.Where(t => _lastFrames.All(l => l != t));
-                var needRemoveFrames = _lastFrames.Where(l => temp.All(t => t != l));
-                //Debug.Log(string.Format("index:{0},\nnrec:{1},\nnrem:{2}",i,needRecordedFrames.JoinToString(", "),needRemoveFrames.JoinToString(", ")));
-                _lastFrames.AddRange(needRecordedFrames);
-                _lastFrames.RemoveAll(e => needRemoveFrames.Any(r => r == e));
+                var needRecordedFrames = temp.Where(t => lastFrames.All(l => l != t)).ToList();
+                var needRemoveFrames = lastFrames.Where(l => temp.All(t => t != l)).ToList();
+                Debug.Log(string.Format("index:{0},\nnrec:{1},\nnrem:{2}",i,needRecordedFrames.JoinToString(", "),needRemoveFrames.JoinToString(", ")));
 
-                foreach (var frameRaw in needRecordedFrames)
-                {
-                    FlaAnimationRecorder.RecordFrameElements(frameRaw, frameRate);
-                }
-
+                Debug.Log("try remove" + needRemoveFrames.ToList().Count);
                 foreach (var frameRaw in needRemoveFrames)
                 {
                     FlaAnimationRecorder.ReleaseFrameElements(frameRaw, frameRate);
                 }
+
+                Debug.Log("try record" + needRecordedFrames.ToList().Count);
+                foreach (var frameRaw in needRecordedFrames)
+                {
+                    FlaAnimationRecorder.RecordFrameElements(frameRaw, frameRate);
+                }
+               
+
+                lastFrames.AddRange(needRecordedFrames);
+                lastFrames.RemoveAll(e => needRemoveFrames.Any(r => r == e));
             }
             FlaAnimationRecorder.ApplyToClip(animationClip);
 #endregion

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Assets.FlaImporter.Editor.Data.RawData.FrameElements;
+using Assets.FlaImporter.Editor.Extentions.FlaExtentionsRaw;
 using Assets.FlaImporter.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -9,43 +11,18 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
 {
     public static class FlaObjectManager
     {
-        public readonly static FlaObjectsHolder Symbols = new FlaObjectsHolder(AssetDataBaseUtility.LoadSymbol);
-        public readonly static FlaObjectsHolder BitmapInstance = new FlaObjectsHolder(AssetDataBaseUtility.LoadBitmapInstance);
-        public readonly static FlaObjectsHolder Shapes = new FlaObjectsHolder(AssetDataBaseUtility.LoadShape);
-
-        public static void Clear()
+      
+        private static readonly Dictionary<string, List<GameObject>> _freeObjects = new Dictionary<string, List<GameObject>>();
+        private static readonly Dictionary<string, List<GameObject>> _allObjects = new Dictionary<string, List<GameObject>>();
+      
+        public static GameObject GetFreeObject(FlaFrameElementRaw elementRaw)
         {
-            Symbols.Clear();
-            BitmapInstance.Clear();
-            Shapes.Clear();
-        }
-
-        public static void ReleaseAll()
-        {
-            Symbols.ReleaseAll();
-            BitmapInstance.ReleaseAll();
-            Shapes.ReleaseAll();
-        }
-    }
-
-    public class FlaObjectsHolder
-    {
-        private Dictionary<string, List<GameObject>> _freeObjects = new Dictionary<string, List<GameObject>>();
-        private Dictionary<string, List<GameObject>> _allObjects = new Dictionary<string, List<GameObject>>();
-        private Func<string,GameObject> _loadDelegate;
-
-        public FlaObjectsHolder(Func<string,GameObject> loadDelegate)
-        {
-            _loadDelegate = loadDelegate;
-        }
-
-        public GameObject GetFreeObject(string name)
-        {
+            var elementName = elementRaw.GetName();
             var freeList = default(List<GameObject>);
-            if (!_freeObjects.TryGetValue(name, out freeList))
+            if (!_freeObjects.TryGetValue(elementName, out freeList))
             {
                 freeList = new List<GameObject>();
-                _freeObjects.Add(name, freeList);
+                _freeObjects.Add(elementName, freeList);
             }
             var go = freeList.FirstOrDefault();
             if (go != null)
@@ -54,20 +31,46 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
             }
             else
             {
-                go = (GameObject)PrefabUtility.InstantiatePrefab(_loadDelegate(name));
+                if (elementRaw is FlaShapeRaw)
+                {
+                    go = (GameObject)PrefabUtility.InstantiatePrefab(AssetDataBaseUtility.LoadShape(elementName));
+                }
+                else if (elementRaw is FlaBitmapInstanceRaw)
+                {
+                    go = (GameObject)PrefabUtility.InstantiatePrefab(AssetDataBaseUtility.LoadBitmapInstance(elementName));
+                }
+                else if (elementRaw is FlaSymbolInstanceRaw)
+                {
+                    go = (GameObject)PrefabUtility.InstantiatePrefab(AssetDataBaseUtility.LoadSymbol(elementName));
+                }
+                else
+                {
+                    Debug.Log("some element cannot parce " + elementRaw);
+                }
+
                 var allList = default(List<GameObject>);
-                if (!_allObjects.TryGetValue(name, out allList))
+                if (!_allObjects.TryGetValue(elementName, out allList))
                 {
                     allList = new List<GameObject>();
-                    _allObjects.Add(name, allList);
+                    _allObjects.Add(elementName, allList);
                 }
-                go.name = name + "_" + allList.Count;
+                go.name = elementName + "_" + allList.Count;
                 allList.Add(go);
             }
             return go;
         }
 
-        public void ReleaseObject(GameObject @object)
+        public static GameObject GetBusyObject(FlaFrameElementRaw elementRaw)
+        {
+            return GetBusyObject(elementRaw.GetName());
+        }
+        public static GameObject GetBusyObject(string name)
+        {
+            var @object = _allObjects[name].FirstOrDefault(a => _freeObjects[name].All(f => a == f));
+            return @object;
+        }
+
+        public static void ReleaseObject(GameObject @object)
         {
             var objectName = _allObjects.Keys.FirstOrDefault(e => @object.name.ToLower().StartsWith(e.ToLower()));
             var freeList = default(List<GameObject>);
@@ -79,8 +82,27 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
             if (!freeList.Contains(@object))
                 freeList.Add(@object);
         }
+        
+        public static void ReleaseObject(FlaFrameElementRaw elementRaw)
+        {
+           ReleaseObject(elementRaw.GetName());
+        }
 
-        public void Clear()
+        public static void ReleaseObject(string objectName)
+        {
+            var freeList = default(List<GameObject>);
+            if (!_freeObjects.TryGetValue(objectName, out freeList))
+            {
+                freeList = new List<GameObject>();
+                _freeObjects.Add(objectName, freeList);
+            }
+            var @object = _allObjects[objectName].FirstOrDefault(a => _freeObjects[objectName].All(f => a == f));
+            if (!freeList.Contains(@object))
+                freeList.Add(@object);
+
+        }
+
+        public static void Clear()
         {
             if (_freeObjects != null)
             {
@@ -107,7 +129,7 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
             }
         }
 
-        public void ReleaseAll()
+        public static void ReleaseAll()
         {
             foreach (var key in _allObjects.Keys.ToList())
             {

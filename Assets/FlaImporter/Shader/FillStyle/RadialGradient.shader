@@ -9,7 +9,7 @@
 		{
 			"Queue"="Transparent"			
 			"IgnoreProjector"="True" 
-			"RenderType"="Transparent" 
+			"RenderType"="Transparent"
 		}
 
 		Cull Off

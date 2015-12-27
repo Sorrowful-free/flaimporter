@@ -146,7 +146,6 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
 
         private static IEnumerator ProcessFlaTimeLine(FlaTimeLineRaw timeLine, int frameRate, GameObject root)
         {
-
             yield return FlaTimeLineProcessor.ProcessFlaTimeLine(timeLine, root, frameRate).StartAsEditorCoroutine();
         }
 

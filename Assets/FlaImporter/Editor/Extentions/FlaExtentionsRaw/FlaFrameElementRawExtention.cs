@@ -1,4 +1,5 @@
-﻿using Assets.FlaImporter.Editor.Data.RawData.FrameElements;
+﻿using System;
+using Assets.FlaImporter.Editor.Data.RawData.FrameElements;
 using Assets.FlaImporter.Editor.Utils;
 using Assets.FlaImporter.FlaImporter.ColorAndFilersHolder.ColorTransform.Enums;
 using Assets.FlaImporter.FlaImporter.Transorm.Enums;
@@ -72,14 +73,14 @@ namespace Assets.FlaImporter.Editor.Extentions.FlaExtentionsRaw
                 case FlaTransformPropertyTypeEnum.SkewY:
                     return element.Matrix.Matrix.GetSkewY();
                 case FlaTransformPropertyTypeEnum.TransformPointX:
-                    if (element.CenterPoint3Dx != null && element.CenterPoint3Dx != 0)
+                    if (Math.Abs(element.CenterPoint3Dx) > 0.001f)
                     {
                         return element.CenterPoint3Dx/FlaExporterConstatns.PixelsPerUnits - element.Matrix.Matrix.GetPosition().x;
                     }
                     return element.TransformationPoint.Point.X/FlaExporterConstatns.PixelsPerUnits;
 
                 case FlaTransformPropertyTypeEnum.TransformPointY:
-                    if (element.CenterPoint3Dy != null && element.CenterPoint3Dy != 0)
+                    if (Math.Abs(element.CenterPoint3Dy) > 0.001f)
                     {
                         return (-element.CenterPoint3Dy/FlaExporterConstatns.PixelsPerUnits) - element.Matrix.Matrix.GetPosition().y;
                         ;
@@ -88,7 +89,6 @@ namespace Assets.FlaImporter.Editor.Extentions.FlaExtentionsRaw
                 default:
                     return 0;
             }
-            return 0;
         }
     }
 }

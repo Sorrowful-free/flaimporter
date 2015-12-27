@@ -6,9 +6,7 @@
 float _ShapeTweenDeltaKoef;
 const float PI = 3.14159;
 
-[PerRendererData]
 float4 _ColorMultipler = float4(1,0,0,1);
-[PerRendererData]
 float4 _ColorOffset = float4(1,0,0,1);
 
 

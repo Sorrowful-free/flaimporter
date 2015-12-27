@@ -6,7 +6,7 @@ namespace Assets.FlaImporter.Editor.Data.RawData.FrameElements
 {
     public class FlaFrameElementRaw
     {
-        [XmlElement("Matrix4X4")]
+        [XmlElement("matrix")]
         public FlaMatrixElemetRaw Matrix = new FlaMatrixElemetRaw();
 
         [XmlElement("transformationPoint")]

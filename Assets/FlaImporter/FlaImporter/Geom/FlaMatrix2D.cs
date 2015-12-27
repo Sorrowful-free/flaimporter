@@ -42,16 +42,16 @@ namespace Assets.FlaImporter.FlaImporter.Geom
             return _skew; // -a for convert angles to unity
         }
         
-
         public float GetAngle()
         {
             var skew = GetSkew();
+            //Debug.Log(string.Format("a={0},sx={1},sy={2}", (skew.x + skew.y) / 2.0f,skew.x,skew.y));
             return (skew.x + skew.y) / 2.0f;
         }
 
         public Vector2 GetPosition()
         {
-            _position.Set(TXTY.x / 100.0f, TXTY.y / 100.0f);
+            _position.Set(TXTY.x,-TXTY.y);
             return _position; // Vector2(,-flaMatrix.TY);//-ty for convert to unity
         }
 

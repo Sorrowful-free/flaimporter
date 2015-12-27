@@ -12,7 +12,8 @@ namespace Assets.FlaImporter.FlaImporter.Transorm
         
         public Vector2 TransformPoint;
 
-        public FlaMatrix2D Matrix2D;
+        public FlaMatrix2D Matrix2D = new FlaMatrix2D(new Vector4(1,0,0,1),Vector2.zero);
+        private float _lastRotation;
 
         private void LateUpdate()
         {
@@ -36,7 +37,8 @@ namespace Assets.FlaImporter.FlaImporter.Transorm
                 
                 if (TransformPoint != ZeroVec2d)
                 {
-                    var deltaAngle = rotation2d - rotation3d.z;
+                    var deltaAngle = rotation2d - transform.localEulerAngles.z;
+                    Debug.Log("deltaAngle rot" +deltaAngle);
                     var localToGlobal = transform.TransformPoint(TransformPoint);
                     transform.RotateAround(localToGlobal, ForwardVec, deltaAngle);
                 }
