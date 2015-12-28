@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using Assets.FlaImporter.Editor.Data.RawData;
 using Assets.FlaImporter.Editor.Extentions;
 using Assets.FlaImporter.Editor.Extentions.FlaExtentionsRaw;
 using Assets.FlaImporter.Editor.Utils;
 using Assets.FlaImporter.FlaImporter.ColorAndFilersHolder;
 using Assets.FlaImporter.FlaImporter.Transorm;
-using Assets.FlaImporter.FlaImporter.Transorm.Enums;
-using UnityEditor;
 using UnityEngine;
 
 namespace Assets.FlaImporter.Editor.FlaProcessors
@@ -29,18 +26,35 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
                     _propertyAnimations.Add(elementGO.name,propAnim);
                 }
                 var time = (float) ((float) frameRaw.Index/(float) framerate);
-                
-                Debug.Log("try record matrix "+ elementRaw.Matrix.Matrix);
-                propAnim.ABCD.Record(elementRaw.Matrix.Matrix.GetABCD(), time);
-                propAnim.TXTY.Record(elementRaw.Matrix.Matrix.GetTXTY()/FlaImporterConstatns.PixelsPerUnits, time);
-                var tranfrormPoint = new Vector2(elementRaw.GetTransformValueByPropertyType(FlaTransformPropertyTypeEnum.TransformPointX), elementRaw.GetTransformValueByPropertyType(FlaTransformPropertyTypeEnum.TransformPointY));
-                propAnim.TransformPoint.Record(tranfrormPoint, time);
 
-                propAnim.TXTY.Record(elementRaw.Matrix.Matrix.GetTXTY() / FlaImporterConstatns.PixelsPerUnits, time);
+                float index = frameRaw.Elements.IndexOf(elementRaw);
+
+                propAnim.Order.Record(index, time);
+                //RecordHelper(propAnim.Order.Record, time, index,0);
+               propAnim.Scale.Record(elementRaw.Matrix.Matrix.GetScale(), time);
+                //RecordHelper(propAnim.Scale.Record, time, elementRaw.Matrix.Matrix.GetScale(),Vector2.one);
+                propAnim.Position.Record(elementRaw.Matrix.Matrix.GetPosition(), time);
+               // RecordHelper(propAnim.Position.Record, time, elementRaw.Matrix.Matrix.GetPosition(), Vector2.zero);
+                propAnim.TransformPoint.Record(elementRaw.GetTransformPoint(), time);
+                //RecordHelper(propAnim.TransformPoint.Record, time, elementRaw.GetTransformPoint(),Vector2.zero);
+                propAnim.Rotation.Record(elementRaw.Matrix.Matrix.GetAngle(),time);
+                //RecordHelper(propAnim.Rotation.Record, time, elementRaw.Matrix.Matrix.GetAngle(),0);
+                propAnim.Skew.Record(elementRaw.Matrix.Matrix.GetSkew(), time);
+                //RecordHelper(propAnim.Skew.Record, time, elementRaw.Matrix.Matrix.GetSkew(),Vector2.zero);
                 propAnim.ColorMultipler.Record(elementRaw.Color.Color.GetColorMultipler(),time);
-                propAnim.ColorMultipler.Record(elementRaw.Color.Color.GetColorOffset(), time);
+               // RecordHelper(propAnim.ColorMultipler.Record, time, (Vector4)elementRaw.Color.Color.GetColorMultipler(),Vector4.one);
+                propAnim.ColorOffset.Record(elementRaw.Color.Color.GetColorOffset(), time);
+               // RecordHelper(propAnim.ColorOffset.Record, time, elementRaw.Color.Color.GetColorOffset(),Vector4.zero);
 
                 propAnim.Visible.Record(true,time);
+            }
+        }
+
+        private static void RecordHelper<TType>(Action<TType,float> recordFunction, float time,TType value, TType defaultValue) where TType : struct 
+        {
+            if (!Equals(value, defaultValue))
+            {
+                recordFunction(value,time);
             }
         }
 
@@ -49,16 +63,19 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
             foreach (var elementRaw in frameRaw.Elements)
             {
                 var elementGO = FlaObjectManager.GetBusyObject(elementRaw);
+                FlaObjectManager.ReleaseObject(elementGO);
+            }
+
+            foreach (var freeObject in FlaObjectManager.GetAllFreeObjects())
+            {
                 var propAnim = default(PropertyAnimationHolder);
-                if (!_propertyAnimations.TryGetValue(elementGO.name, out propAnim))
+                if (!_propertyAnimations.TryGetValue(freeObject.name, out propAnim))
                 {
-                    propAnim = new PropertyAnimationHolder(elementGO.name);
-                    _propertyAnimations.Add(elementGO.name, propAnim);
+                    propAnim = new PropertyAnimationHolder(freeObject.name);
+                    _propertyAnimations.Add(freeObject.name, propAnim);
                 }
                 var time = (float)((float)frameRaw.Index / (float)framerate);
-                
-                propAnim.Visible.Record(false, time);
-                FlaObjectManager.ReleaseObject(elementGO);
+             //   propAnim.Visible.Record(false, time);
             }
         }
 
@@ -80,86 +97,95 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
     public class PropertyAnimationHolder
     {
         public readonly string RelativePath;
-        public readonly Vector4Curve ColorOffset;
-        public readonly Vector4Curve ColorMultipler;
+        public readonly ColorCurve ColorOffset;
+        public readonly ColorCurve ColorMultipler;
 
-        public readonly Vector4Curve ABCD;
-        public readonly Vector2Curve TXTY;
-
+        public readonly FloatCurve Rotation;
+        public readonly FloatCurve Order;
+        public readonly Vector2Curve Position;
+        public readonly Vector2Curve Scale;
+        public readonly Vector2Curve Skew;
         public readonly Vector2Curve TransformPoint;
 
         public readonly BoolCurve Visible;
 
         public PropertyAnimationHolder(string relativePath)
         {
-            Debug.Log(string.Format("craete anim holder rp{0}",relativePath));
             RelativePath = relativePath;
-            ColorOffset = new Vector4Curve();
-            ColorMultipler = new Vector4Curve();
-            ABCD = new Vector4Curve();
-            TXTY = new Vector2Curve();
+            Order = new FloatCurve();
+            Rotation = new FloatCurve();
+            Position = new Vector2Curve();
+            Scale = new Vector2Curve();
+            Skew = new Vector2Curve();
+            ColorOffset = new ColorCurve();
+            ColorMultipler = new ColorCurve();
             TransformPoint = new Vector2Curve();
             Visible = new BoolCurve();
         }
 
         public void ApplyToClip(AnimationClip clip)
         {
-            ColorOffset.ApplyToClip(clip, typeof(FlaColorAndFiltersHolder), RelativePath, "_selfColorTransform.ColorOffset", false);
-            ColorMultipler.ApplyToClip(clip, typeof(FlaColorAndFiltersHolder), RelativePath, "_selfColorTransform.ColorMultipler", true);
+            ColorOffset.ApplyToClip(clip, typeof(FlaColorAndFiltersHolder), RelativePath, "_selfColorTransform.ColorOffset",false);
+            ColorMultipler.ApplyToClip(clip, typeof(FlaColorAndFiltersHolder), RelativePath, "_selfColorTransform.ColorMultipler",true);
 
-            ABCD.ApplyToClip(clip, typeof(FlaTransform), RelativePath, "Matrix2D.ABCD", false);
-            TXTY.ApplyToClip(clip, typeof(FlaTransform), RelativePath, "Matrix2D.TXTY");
-
+            Order.ApplyToClip(clip, typeof(FlaTransform), RelativePath, "Order");
+            Scale.ApplyToClip(clip, typeof(FlaTransform), RelativePath, "Scale");
+            Position.ApplyToClip(clip, typeof(FlaTransform), RelativePath, "Position");
             TransformPoint.ApplyToClip(clip, typeof(FlaTransform), RelativePath, "TransformPoint");
+            Rotation.ApplyToClip(clip, typeof(FlaTransform), RelativePath, "Rotation");
+            Skew.ApplyToClip(clip,typeof(FlaTransform),RelativePath,"Skew");
             
             Visible.ApplyToClip(clip,typeof(GameObject),RelativePath,"m_IsActive");
         }
     }
 
-    public class Vector4Curve
+    public class ColorCurve
     {
         
-        public readonly AnimationCurve X;
-        public readonly AnimationCurve Y;
-        public readonly AnimationCurve Z;
-        public readonly AnimationCurve W;
+        public readonly AnimationCurve R;
+        public readonly AnimationCurve G;
+        public readonly AnimationCurve B;
+        public readonly AnimationCurve A;
 
-        public Vector4Curve()
+        public ColorCurve()
         {
-            X = new AnimationCurve();
-            Y = new AnimationCurve();
-            Z = new AnimationCurve();
-            W = new AnimationCurve();
+            R = new AnimationCurve();
+            G = new AnimationCurve();
+            B = new AnimationCurve();
+            A = new AnimationCurve();
         }
 
         public void Record(Vector4 vector,float time)
         {
-            X.AddKey(time, vector.x);
-            Y.AddKey(time, vector.y);
-            Z.AddKey(time, vector.z);
-            W.AddKey(time, vector.w);
+            R.AddKey(time, vector.x);
+            G.AddKey(time, vector.y);
+            B.AddKey(time, vector.z);
+            A.AddKey(time, vector.w);
         }
 
         public Vector4 GetValue(int index)
         {
-            return new Vector4(X.keys[index].value, Y.keys[index].value, Z.keys[index].value, W.keys[index].value);
+            return new Vector4(R.keys[index].value, G.keys[index].value, B.keys[index].value, A.keys[index].value);
         }
 
-        public void ApplyToClip(AnimationClip clip, Type targetType,string relativePath,string propertyName, bool isColor)
+        public void ApplyToClip(AnimationClip clip, Type targetType,string relativePath,string propertyName,bool isColor)
         {
-            if (!isColor)
+            if (R.keys.Length > 0)
             {
-                clip.SetCurve(relativePath,targetType,propertyName+".x",X);
-                clip.SetCurve(relativePath,targetType,propertyName+".y",Y);
-                clip.SetCurve(relativePath,targetType,propertyName+".z",Z);
-                clip.SetCurve(relativePath,targetType,propertyName+".w",W);
-            }
-            else
-            {
-                clip.SetCurve(relativePath,targetType,propertyName+".r",X);
-                clip.SetCurve(relativePath,targetType,propertyName+".g",Y);
-                clip.SetCurve(relativePath,targetType,propertyName+".b",Z);
-                clip.SetCurve(relativePath,targetType,propertyName+".a",W);
+                if (isColor)
+                {
+                    clip.SetCurve(relativePath, targetType, propertyName + ".r", R);
+                    clip.SetCurve(relativePath, targetType, propertyName + ".g", G);
+                    clip.SetCurve(relativePath, targetType, propertyName + ".b", B);
+                    clip.SetCurve(relativePath, targetType, propertyName + ".a", A);   
+                }
+                else
+                {
+                    clip.SetCurve(relativePath, targetType, propertyName + ".x", R);
+                    clip.SetCurve(relativePath, targetType, propertyName + ".y", G);
+                    clip.SetCurve(relativePath, targetType, propertyName + ".z", B);
+                    clip.SetCurve(relativePath, targetType, propertyName + ".w", A);  
+                }
             }
         }
     }
@@ -189,8 +215,14 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
 
         public void ApplyToClip(AnimationClip clip, Type targetType, string relativePath, string propertyName)
         {
-            clip.SetCurve(relativePath, targetType, propertyName + ".x", X);
-            clip.SetCurve(relativePath, targetType, propertyName + ".y", Y);
+            if (X.keys.Length > 0)
+            {
+                X.SetCurveLinear();
+                Y.SetCurveLinear();
+                clip.SetCurve(relativePath, targetType, propertyName + ".x", X);
+                clip.SetCurve(relativePath, targetType, propertyName + ".y", Y);    
+            }
+            
         }
     }
 
@@ -216,8 +248,36 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
         public void ApplyToClip(AnimationClip clip, Type targetType,string relativePath,string propertyName)
         {
             Flag.SetCurveLinear();
-            AnimationUtility.
-            clip.SetCurve(relativePath, targetType, propertyName, Flag);
+            clip.SetCurve(relativePath, targetType, propertyName, Flag); 
+        }
+
+    }
+
+    public class FloatCurve
+    {
+        public readonly AnimationCurve Float;
+
+        public FloatCurve()
+        {
+            Float = new AnimationCurve();
+        }
+
+        public void Record(float value, float time)
+        {
+            Float.AddKey(time, value);
+        }
+
+        public bool GetValue(int index)
+        {
+            return Float.keys[index].value > 0;
+        }
+
+        public void ApplyToClip(AnimationClip clip, Type targetType, string relativePath, string propertyName)
+        {
+            if (Float.keys.Length > 0)
+            {
+                clip.SetCurve(relativePath, targetType, propertyName, Float);
+            }
         }
 
     }

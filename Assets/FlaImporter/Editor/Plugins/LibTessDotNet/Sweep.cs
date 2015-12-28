@@ -581,7 +581,7 @@ namespace Assets.FlaImporter.Editor.Plugins.LibTessDotNet
             // rightmost origin (which should rarely happen), it can cause
             // unbelievable inefficiency on sufficiently degenerate inputs.
             // (If you have the test program, try running test54.d with the
-            // "X zoom" option turned on).
+            // "R zoom" option turned on).
             var orgMin = Geom.VertLeq(orgUp, orgLo) ? orgUp : orgLo;
             if (Geom.VertLeq(orgMin, isect))
             {

@@ -17,6 +17,7 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
       
         public static GameObject GetFreeObject(FlaFrameElementRaw elementRaw)
         {
+            //Debug.Log(string.Format("{0} - try get object:{1}", DateTime.Now.Ticks, elementRaw.GetName()));
             var elementName = elementRaw.GetName();
             var freeList = default(List<GameObject>);
             if (!_freeObjects.TryGetValue(elementName, out freeList))
@@ -55,6 +56,7 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
                     _allObjects.Add(elementName, allList);
                 }
                 go.name = elementName + "_" + allList.Count;
+                
                 allList.Add(go);
             }
             return go;
@@ -64,14 +66,25 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
         {
             return GetBusyObject(elementRaw.GetName());
         }
+
         public static GameObject GetBusyObject(string name)
         {
-            var @object = _allObjects[name].FirstOrDefault(a => _freeObjects[name].All(f => a == f));
+            var @object = _allObjects[name].FirstOrDefault(a => _freeObjects[name].All(f => a != f));
             return @object;
+        }
+
+        public static List<GameObject> GetAllFreeObjects()
+        {
+            return _freeObjects.SelectMany(e => e.Value).ToList();
         }
 
         public static void ReleaseObject(GameObject @object)
         {
+            //Debug.Log(string.Format("{0} - release object:{1}",DateTime.Now.Ticks,@object.name));
+            if (@object == null)
+            {
+                return;
+            }
             var objectName = _allObjects.Keys.FirstOrDefault(e => @object.name.ToLower().StartsWith(e.ToLower()));
             var freeList = default(List<GameObject>);
             if (!_freeObjects.TryGetValue(objectName, out freeList))
@@ -96,7 +109,7 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
                 freeList = new List<GameObject>();
                 _freeObjects.Add(objectName, freeList);
             }
-            var @object = _allObjects[objectName].FirstOrDefault(a => _freeObjects[objectName].All(f => a == f));
+            var @object = _allObjects[objectName].FirstOrDefault(a => _freeObjects[objectName].All(f => a != f));
             if (!freeList.Contains(@object))
                 freeList.Add(@object);
 

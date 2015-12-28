@@ -8,12 +8,18 @@ namespace Assets.FlaImporter.Editor.Utils
     {
         public static float GetSkewX(this FlaMatrixRaw flaMatrix)
         {
-            return (float)(Math.Atan(-flaMatrix.B/flaMatrix.A)*180/Math.PI);// -a for convert angles to unity
+
+            return Mathf.Atan(-flaMatrix.B / flaMatrix.A) * (180.0f / Mathf.PI); 
         }
 
         public static float GetSkewY(this FlaMatrixRaw flaMatrix)
         {
-            return (float)(Math.Atan(flaMatrix.C / flaMatrix.D)*180/Math.PI); //-d for convert angles to unity
+            return Mathf.Atan(flaMatrix.C / flaMatrix.D) * (180.0f / Mathf.PI); 
+        }
+
+        public static Vector2 GetSkew(this FlaMatrixRaw flaMatrix)
+        {
+            return new Vector2(flaMatrix.GetSkewX(),flaMatrix.GetSkewY());
         }
 
         public static float GetAngle(this FlaMatrixRaw flaMatrix)

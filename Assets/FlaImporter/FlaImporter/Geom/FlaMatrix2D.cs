@@ -38,7 +38,7 @@ namespace Assets.FlaImporter.FlaImporter.Geom
 
         public Vector2 GetSkew()
         {
-            _skew.Set((float)(Math.Atan(-ABCD.y / ABCD.x) * 180 / Math.PI), (float)(Math.Atan(ABCD.z / ABCD.w) * 180 / Math.PI));
+            _skew.Set(-Mathf.Asin(ABCD.z) * (180.0f / Mathf.PI), Mathf.Asin(ABCD.y) * (180.0f / Mathf.PI));
             return _skew; // -a for convert angles to unity
         }
         
@@ -55,12 +55,12 @@ namespace Assets.FlaImporter.FlaImporter.Geom
             return _position; // Vector2(,-flaMatrix.TY);//-ty for convert to unity
         }
 
-        public Vector2 GetScale()
+        public Vector2 GetScale() 
         {
-            var sx = (float) Math.Sqrt(Math.Pow(ABCD.x, 2) + Math.Pow(ABCD.z, 2));
-            var sy = (float) Math.Sqrt(Math.Pow(ABCD.y, 2) + Math.Pow(ABCD.w, 2));
+            var sx = Mathf.Sqrt(Mathf.Pow(ABCD.x, 2) + Mathf.Pow(ABCD.z, 2));
+            var sy = Mathf.Sqrt(Mathf.Pow(ABCD.y, 2) + Mathf.Pow(ABCD.w, 2));
             _scale.Set(sx,sy);
-            return _scale;
+            return new Vector2(sx,sy);
         }
     }
 }

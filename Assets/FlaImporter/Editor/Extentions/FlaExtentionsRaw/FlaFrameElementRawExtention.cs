@@ -3,6 +3,7 @@ using Assets.FlaImporter.Editor.Data.RawData.FrameElements;
 using Assets.FlaImporter.Editor.Utils;
 using Assets.FlaImporter.FlaImporter.ColorAndFilersHolder.ColorTransform.Enums;
 using Assets.FlaImporter.FlaImporter.Transorm.Enums;
+using UnityEngine;
 
 namespace Assets.FlaImporter.Editor.Extentions.FlaExtentionsRaw
 {
@@ -19,6 +20,31 @@ namespace Assets.FlaImporter.Editor.Extentions.FlaExtentionsRaw
                 return ((FlaBaseInstanceRaw)element).LibraryItemName;
             }
             return "";
+        }
+
+        public static Vector2 GetTransformPoint(this FlaFrameElementRaw element)
+        {
+            var tpx = 0.0f;
+            var tpy = 0.0f;
+
+            if (Math.Abs(element.CenterPoint3Dx) > 0.001f)
+            {
+                tpx = element.CenterPoint3Dx/FlaExporterConstatns.PixelsPerUnits - element.Matrix.Matrix.GetPosition().x;
+            }
+            else
+            {
+                tpx = element.TransformationPoint.Point.X / FlaExporterConstatns.PixelsPerUnits;
+            }
+
+            if (Math.Abs(element.CenterPoint3Dy) > 0.001f)
+            {
+                tpy = -((element.CenterPoint3Dy / FlaExporterConstatns.PixelsPerUnits) - element.Matrix.Matrix.GetPosition().y);
+            }
+            else
+            {
+                tpy = -element.TransformationPoint.Point.Y / FlaExporterConstatns.PixelsPerUnits;
+            }
+            return new Vector2(tpx,tpy);
         }
 
         public static float GetColorValueByPropertyType(this FlaFrameElementRaw element,FlaColorTransformPropertyTypeEnum propertyType)
@@ -85,7 +111,7 @@ namespace Assets.FlaImporter.Editor.Extentions.FlaExtentionsRaw
                         return (-element.CenterPoint3Dy/FlaExporterConstatns.PixelsPerUnits) - element.Matrix.Matrix.GetPosition().y;
                         ;
                     }
-                    return element.TransformationPoint.Point.Y/FlaExporterConstatns.PixelsPerUnits;
+                    return -element.TransformationPoint.Point.Y/FlaExporterConstatns.PixelsPerUnits;
                 default:
                     return 0;
             }

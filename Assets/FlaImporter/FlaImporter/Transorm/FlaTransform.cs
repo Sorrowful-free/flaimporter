@@ -1,5 +1,4 @@
-﻿using Assets.FlaImporter.FlaImporter.Geom;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Assets.FlaImporter.FlaImporter.Transorm
 {
@@ -7,46 +6,77 @@ namespace Assets.FlaImporter.FlaImporter.Transorm
     public class FlaTransform : MonoBehaviour
     {
         private static readonly Vector2 ZeroVec2d = Vector2.zero;
-        private static readonly Vector3 ForwardVec  = Vector3.forward;
+        private static readonly Vector3 ForwardVec = Vector3.forward;
 
-        
-        public Vector2 TransformPoint;
+        [SerializeField] public float Rotation = 0;
+        private float _oldRotation;
 
-        public FlaMatrix2D Matrix2D = new FlaMatrix2D(new Vector4(1,0,0,1),Vector2.zero);
-        private float _lastRotation;
+        [SerializeField]
+        public float Order = 0;
+        private float _oldOrder;
+
+        [SerializeField] public Vector2 Position = Vector2.zero;
+        private Vector2 _oldPosition = Vector2.zero;
+
+        [SerializeField] public Vector2 Scale = Vector2.one;
+        private Vector2 _oldScale = Vector2.one;
+
+        [SerializeField] public Vector2 Skew = Vector2.zero;
+        private Vector2 _oldSkew = Vector2.zero;
+
+        [SerializeField] public Vector2 TransformPoint = Vector2.zero;
+        private Vector2 _oldTransformPoint = Vector2.zero;
+
+        private void OnEnable()
+        {
+            LateUpdate();
+        }
 
         private void LateUpdate()
         {
-            if (Matrix2D.UpdateMatrix())
+            if (_oldScale != Scale)
             {
-                var scale2d = Matrix2D.GetScale();
-                var scale3d = transform.localScale;
-                scale3d.x = scale2d.x;
-                scale3d.y = scale2d.y;
-                transform.localScale = scale3d;
+                var scale = transform.localScale;
+                scale.x = Scale.x;
+                scale.y = Scale.y;
+                transform.localScale = scale;
+                _oldScale = Scale;
+            }
 
-                var position2d = Matrix2D.GetPosition();
-                var position3d = transform.localPosition;
-                position3d.x = position2d.x;
-                position3d.y = position2d.y;
-                transform.localPosition = position3d;
+            if (_oldPosition != Position)
+            {
+                var oldPosition = transform.localPosition;
+                oldPosition.x = Position.x;
+                oldPosition.y = Position.y;
+                transform.localPosition = oldPosition;
+                _oldPosition = Position;
+            }
 
-                var rotation2d = Matrix2D.GetAngle();
-                var rotation3d = transform.localEulerAngles;
-                rotation3d.z = rotation2d;
-                
+            if (_oldRotation != Rotation || TransformPoint != _oldTransformPoint)
+            {
                 if (TransformPoint != ZeroVec2d)
                 {
-                    var deltaAngle = rotation2d - transform.localEulerAngles.z;
-                    Debug.Log("deltaAngle rot" +deltaAngle);
+                    var deltaAngle = Rotation - transform.eulerAngles.z;
                     var localToGlobal = transform.TransformPoint(TransformPoint);
                     transform.RotateAround(localToGlobal, ForwardVec, deltaAngle);
+                    Position = _oldPosition = transform.position;
+                    _oldTransformPoint = TransformPoint;
                 }
                 else
                 {
-                    transform.localEulerAngles = rotation3d;
+                    transform.localEulerAngles = ForwardVec*Rotation;
                 }
+                _oldRotation = Rotation;
             }
+
+            if (Order != _oldOrder)
+            {
+                var oldPosition = transform.localPosition;
+                _oldOrder = oldPosition.z = Order;
+                transform.localPosition = oldPosition;
+                _oldPosition = Position;
+            }
+               
         }
     }
 }
