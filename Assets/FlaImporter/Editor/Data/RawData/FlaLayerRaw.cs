@@ -32,8 +32,8 @@ namespace Assets.FlaImporter.Editor.Data.RawData
         [XmlAttribute("layerType")]
         public string LayerType;
 
-        [XmlAttribute("parentLayerIndex")]
-        public int ParentLayerIndex;
+        [XmlAttribute("parentLayerIndex")] 
+        public int ParentLayerIndex = -1;
 
         [XmlArray("frames")] 
         [XmlArrayItem("DOMFrame")] 

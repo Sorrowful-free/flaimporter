@@ -4,6 +4,9 @@ using System.Linq;
 using Assets.FlaImporter.Editor.Data.RawData.FrameElements;
 using Assets.FlaImporter.Editor.Extentions.FlaExtentionsRaw;
 using Assets.FlaImporter.Editor.Utils;
+using Assets.FlaImporter.FlaImporter.ColorAndFilersHolder;
+using Assets.FlaImporter.FlaImporter.Transorm;
+using Assets.FlaImporter.FlaImporter.Transorm.Enums;
 using UnityEditor;
 using UnityEngine;
 
@@ -15,7 +18,7 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
         private static readonly Dictionary<string, List<GameObject>> _freeObjects = new Dictionary<string, List<GameObject>>();
         private static readonly Dictionary<string, List<GameObject>> _allObjects = new Dictionary<string, List<GameObject>>();
       
-        public static GameObject GetFreeObject(FlaFrameElementRaw elementRaw)
+        public static GameObject GetFreeObject(FlaFrameElementRaw elementRaw,Action<GameObject> instaceCallBack = null)
         {
             //Debug.Log(string.Format("{0} - try get object:{1}", DateTime.Now.Ticks, elementRaw.GetName()));
             var elementName = elementRaw.GetName();
@@ -25,7 +28,7 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
                 freeList = new List<GameObject>();
                 _freeObjects.Add(elementName, freeList);
             }
-            var go = freeList.FirstOrDefault();
+            var go = freeList.OrderBy(e => e.name).FirstOrDefault();
             if (go != null)
             {
                 freeList.Remove(go);
@@ -55,9 +58,18 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
                     allList = new List<GameObject>();
                     _allObjects.Add(elementName, allList);
                 }
-                go.name = elementName + "_" + allList.Count;
+                var instanceNumber = allList.Count.ToString();
+                while (instanceNumber.Length<=3)
+                {
+                    instanceNumber = "0" + instanceNumber;
+                }
+                go.name = elementName + "_" + instanceNumber;
                 
                 allList.Add(go);
+                if (instaceCallBack != null)
+                {
+                    instaceCallBack(go);
+                }
             }
             return go;
         }
@@ -69,7 +81,7 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
 
         public static GameObject GetBusyObject(string name)
         {
-            var @object = _allObjects[name].FirstOrDefault(a => _freeObjects[name].All(f => a != f));
+            var @object = _allObjects[name].OrderBy(e=>e.name).FirstOrDefault(a => _freeObjects[name].All(f => a != f));
             return @object;
         }
 
@@ -80,12 +92,20 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
 
         public static void ReleaseObject(GameObject @object)
         {
-            //Debug.Log(string.Format("{0} - release object:{1}",DateTime.Now.Ticks,@object.name));
+          //  Debug.Log(string.Format("{0} - release object:{1}",DateTime.Now.Ticks,@object == null?"null!":@object.name));
             if (@object == null)
             {
                 return;
             }
-            var objectName = _allObjects.Keys.FirstOrDefault(e => @object.name.ToLower().StartsWith(e.ToLower()));
+
+            var objectName = _allObjects.Keys.FirstOrDefault(key =>
+            {
+                var subObjectName = @object.name.ToLower();
+                var lastUnderlineIndex = subObjectName.LastIndexOf("_");
+                var substring = subObjectName.Substring(0, lastUnderlineIndex);
+                //Debug.Log("sub string is "+substring +" and key is "+key );
+                return substring == key.ToLower();
+            });
             var freeList = default(List<GameObject>);
             if (!_freeObjects.TryGetValue(objectName, out freeList))
             {
@@ -98,21 +118,14 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
         
         public static void ReleaseObject(FlaFrameElementRaw elementRaw)
         {
-           ReleaseObject(elementRaw.GetName());
+            var @object = GetBusyObject(elementRaw);
+            ReleaseObject(@object);
         }
 
         public static void ReleaseObject(string objectName)
         {
-            var freeList = default(List<GameObject>);
-            if (!_freeObjects.TryGetValue(objectName, out freeList))
-            {
-                freeList = new List<GameObject>();
-                _freeObjects.Add(objectName, freeList);
-            }
-            var @object = _allObjects[objectName].FirstOrDefault(a => _freeObjects[objectName].All(f => a != f));
-            if (!freeList.Contains(@object))
-                freeList.Add(@object);
-
+            var @object = GetBusyObject(objectName);
+            ReleaseObject(@object);
         }
 
         public static void Clear()

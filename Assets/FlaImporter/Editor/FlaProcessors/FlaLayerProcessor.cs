@@ -1,6 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using Assets.FlaImporter.Editor.Data.RawData;
 using Assets.FlaImporter.Editor.EditorCoroutine;
 using UnityEngine;

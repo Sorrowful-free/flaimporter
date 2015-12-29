@@ -59,6 +59,9 @@ namespace Assets.FlaImporter.FlaImporter.ColorAndFilersHolder
             }
         }
 
+        public FlaColorAndFiltersHolderType Type = FlaColorAndFiltersHolderType.Simple;
+        public int DependenceId = -1;
+
         public void AddChild(FlaColorAndFiltersHolder child)
         {
             if (_childs == null)
@@ -128,5 +131,14 @@ namespace Assets.FlaImporter.FlaImporter.ColorAndFilersHolder
             }
         }
 
+    }
+
+    public enum FlaColorAndFiltersHolderType
+    {
+        Simple,
+        Mask,
+        Masked,
+        Guid,
+        Guided
     }
 }

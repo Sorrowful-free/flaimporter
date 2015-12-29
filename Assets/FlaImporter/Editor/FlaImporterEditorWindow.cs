@@ -7,17 +7,34 @@ namespace Assets.FlaImporter.Editor
 {
     public class FlaImporterEditorWindow : EditorWindow
     {
+
+        [MenuItem("Assets/Convert Selection FLA")]
+        public static void ConvertSelection()
+        {
+            var path = AssetDatabase.GetAssetPath(Selection.activeObject);
+            Debug.Log("proccess path "+path);
+            Instance.ProcessPath(path);
+        }
+
         private static FlaImporterEditorWindow _instance;
+
+        private static FlaImporterEditorWindow Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = CreateInstance<FlaImporterEditorWindow>();
+                    _instance.titleContent = new GUIContent("FlaImporter");
+                }
+                return _instance;
+            }
+        }
         [MenuItem("FlaImporter/FlaImporter")]
         public static void ShowWindow()
         {
-            if (_instance == null)
-            {
-                _instance = CreateInstance<FlaImporterEditorWindow>();
-                _instance.titleContent = new GUIContent("FlaImporter");
-            }
-            _instance.Show();
-            _instance.Focus();
+            Instance.Show();
+            Instance.Focus();
         }
         
         private void OnGUI()

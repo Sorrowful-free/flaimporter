@@ -56,6 +56,7 @@
      <Compile Include="Assets\FlaImporter\FlaImporter\Renderer\FillStyles\FlaFillStyle.cs" />
      <Compile Include="Assets\FlaImporter\FlaImporter\Renderer\FlaEdge.cs" />
      <Compile Include="Assets\FlaImporter\FlaImporter\Renderer\FlaShape.cs" />
+     <Compile Include="Assets\FlaImporter\FlaImporter\TestSortString.cs" />
      <Compile Include="Assets\FlaImporter\FlaImporter\Transorm\Enums\FlaTransformPropertyTypeEnum.cs" />
      <Compile Include="Assets\FlaImporter\FlaImporter\Transorm\FlaTransform.cs" />
      <None Include="Assets\FlaImporter\Shader\FillStyle\RadialGradient.shader" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Assets.FlaImporter.Editor.Data.RawData;
 using Assets.FlaImporter.Editor.Extentions;
 using Assets.FlaImporter.Editor.Extentions.FlaExtentionsRaw;
@@ -14,7 +15,7 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
     {
 
         private readonly static Dictionary<string, PropertyAnimationHolder> _propertyAnimations = new Dictionary<string, PropertyAnimationHolder>();
-        public static void RecordFrameElements(FlaFrameRaw frameRaw, int framerate = 30)
+        public static void RecordFrameElements(FlaFrameRaw frameRaw, string layerName, int framerate = 30)
         {
             foreach (var elementRaw in frameRaw.Elements)
             {
@@ -22,7 +23,7 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
                 var propAnim = default(PropertyAnimationHolder);
                 if (!_propertyAnimations.TryGetValue(elementGO.name,out propAnim))
                 {
-                    propAnim = new PropertyAnimationHolder(elementGO.name);
+                    propAnim = new PropertyAnimationHolder(layerName+"/"+elementGO.name);
                     _propertyAnimations.Add(elementGO.name,propAnim);
                 }
                 var time = (float) ((float) frameRaw.Index/(float) framerate);
@@ -31,10 +32,10 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
 
                 propAnim.Order.Record(index, time);
                 //RecordHelper(propAnim.Order.Record, time, index,0);
-               propAnim.Scale.Record(elementRaw.Matrix.Matrix.GetScale(), time);
+                propAnim.Scale.Record(elementRaw.Matrix.Matrix.GetScale(), time);
                 //RecordHelper(propAnim.Scale.Record, time, elementRaw.Matrix.Matrix.GetScale(),Vector2.one);
                 propAnim.Position.Record(elementRaw.Matrix.Matrix.GetPosition(), time);
-               // RecordHelper(propAnim.Position.Record, time, elementRaw.Matrix.Matrix.GetPosition(), Vector2.zero);
+                // RecordHelper(propAnim.Position.Record, time, elementRaw.Matrix.Matrix.GetPosition(), Vector2.zero);
                 propAnim.TransformPoint.Record(elementRaw.GetTransformPoint(), time);
                 //RecordHelper(propAnim.TransformPoint.Record, time, elementRaw.GetTransformPoint(),Vector2.zero);
                 propAnim.Rotation.Record(elementRaw.Matrix.Matrix.GetAngle(),time);
@@ -42,11 +43,16 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
                 propAnim.Skew.Record(elementRaw.Matrix.Matrix.GetSkew(), time);
                 //RecordHelper(propAnim.Skew.Record, time, elementRaw.Matrix.Matrix.GetSkew(),Vector2.zero);
                 propAnim.ColorMultipler.Record(elementRaw.Color.Color.GetColorMultipler(),time);
-               // RecordHelper(propAnim.ColorMultipler.Record, time, (Vector4)elementRaw.Color.Color.GetColorMultipler(),Vector4.one);
+                // RecordHelper(propAnim.ColorMultipler.Record, time, (Vector4)elementRaw.Color.Color.GetColorMultipler(),Vector4.one);
                 propAnim.ColorOffset.Record(elementRaw.Color.Color.GetColorOffset(), time);
-               // RecordHelper(propAnim.ColorOffset.Record, time, elementRaw.Color.Color.GetColorOffset(),Vector4.zero);
+                // RecordHelper(propAnim.ColorOffset.Record, time, elementRaw.Color.Color.GetColorOffset(),Vector4.zero);
 
-                propAnim.Visible.Record(true,time);
+                var lastValue = propAnim.Visible.GetLastValue();
+                if (!lastValue)
+                {
+                    propAnim.Visible.Record(true, time);
+                }
+                    
             }
         }
 
@@ -63,20 +69,25 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
             foreach (var elementRaw in frameRaw.Elements)
             {
                 var elementGO = FlaObjectManager.GetBusyObject(elementRaw);
+
+                //var propAnim = default(PropertyAnimationHolder);
+                //if (!_propertyAnimations.TryGetValue(elementGO.name, out propAnim))
+                //{
+                //    propAnim = new PropertyAnimationHolder(elementGO.name);
+                //    _propertyAnimations.Add(elementGO.name, propAnim);
+                //}
+                //var time = (float)((float)(frameRaw.Index + frameRaw.Duration - 1) / (float)framerate);
+                //var time = (float)((float)(frameRaw.Index + frameRaw.Duration - 1) / (float)framerate);
+                //var lastValue = propAnim.Visible.GetLastValue();
+                //if (lastValue)
+                //{
+                //    propAnim.Visible.Record(false, time);
+                //    //propAnim.Visible.Record(false, time);
+                //}
+
                 FlaObjectManager.ReleaseObject(elementGO);
             }
 
-            foreach (var freeObject in FlaObjectManager.GetAllFreeObjects())
-            {
-                var propAnim = default(PropertyAnimationHolder);
-                if (!_propertyAnimations.TryGetValue(freeObject.name, out propAnim))
-                {
-                    propAnim = new PropertyAnimationHolder(freeObject.name);
-                    _propertyAnimations.Add(freeObject.name, propAnim);
-                }
-                var time = (float)((float)frameRaw.Index / (float)framerate);
-             //   propAnim.Visible.Record(false, time);
-            }
         }
 
         public static void ApplyToClip(AnimationClip clip)
@@ -170,7 +181,7 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
 
         public void ApplyToClip(AnimationClip clip, Type targetType,string relativePath,string propertyName,bool isColor)
         {
-            if (R.keys.Length > 0)
+            if (R.keys.Length > 1)
             {
                 if (isColor)
                 {
@@ -215,14 +226,13 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
 
         public void ApplyToClip(AnimationClip clip, Type targetType, string relativePath, string propertyName)
         {
-            if (X.keys.Length > 0)
+            if (X.keys.Length > 1)
             {
                 X.SetCurveLinear();
                 Y.SetCurveLinear();
                 clip.SetCurve(relativePath, targetType, propertyName + ".x", X);
                 clip.SetCurve(relativePath, targetType, propertyName + ".y", Y);    
             }
-            
         }
     }
 
@@ -240,15 +250,19 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
             Flag.AddKey(time, !value?0:1);
         }
 
-        public bool GetValue(int index)
+        public bool GetLastValue()
         {
-            return Flag.keys[index].value > 0;
+            return Flag.keys.LastOrDefault().value > 0;
         }
 
         public void ApplyToClip(AnimationClip clip, Type targetType,string relativePath,string propertyName)
         {
-            Flag.SetCurveLinear();
-            clip.SetCurve(relativePath, targetType, propertyName, Flag); 
+            if (Flag.keys.Length > 1)
+            {
+                Flag.SetCurveLinear();
+                clip.SetCurve(relativePath, targetType, propertyName, Flag);     
+            }
+            
         }
 
     }
@@ -267,15 +281,16 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
             Float.AddKey(time, value);
         }
 
-        public bool GetValue(int index)
+        public float GetValue(int index)
         {
-            return Float.keys[index].value > 0;
+            return Float.keys[index].value;
         }
 
         public void ApplyToClip(AnimationClip clip, Type targetType, string relativePath, string propertyName)
         {
-            if (Float.keys.Length > 0)
+            if (Float.keys.Length > 1)
             {
+                Float.SetCurveLinear();
                 clip.SetCurve(relativePath, targetType, propertyName, Float);
             }
         }
