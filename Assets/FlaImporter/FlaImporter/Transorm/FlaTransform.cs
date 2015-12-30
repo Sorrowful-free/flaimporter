@@ -34,26 +34,18 @@ namespace Assets.FlaImporter.FlaImporter.Transorm
 
         private void LateUpdate()
         {
-            if (_oldScale != Scale)
-            {
-                var scale = transform.localScale;
-                scale.x = Scale.x;
-                scale.y = Scale.y;
-                transform.localScale = scale;
-                _oldScale = Scale;
-            }
 
-            if (_oldPosition != Position)
+            if (_oldPosition != Position || _oldRotation != Rotation || TransformPoint != _oldTransformPoint || _oldScale != Scale)
             {
                 var oldPosition = transform.localPosition;
                 oldPosition.x = Position.x;
                 oldPosition.y = Position.y;
                 transform.localPosition = oldPosition;
                 _oldPosition = Position;
-            }
+           // }
 
-            if (_oldRotation != Rotation || TransformPoint != _oldTransformPoint)
-            {
+           // if (_oldRotation != Rotation || TransformPoint != _oldTransformPoint)
+          //  {
                 if (TransformPoint != ZeroVec2d)
                 {
                     var deltaAngle = Rotation - transform.eulerAngles.z;
@@ -64,18 +56,27 @@ namespace Assets.FlaImporter.FlaImporter.Transorm
                 }
                 else
                 {
-                    transform.localEulerAngles = ForwardVec*Rotation;
+                    transform.localEulerAngles = ForwardVec * Rotation;
                 }
                 _oldRotation = Rotation;
-            }
+           // }
 
-            if (Order != _oldOrder)
-            {
-                var oldPosition = transform.localPosition;
-                _oldOrder = oldPosition.z = Order;
-                transform.localPosition = oldPosition;
-                _oldPosition = Position;
+          //  if (_oldScale != Scale)
+           // {
+                var scale = transform.localScale;
+                scale.x = Scale.x;
+                scale.y = Scale.y;
+                transform.localScale = scale;
+                _oldScale = Scale;
             }
+            
+            //if (Order != _oldOrder)
+            //{
+            //    var oldPosition = transform.localPosition;
+            //    _oldOrder = oldPosition.z = Order;
+            //    transform.localPosition = oldPosition;
+            //    _oldPosition = Position;
+            //}
                
         }
     }

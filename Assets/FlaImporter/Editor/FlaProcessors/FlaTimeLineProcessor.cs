@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Assets.FlaImporter.Editor.Data.RawData;
 using Assets.FlaImporter.Editor.Data.RawData.FrameElements;
-using Assets.FlaImporter.Editor.Extentions;
 using Assets.FlaImporter.Editor.Extentions.FlaExtentionsRaw;
 using Assets.FlaImporter.Editor.Utils;
 using Assets.FlaImporter.FlaImporter.ColorAndFilersHolder;
@@ -17,7 +16,6 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
     public static class FlaTimeLineProcessor
     {
 
-
         private static int GetLayerIndex(List<FlaLayerRaw> layers, FlaFrameElementRaw element)
         {
             var index = -1;
@@ -28,7 +26,7 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
 
         public static IEnumerator ProcessFlaTimeLine(FlaTimeLineRaw flaTimeLine, GameObject rootGO,int frameRate)
         {
-            FlaObjectManager.Clear();
+            FlaObjectManager.ClearAll();
             FlaAnimationRecorder.Clear();
 
             #region instances Parse
@@ -47,21 +45,26 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
             
             foreach (var layerRaw in flaTimeLine.Layers)
             {
-                FlaObjectManager.Clear();
-                FlaAnimationRecorder.Clear();
-                var layerGO = new GameObject(layerRaw.Name);
-                var _lastFrame = default(FlaFrameRaw);
+                
+                var lastFrames = default(FlaFrameRaw);
+                var layerIndex = flaTimeLine.Layers.IndexOf(layerRaw);
                 foreach (var frameRaw in layerRaw.Frames)
                 {
-                    if (_lastFrame != null)
-                    {
-                        FlaAnimationRecorder.ReleaseFrameElements(_lastFrame, frameRate);    
-                    }
-#region process elements
+                    var time = (float) frameRaw.Index/(float) frameRate;
+
+                    //if (_lastFrame != null)
+                    //{
+                    //    FlaAnimationRecorder.ReleaseFrameElements(,_lastFrame, frameRate);
+                    //    foreach (var frameRaw in _lastFrame)
+                    //    {
+                            
+                    //    }
+                    //}
                     foreach (var elementRaw in frameRaw.Elements)
                     {
-                        var elementGO = FlaObjectManager.GetFreeObject(elementRaw, (instance) =>
+                        var elementGO = FlaObjectManager.GetFreeObject(elementRaw, layerIndex, (instance) =>
                         {
+#region InstanceObjects 
                             var transform = instance.GetComponent<FlaTransform>();
                             transform.TransformPoint =
                                 new Vector2(
@@ -133,16 +136,15 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
                             position.z = GetLayerIndex(flaTimeLine.Layers, elementRaw);
                             instance.transform.position = position;
 
-                            instance.transform.SetParent(layerGO.transform, false);
+                            instance.transform.SetParent(rootGO.transform, false);
+#endregion
                         });
+                        FlaAnimationRecorder.RecordFrameElement(elementGO.name, elementRaw, time);
                         
                     }
-#endregion
-                    FlaObjectManager.ReleaseAll();
-                    FlaAnimationRecorder.RecordFrameElements(frameRaw,layerRaw.Name, frameRate);
-                    _lastFrame = _lastFrame;
+                    FlaObjectManager.ReleaseAll(layerIndex);
                 }
-                layerGO.transform.SetParent(rootGO.transform,false);
+                //layerGO.transform.SetParent(rootGO.transform,false);
                 FlaAnimationRecorder.ApplyToClip(animationClip);
             }
             var scale = rootGO.transform.localScale;

@@ -9,12 +9,12 @@ namespace Assets.FlaImporter.Editor.Utils
         public static float GetSkewX(this FlaMatrixRaw flaMatrix)
         {
 
-            return Mathf.Atan(-flaMatrix.B / flaMatrix.A) * (180.0f / Mathf.PI); 
+            return Mathf.Atan2(-flaMatrix.B , flaMatrix.A) * (180.0f / Mathf.PI); 
         }
 
         public static float GetSkewY(this FlaMatrixRaw flaMatrix)
         {
-            return Mathf.Atan(flaMatrix.C / flaMatrix.D) * (180.0f / Mathf.PI); 
+            return Mathf.Atan2(flaMatrix.C , flaMatrix.D) * (180.0f / Mathf.PI); 
         }
 
         public static Vector2 GetSkew(this FlaMatrixRaw flaMatrix)

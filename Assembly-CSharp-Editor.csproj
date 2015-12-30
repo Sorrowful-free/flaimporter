@@ -146,6 +146,7 @@
      <Compile Include="Assets\FlaImporter\Editor\Utils\FolderAndFileUtils.cs" />
      <None Include="Assets\FlaImporter\Shader\FillStyle\RadialGradient.shader" />
      <None Include="Assets\FlaImporter\Shader\FillStyle\SolidColor.shader" />
+     <None Include="Assets\FlaImporter\Shader\TestShader.shader" />
      <None Include="Assets\FlaImporter\Shader\FillStyle\Bitmap.shader" />
      <None Include="Assets\FlaImporter\Editor\Plugins\LibTessDotNet\LibTessDotNet-LICENSE.txt" />
      <None Include="Assets\FlaImporter\Shader\FlaCG.cginc" />

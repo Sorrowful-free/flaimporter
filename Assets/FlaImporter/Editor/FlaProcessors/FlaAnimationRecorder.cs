@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Assets.FlaImporter.Editor.Data.RawData;
+using Assets.FlaImporter.Editor.Data.RawData.FrameElements;
 using Assets.FlaImporter.Editor.Extentions;
 using Assets.FlaImporter.Editor.Extentions.FlaExtentionsRaw;
 using Assets.FlaImporter.Editor.Utils;
@@ -15,22 +16,20 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
     {
 
         private readonly static Dictionary<string, PropertyAnimationHolder> _propertyAnimations = new Dictionary<string, PropertyAnimationHolder>();
-        public static void RecordFrameElements(FlaFrameRaw frameRaw, string layerName, int framerate = 30)
+        public static void RecordFrameElement(string objectName,FlaFrameElementRaw elementRaw, float time)
         {
-            foreach (var elementRaw in frameRaw.Elements)
-            {
-                var elementGO = FlaObjectManager.GetFreeObject(elementRaw);
+           // foreach (var elementRaw in frameRaw.Elements)
+         //   {
+              //  var elementGO = FlaObjectManager.GetFreeObject(elementRaw);
                 var propAnim = default(PropertyAnimationHolder);
-                if (!_propertyAnimations.TryGetValue(elementGO.name,out propAnim))
+                if (!_propertyAnimations.TryGetValue(objectName, out propAnim))
                 {
-                    propAnim = new PropertyAnimationHolder(layerName+"/"+elementGO.name);
-                    _propertyAnimations.Add(elementGO.name,propAnim);
+                    propAnim = new PropertyAnimationHolder(objectName);
+                    _propertyAnimations.Add(objectName, propAnim);
                 }
-                var time = (float) ((float) frameRaw.Index/(float) framerate);
+            //   float index = frameRaw.Elements.IndexOf(elementRaw);
 
-                float index = frameRaw.Elements.IndexOf(elementRaw);
-
-                propAnim.Order.Record(index, time);
+           //     propAnim.Order.Record(index, time);
                 //RecordHelper(propAnim.Order.Record, time, index,0);
                 propAnim.Scale.Record(elementRaw.Matrix.Matrix.GetScale(), time);
                 //RecordHelper(propAnim.Scale.Record, time, elementRaw.Matrix.Matrix.GetScale(),Vector2.one);
@@ -53,7 +52,7 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
                     propAnim.Visible.Record(true, time);
                 }
                     
-            }
+           // }
         }
 
         private static void RecordHelper<TType>(Action<TType,float> recordFunction, float time,TType value, TType defaultValue) where TType : struct 
@@ -64,11 +63,11 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
             }
         }
 
-        public static void ReleaseFrameElements(FlaFrameRaw frameRaw, int framerate = 30)
+        public static void ReleaseFrameElements(string objectName, FlaFrameRaw frameRaw, int framerate = 30)
         {
             foreach (var elementRaw in frameRaw.Elements)
             {
-                var elementGO = FlaObjectManager.GetBusyObject(elementRaw);
+               // var elementGO = FlaObjectManager.GetBusyObject(elementRaw);
 
                 //var propAnim = default(PropertyAnimationHolder);
                 //if (!_propertyAnimations.TryGetValue(elementGO.name, out propAnim))
@@ -85,7 +84,7 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
                 //    //propAnim.Visible.Record(false, time);
                 //}
 
-                FlaObjectManager.ReleaseObject(elementGO);
+              //  FlaObjectManager.ReleaseObject(elementGO);
             }
 
         }
@@ -139,7 +138,7 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
             ColorOffset.ApplyToClip(clip, typeof(FlaColorAndFiltersHolder), RelativePath, "_selfColorTransform.ColorOffset",false);
             ColorMultipler.ApplyToClip(clip, typeof(FlaColorAndFiltersHolder), RelativePath, "_selfColorTransform.ColorMultipler",true);
 
-            Order.ApplyToClip(clip, typeof(FlaTransform), RelativePath, "Order");
+         //   Order.ApplyToClip(clip, typeof(FlaTransform), RelativePath, "Order");
             Scale.ApplyToClip(clip, typeof(FlaTransform), RelativePath, "Scale");
             Position.ApplyToClip(clip, typeof(FlaTransform), RelativePath, "Position");
             TransformPoint.ApplyToClip(clip, typeof(FlaTransform), RelativePath, "TransformPoint");

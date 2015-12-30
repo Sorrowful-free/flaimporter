@@ -12,7 +12,6 @@ namespace Assets.FlaImporter.Editor
         public static void ConvertSelection()
         {
             var path = AssetDatabase.GetAssetPath(Selection.activeObject);
-            Debug.Log("proccess path "+path);
             Instance.ProcessPath(path);
         }
 
