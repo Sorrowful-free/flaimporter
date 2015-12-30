@@ -7,6 +7,7 @@ namespace Assets.FlaImporter.FlaImporter.Transorm
     {
         private static readonly Vector2 ZeroVec2d = Vector2.zero;
         private static readonly Vector3 ForwardVec = Vector3.forward;
+        private static Matrix4x4 _matrix = Matrix4x4.identity;
 
         [SerializeField] public float Rotation = 0;
         private float _oldRotation;
@@ -34,35 +35,46 @@ namespace Assets.FlaImporter.FlaImporter.Transorm
 
         private void LateUpdate()
         {
-
-            if (_oldPosition != Position || _oldRotation != Rotation || TransformPoint != _oldTransformPoint || _oldScale != Scale)
+            
+            if (_oldPosition != Position)
             {
                 var oldPosition = transform.localPosition;
                 oldPosition.x = Position.x;
                 oldPosition.y = Position.y;
                 transform.localPosition = oldPosition;
                 _oldPosition = Position;
-           // }
+            }
 
-           // if (_oldRotation != Rotation || TransformPoint != _oldTransformPoint)
-          //  {
+            if (_oldRotation != Rotation || TransformPoint != _oldTransformPoint)
+            {
                 if (TransformPoint != ZeroVec2d)
                 {
-                    var deltaAngle = Rotation - transform.eulerAngles.z;
-                    var localToGlobal = transform.TransformPoint(TransformPoint);
-                    transform.RotateAround(localToGlobal, ForwardVec, deltaAngle);
-                    Position = _oldPosition = transform.position;
+                    _matrix = Matrix4x4.identity; // kostil and memory leak
+
+                    var tempScale = transform.localScale;
+                    _matrix.SetTRS(-TransformPoint, Quaternion.Euler(ForwardVec * Rotation), tempScale);
+                    //var deltaAngle = Rotation - transform.eulerAngles.z;
+                    //var localToGlobal = transform.TransformPoint(TransformPoint);
+                    //transform.RotateAround(localToGlobal, ForwardVec, deltaAngle);
+                    tempScale.x = 1 / tempScale.x;
+                    tempScale.y = 1 / tempScale.y;
+                    tempScale.z = 1 / tempScale.z;
+
+                    _matrix.SetTRS(TransformPoint, Quaternion.identity, tempScale);
+                    
+                    Position = _oldPosition =  _matrix*Position;
+                    var tempPosition = transform.position;
+                    tempPosition.x = Position.x;
+                    tempPosition.y = Position.y;
+                    //Position = _oldPosition = transform.position;
                     _oldTransformPoint = TransformPoint;
                 }
-                else
-                {
-                    transform.localEulerAngles = ForwardVec * Rotation;
-                }
+                transform.eulerAngles = ForwardVec * Rotation;
                 _oldRotation = Rotation;
-           // }
+            }
 
-          //  if (_oldScale != Scale)
-           // {
+            if (_oldScale != Scale)
+            {
                 var scale = transform.localScale;
                 scale.x = Scale.x;
                 scale.y = Scale.y;
@@ -70,13 +82,13 @@ namespace Assets.FlaImporter.FlaImporter.Transorm
                 _oldScale = Scale;
             }
             
-            //if (Order != _oldOrder)
-            //{
-            //    var oldPosition = transform.localPosition;
-            //    _oldOrder = oldPosition.z = Order;
-            //    transform.localPosition = oldPosition;
-            //    _oldPosition = Position;
-            //}
+            if (Order != _oldOrder)
+            {
+                var oldPosition = transform.localPosition;
+                _oldOrder = oldPosition.z = Order;
+                transform.localPosition = oldPosition;
+                _oldPosition = Position;
+            }
                
         }
     }
