@@ -8,18 +8,6 @@ namespace Assets.FlaImporter.FlaImporter.ColorAndFilersHolder.ColorTransform
     [Serializable]
     public struct FlaColorTransform 
     {
-        public static readonly Dictionary<FlaColorTransformPropertyTypeEnum,string> PropertyNames = new Dictionary<FlaColorTransformPropertyTypeEnum, string>
-        {
-            {FlaColorTransformPropertyTypeEnum.ColorMultiplyR, "ColorMultipler.r"},
-            {FlaColorTransformPropertyTypeEnum.ColorMultiplyG, "ColorMultipler.g"},
-            {FlaColorTransformPropertyTypeEnum.ColorMultiplyB, "ColorMultipler.b"},
-            {FlaColorTransformPropertyTypeEnum.ColorMultiplyA, "ColorMultipler.a"},
-            {FlaColorTransformPropertyTypeEnum.ColorOffsetR, "ColorOffset.x"},
-            {FlaColorTransformPropertyTypeEnum.ColorOffsetG, "ColorOffset.y"},
-            {FlaColorTransformPropertyTypeEnum.ColorOffsetB, "ColorOffset.z"},
-            {FlaColorTransformPropertyTypeEnum.ColorOffsetA, "ColorOffset.w"},
-        };
-
         [SerializeField] 
         public Vector4 ColorOffset;//= new Vector4(0, 0, 0, 0);
         private Vector4 _oldColorOffset;// = new Vector4(0, 0, 0, 0);

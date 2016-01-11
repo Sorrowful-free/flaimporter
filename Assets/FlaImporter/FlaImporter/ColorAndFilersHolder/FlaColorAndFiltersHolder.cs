@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Assets.FlaImporter.FlaImporter.ColorAndFilersHolder.ColorTransform;
 using Assets.FlaImporter.FlaImporter.ColorAndFilersHolder.Enums;
 using Assets.FlaImporter.FlaImporter.Renderer;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Assets.FlaImporter.FlaImporter.ColorAndFilersHolder
 {
@@ -59,8 +61,11 @@ namespace Assets.FlaImporter.FlaImporter.ColorAndFilersHolder
             }
         }
 
-        public FlaColorAndFiltersHolderType Type = FlaColorAndFiltersHolderType.Simple;
-        public int DependenceId = -1;
+        public FlaColorAndFiltersHolderMaskType MaskType = FlaColorAndFiltersHolderMaskType.Simple;
+        public int MaskId = -1;
+
+        public FlaColorAndFiltersHolderGuidType GuidType = FlaColorAndFiltersHolderGuidType.Simple;
+        public int GuidId = -1;
 
         public void AddChild(FlaColorAndFiltersHolder child)
         {
@@ -127,18 +132,52 @@ namespace Assets.FlaImporter.FlaImporter.ColorAndFilersHolder
                 for (int i = 0; i < _shapes.Count; i++)
                 {
                     _shapes[i].UpdateColorTranform(GlobalColorTransform);
+
+                    for (int j = 0; j < _shapes[i].Edges.Count; j++)
+                    {
+                        var isMask = MaskType == FlaColorAndFiltersHolderMaskType.Mask;
+                        _shapes[i].Edges[j].FillStyle.Material.SetInt("_MaskType",isMask ? 1:0);
+                        _shapes[i].Edges[j].FillStyle.Material.renderQueue = isMask ? 1000 : 4000;
+                        _shapes[i].Edges[j].FillStyle.Material.SetInt("_StencilId",MaskId);
+                        _shapes[i].Edges[j].FillStyle.Material.SetInt("_StencilOp", (int)(isMask?StencilOp.Replace:StencilOp.Keep));
+                        switch (MaskType)
+                        {
+                            default:
+                            case FlaColorAndFiltersHolderMaskType.Simple:
+                                _shapes[i].Edges[j].FillStyle.Material.SetInt("_StencilComp", (int) CompareFunction.Disabled);
+                                _shapes[i].Edges[j].FillStyle.Material.SetInt("_ColorMask", (int)ColorWriteMask.All);
+                                break;
+                            case FlaColorAndFiltersHolderMaskType.Mask:
+                                _shapes[i].Edges[j].FillStyle.Material.SetInt("_StencilComp", (int)CompareFunction.Always);
+                                _shapes[i].Edges[j].FillStyle.Material.SetInt("_ColorMask", 0);
+                                break;
+                            case FlaColorAndFiltersHolderMaskType.Masked:
+                                _shapes[i].Edges[j].FillStyle.Material.SetInt("_StencilComp", (int)CompareFunction.Equal);
+                                _shapes[i].Edges[j].FillStyle.Material.SetInt("_ColorMask", (int)ColorWriteMask.All);
+                                break;
+                            
+                                
+                        }
+                        
+                        //StencilOp.
+                        //CompareFunction.Always
+                    }
                 }
             }
         }
-
     }
 
-    public enum FlaColorAndFiltersHolderType
+    public enum FlaColorAndFiltersHolderGuidType
+    {
+        Simple,
+        Guid,
+        Guided
+    }
+
+    public enum FlaColorAndFiltersHolderMaskType
     {
         Simple,
         Mask,
         Masked,
-        Guid,
-        Guided
     }
 }

@@ -12,46 +12,56 @@ namespace Assets.FlaImporter.FlaImporter.Renderer.FillStyles
 
         [HideInInspector]
         [SerializeField]
-        private Material _material;
-        public Material Material
+        private MeshRenderer _meshRenderer;
+        public Material Material 
         {
-            get { return _material; }
+            get
+            {
+                return !Application.isPlaying ? _meshRenderer.sharedMaterial:_meshRenderer.material;
+            }
         }
 
     //    [HideInInspector]
         [SerializeField]
         private float _aspect;
+        private float _oldAspect; 
 
       //  [HideInInspector]
         [SerializeField]
         private bool _isCliped;
+        private bool _oldIsCliped;
 
 
-        public FlaFillStyle(Material material, FlaMatrix2D matrix, float aspect, bool isCliped)
+        public FlaFillStyle(MeshRenderer meshRenderer, FlaMatrix2D matrix, float aspect, bool isCliped)
         {
-            _aspect = aspect;
+            _oldAspect = _aspect = aspect;
             Matrix = matrix;
-            _material = material;
-            _isCliped = isCliped;
+            _meshRenderer = meshRenderer;
+            _oldIsCliped = _isCliped = isCliped;
         }
         
         public void UpdateMaterial()
         {
-            if (Matrix.UpdateMatrix())
+            if (Matrix.UpdateMatrix() || _isCliped != _oldIsCliped || _aspect != _oldAspect)
             {
+                _oldIsCliped = _isCliped;
+                _oldAspect = _aspect;
                 UpdateMaterialWithoutCheck();
             }
         }
 
         public void UpdateMaterialWithoutCheck()
         {
-            if (_material == null)
+            if (_meshRenderer == null)
+            {
                 return;
-            _material.SetVector("_TextureMatrixABCD", Matrix.ABCD);
-            _material.SetVector("_TextureMatrixTXTY", Matrix.TXTY);
-            _material.SetFloat("_TextureAspect", _aspect);
-            _material.SetFloat("_TextureIsCliped", _isCliped?1:0);
-            
+            }
+            if (Material == null) 
+                return;
+            Material.SetVector("_TextureMatrixABCD", Matrix.ABCD);
+            Material.SetVector("_TextureMatrixTXTY", Matrix.TXTY);
+            Material.SetFloat("_TextureAspect", _aspect); 
+            Material.SetInt("_TextureIsCliped", _isCliped ? 1 : 0);
         }
 
     }

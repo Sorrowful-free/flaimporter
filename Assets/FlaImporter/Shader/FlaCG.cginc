@@ -3,17 +3,23 @@
 
 #include "UnityCG.cginc"
 
+#pragma multi_compile FLA_MASKED FLA_MASK FLA_IS_CLIPED
+//#pragma FLA_IS_CLIPED
+
 float _ShapeTweenDeltaKoef;
 const float PI = 3.14159;
 
 float4 _ColorMultipler = float4(1,0,0,1);
 float4 _ColorOffset = float4(1,0,0,1);
 
-
 float _TextureAspect = 1;
-float _TextureIsCliped = 1;
+int _TextureIsCliped = 0;
+int _MaskType = 0; //0 - masked, 1-mask
+
 float4 _TextureMatrixABCD = float4(1,0,0,1);
 float2 _TextureMatrixTXTY = float2(0,0); 
+
+
 
 struct fla_vert_data
 {
@@ -82,7 +88,12 @@ float2 get_transform_uv(float2 uv)
 
 fixed4 apply_color_transform(fixed4 color)
 {
-	return (color * _ColorMultipler)+_ColorOffset;
+	fixed4 result = (color * _ColorMultipler)+_ColorOffset;
+	if(result.a <0.01 && _MaskType>0)
+	{
+		discard;
+	}
+	return result;
 }
 
 fla_frag_data fla_vert_func(fla_vert_data input)
@@ -91,13 +102,9 @@ fla_frag_data fla_vert_func(fla_vert_data input)
 	float4 position = get_vertex_position(input.position,input.shape_tween_delta);
 	output.position = mul (UNITY_MATRIX_MVP, position);
 	if(_TextureIsCliped > 0)
-	{
 		output.uv_0 = input.uv_1;
-	}
 	else
-	{
 		output.uv_0 = get_transform_uv(input.uv_0); 
-	}
 	
 	return output;
 }
@@ -110,5 +117,6 @@ fla_frag_data fla_grab_vert_func(fla_vert_data input)
 	output.uv_0 = get_screen_uv(output.position);	
 	return output;
 }
+
 
 #endif

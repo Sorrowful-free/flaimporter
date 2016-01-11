@@ -1,28 +1,44 @@
-﻿Shader "Fla/FillStyles/SolidColor" {
-	Properties {
+﻿Shader "Fla/FillStyles/SolidColor"
+{
+	Properties 
+	{
 		_Color ("Color", Color) = (1,1,1,1)		
+		_StencilId("StencilId",Int) = 0
+		_StencilOp("StencilOp",Int) = 0
+		_StencilComp("StencilComp",Int) = 0
+		_ColorMask("ColorMask",Int) = 0
 	}
-	SubShader {
+
+	SubShader 
+	{
+		Stencil
+		{
+			Ref [_StencilId]
+			Pass [_StencilOp]
+			Comp [_StencilComp]
+		}
 		Tags 
 		{
-			"Queue"="Transparent"			
-			"IgnoreProjector"="True" 
-			"RenderType"="Transparent"
-		}
+			"Queue" = "Transparent"			
+			"IgnoreProjector"="True"  
+			"RenderType"="Transparent" 
+		} 
 
-		Cull Off
-		Lighting Off
+		Cull Off 
+		Lighting Off 
 		ZWrite Off
 		ZTest LEqual  
 		Blend SrcAlpha OneMinusSrcAlpha  
-		 
+		ColorMask [_ColorMask]
+		  
 		LOD 200
 
-		 Pass {
+		 Pass 
+		 {
 			CGPROGRAM			
 			#include "../FlaCG.cginc" 
 			#pragma vertex fla_vert_func 
-			#pragma fragment frag 
+			#pragma fragment frag   
 
 			fixed4 _Color;
 			

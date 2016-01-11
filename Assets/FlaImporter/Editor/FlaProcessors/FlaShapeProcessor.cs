@@ -73,15 +73,16 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
 
                 var ordered = -(float)shape.Edges.IndexOf(flaEdgeRaw) / (float)shape.Edges.Count;
                 var flaEdge = ProsessFlaEdge(flaEdgeRaw);
-                
-                flaEdge.FillStyle = ProcessFlaFillStyle(fillStyleRaw);
+                 
+                flaEdge.FillStyle = ProcessFlaFillStyle(flaEdge.MeshRenderer,fillStyleRaw);
                 flaEdge.gameObject.GetComponent<MeshRenderer>().material = flaEdge.FillStyle.Material;
                 flaEdge.transform.SetParent(shapeGO.transform);
                 flaEdge.transform.localScale = Vector3.one;
                 flaEdge.transform.localPosition = Vector3.forward * ordered;
-                flaEdge.Parent = shapeComponent;
+                flaEdge.Parent = shapeComponent; 
+                flaEdge.MeshRenderer.sharedMaterial = flaEdge.FillStyle.Material; 
                 AssetDataBaseUtility.SaveEdge(flaEdge.gameObject);
-                shapeComponent.Edges.Add(flaEdge);
+                shapeComponent.Edges.Add(flaEdge); 
             }
             AssetDataBaseUtility.SaveShape(shapeGO);
             if (callback != null)
@@ -155,10 +156,11 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
             AssetDataBaseUtility.SaveEdgeMesh(mesh);
             edgeMeshFilter.mesh = mesh;
             
+            
             return edge;
         }
 
-        private static FlaFillStyle ProcessFlaFillStyle(FlaFillStyleRaw fillStyleRaw)
+        private static FlaFillStyle ProcessFlaFillStyle(MeshRenderer meshRenderer,FlaFillStyleRaw fillStyleRaw)
         {
             var fillStyle = fillStyleRaw.FillStyle;
             var material = default(Material);
@@ -181,7 +183,9 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
                     material.name = matName;
                     needSaveMaterial = true;
                 }
-                flaFillStyle = new FlaFillStyle(material, flaMatrix2D,1, false);
+                meshRenderer.material = material;
+                flaFillStyle = new FlaFillStyle(meshRenderer, flaMatrix2D, 1, false);
+                
             }
             else if (fillStyle is FlaBitmapFillRaw)
             {
@@ -204,7 +208,8 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
                 {
                     texture = (Texture2D) material.GetTexture("_Bitmap");
                 }
-                flaFillStyle = new FlaFillStyle(material, flaMatrix2D, (float)texture.width / (float)texture.height, bitmap.BitmapIsClipped);
+                meshRenderer.material = material;
+                flaFillStyle = new FlaFillStyle(meshRenderer, flaMatrix2D, (float)texture.width / (float)texture.height, bitmap.BitmapIsClipped);
             }
             else if (fillStyle is FlaLinearGradientFillStyleRaw)
             {
@@ -218,7 +223,8 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
                     material.name = matName;
                     needSaveMaterial = true;
                 }
-                flaFillStyle = new FlaFillStyle(material,flaMatrix2D,1,false);
+                meshRenderer.material = material;
+                flaFillStyle = new FlaFillStyle(meshRenderer, flaMatrix2D, 1, false);
             }
             else if (fillStyle is FlaRadialGradientFillStyleRaw)
             {
@@ -233,7 +239,8 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
                     material.name = matName;
                     needSaveMaterial = true;
                 }
-                flaFillStyle = new FlaFillStyle(material,flaMatrix2D,1,false);
+                meshRenderer.material = material;
+                flaFillStyle = new FlaFillStyle(meshRenderer, flaMatrix2D, 1, false);
             }
             
             if (needSaveMaterial)

@@ -3,12 +3,24 @@
 		_Colors ("Colors", 2D) = "white" {} 
 		_ColorWeight ("ColorWeight", 2D) = "white" {} 
 		_GradientEntryCount("GradientEntryCount",Int) = 3
+		_StencilId("StencilId",Int) = 0
+		_StencilOp("StencilOp",Int) = 0
+		_StencilComp("StencilComp",Int) = 0
+		_ColorMask("ColorMask",Int) = 0
 	}
-	SubShader {
+
+	SubShader 
+	{
+		Stencil
+		{
+			Ref [_StencilId]
+			Pass [_StencilOp]
+			Comp [_StencilComp]
+		}
 		Tags 
 		{
 			"Queue"="Transparent"			
-			"IgnoreProjector"="True" 
+			"IgnoreProjector"="True"  
 			"RenderType"="Transparent"
 		}
 
@@ -17,6 +29,7 @@
 		ZWrite Off 
 		ZTest LEqual 
 		Blend One OneMinusSrcAlpha  
+		ColorMask [_ColorMask]
 		 
 		LOD 200  
 

@@ -106,12 +106,12 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
                                     switch (parentLayer.LayerType)
                                     {
                                         case "mask":
-                                            colorAndFilterHolder.Type = FlaColorAndFiltersHolderType.Masked;
-                                            colorAndFilterHolder.DependenceId = layerRaw.ParentLayerIndex;
+                                            colorAndFilterHolder.MaskType = FlaColorAndFiltersHolderMaskType.Masked;
+                                            colorAndFilterHolder.MaskId = layerRaw.ParentLayerIndex;
                                             break;
                                         case "guide":
-                                            colorAndFilterHolder.Type = FlaColorAndFiltersHolderType.Guided;
-                                            colorAndFilterHolder.DependenceId = layerRaw.ParentLayerIndex;
+                                            colorAndFilterHolder.GuidType = FlaColorAndFiltersHolderGuidType.Guided;
+                                            colorAndFilterHolder.GuidId = layerRaw.ParentLayerIndex;
                                             break;
                                     }
                                 }
@@ -120,12 +120,12 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
                                     switch (layerRaw.LayerType)
                                     {
                                         case "mask":
-                                            colorAndFilterHolder.Type = FlaColorAndFiltersHolderType.Mask;
-                                            colorAndFilterHolder.DependenceId = flaTimeLine.Layers.IndexOf(layerRaw);
+                                            colorAndFilterHolder.MaskType = FlaColorAndFiltersHolderMaskType.Mask;
+                                            colorAndFilterHolder.MaskId = flaTimeLine.Layers.IndexOf(layerRaw);
                                             break;
                                         case "guide":
-                                            colorAndFilterHolder.Type = FlaColorAndFiltersHolderType.Guid;
-                                            colorAndFilterHolder.DependenceId = flaTimeLine.Layers.IndexOf(layerRaw);
+                                             colorAndFilterHolder.GuidType = FlaColorAndFiltersHolderGuidType.Guid;
+                                             colorAndFilterHolder.GuidId = flaTimeLine.Layers.IndexOf(layerRaw);
                                             break;
                                     }
                                 }
@@ -208,12 +208,12 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
             //                    switch (parentLayer.LayerType)
             //                    {
             //                        case "mask":
-            //                            colorAndFilterHolder.Type = FlaColorAndFiltersHolderType.Masked;
-            //                            colorAndFilterHolder.DependenceId = layerRaw.ParentLayerIndex;
+            //                            colorAndFilterHolder.MaskType = FlaColorAndFiltersHolderMaskType.Masked;
+            //                            colorAndFilterHolder.MaskId = layerRaw.ParentLayerIndex;
             //                            break;
             //                        case "guide":
-            //                            colorAndFilterHolder.Type = FlaColorAndFiltersHolderType.Guided;
-            //                            colorAndFilterHolder.DependenceId = layerRaw.ParentLayerIndex;
+            //                            colorAndFilterHolder.MaskType = FlaColorAndFiltersHolderMaskType.Guided;
+            //                            colorAndFilterHolder.MaskId = layerRaw.ParentLayerIndex;
             //                            break;
             //                    }
             //                }
@@ -222,12 +222,12 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
             //                    switch (layerRaw.LayerType)
             //                    {
             //                        case "mask":
-            //                            colorAndFilterHolder.Type = FlaColorAndFiltersHolderType.Mask;
-            //                            colorAndFilterHolder.DependenceId = flaTimeLine.Layers.IndexOf(layerRaw);
+            //                            colorAndFilterHolder.MaskType = FlaColorAndFiltersHolderMaskType.Mask;
+            //                            colorAndFilterHolder.MaskId = flaTimeLine.Layers.IndexOf(layerRaw);
             //                            break;
             //                        case "guide":
-            //                            colorAndFilterHolder.Type = FlaColorAndFiltersHolderType.Guid;
-            //                            colorAndFilterHolder.DependenceId = flaTimeLine.Layers.IndexOf(layerRaw);
+            //                            colorAndFilterHolder.MaskType = FlaColorAndFiltersHolderMaskType.Guid;
+            //                            colorAndFilterHolder.MaskId = flaTimeLine.Layers.IndexOf(layerRaw);
             //                            break;
             //                    }
             //                }
