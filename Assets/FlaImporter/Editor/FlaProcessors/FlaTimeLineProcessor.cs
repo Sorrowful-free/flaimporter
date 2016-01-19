@@ -43,15 +43,28 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
                 animationController.AddMotion(animationClip);
             }
             
+            var lastItems = new List<GameObject>();
+
             foreach (var layerRaw in flaTimeLine.Layers)
             {
                 
-                var lastFrames = default(FlaFrameRaw);
+              
+
                 var layerIndex = flaTimeLine.Layers.IndexOf(layerRaw);
                 foreach (var frameRaw in layerRaw.Frames)
                 {
+                    lastItems.Clear();
                     var time = (float) frameRaw.Index/(float) frameRate;
 
+                    foreach (var lastItem in lastItems)
+                    {
+                        var isNotVisible = frameRaw.Elements.FirstOrDefault(
+                                e => lastItem.name.ToLower().StartsWith(e.GetName().ToLower())) == null;
+                        if (isNotVisible)
+                        {
+                            FlaAnimationRecorder.RecordVisibleElement(lastItem.name,false,time);
+                        }
+                    }
                     //if (_lastFrame != null)
                     //{
                     //    FlaAnimationRecorder.ReleaseFrameElements(,_lastFrame, frameRate);
@@ -64,7 +77,7 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
                     {
                         var elementGO = FlaObjectManager.GetFreeObject(elementRaw, layerIndex, (instance) =>
                         {
-#region InstanceObjects 
+    #region InstanceObjects 
                             var transform = instance.GetComponent<FlaTransform>();
                             transform.TransformPoint =
                                 new Vector2(
@@ -98,7 +111,7 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
                             {
                                 rootColorAndFilterHolder.AddChild(colorAndFilterHolder);
 
-                              //  var layerRaw = flaTimeLine.Layers[GetLayerIndex(flaTimeLine.Layers, elementRaw)];//GetElementLayer(flaTimeLine, elementRaw);
+                                //  var layerRaw = flaTimeLine.Layers[GetLayerIndex(flaTimeLine.Layers, elementRaw)];//GetElementLayer(flaTimeLine, elementRaw);
                                 if (layerRaw.ParentLayerIndex >= 0)
                                 {
                                     var parentLayer = flaTimeLine.Layers[layerRaw.ParentLayerIndex];
@@ -124,8 +137,8 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
                                             colorAndFilterHolder.MaskId = flaTimeLine.Layers.IndexOf(layerRaw);
                                             break;
                                         case "guide":
-                                             colorAndFilterHolder.GuidType = FlaColorAndFiltersHolderGuidType.Guid;
-                                             colorAndFilterHolder.GuidId = flaTimeLine.Layers.IndexOf(layerRaw);
+                                                colorAndFilterHolder.GuidType = FlaColorAndFiltersHolderGuidType.Guid;
+                                                colorAndFilterHolder.GuidId = flaTimeLine.Layers.IndexOf(layerRaw);
                                             break;
                                     }
                                 }
@@ -137,11 +150,13 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
                             instance.transform.position = position;
 
                             instance.transform.SetParent(rootGO.transform, false);
-#endregion
+    #endregion
                         });
-                        FlaAnimationRecorder.RecordFrameElement(elementGO.name, elementRaw, time);
-                        
+                     lastItems.Add(elementGO);
+                     FlaAnimationRecorder.RecordFrameElement(elementGO.name, elementRaw, time);
+                     FlaAnimationRecorder.RecordVisibleElement(elementGO.name,true,time);
                     }
+                  
                     FlaObjectManager.ReleaseAll(layerIndex);
                 }
                 //layerGO.transform.SetParent(rootGO.transform,false);

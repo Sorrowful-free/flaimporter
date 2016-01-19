@@ -46,11 +46,6 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\BundleExporter\Editor\BudleExporter\BundleExporter.cs" />
-     <Compile Include="Assets\BundleExporter\Editor\BudleExporter\BundleExporterWindow.cs" />
-     <Compile Include="Assets\BundleExporter\Editor\BudleExporter\BundlesUrlEditor.cs" />
-     <Compile Include="Assets\BundleExporter\Editor\Helpers\ProtobufSerializationExtention.cs" />
-     <Compile Include="Assets\BundleExporter\Editor\Helpers\StringExtention.cs" />
      <Compile Include="Assets\FlaImporter\Editor\CustomEditors\FlaRendererCustomEditor.cs" />
      <Compile Include="Assets\FlaImporter\Editor\Data\RawData\Effects\Color\FlaColorElementRaw.cs" />
      <Compile Include="Assets\FlaImporter\Editor\Data\RawData\Effects\Color\FlaColorRaw.cs" />
@@ -131,7 +126,6 @@
      <Compile Include="Assets\FlaImporter\Editor\FlaImporterEditorWindow.cs" />
      <Compile Include="Assets\FlaImporter\Editor\FlaProcessors\FlaAnimationRecorder.cs" />
      <Compile Include="Assets\FlaImporter\Editor\FlaProcessors\FlaFrameElementProcessor.cs" />
-     <Compile Include="Assets\FlaImporter\Editor\FlaProcessors\FlaLayerProcessor.cs" />
      <Compile Include="Assets\FlaImporter\Editor\FlaProcessors\FlaObjectManager.cs" />
      <Compile Include="Assets\FlaImporter\Editor\FlaProcessors\FlaPreProcessor.cs" />
      <Compile Include="Assets\FlaImporter\Editor\FlaProcessors\FlaProcessor.cs" />
@@ -149,6 +143,7 @@
      <Compile Include="Assets\FlaImporter\Editor\Utils\AssetDataBaseUtility.cs" />
      <Compile Include="Assets\FlaImporter\Editor\Utils\FlaMathUtils.cs" />
      <Compile Include="Assets\FlaImporter\Editor\Utils\FolderAndFileUtils.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\Utils\KeyframeUtil.cs" />
      <None Include="Assets\FlaImporter\Shader\FillStyle\RadialGradient.shader" />
      <None Include="Assets\FlaImporter\Shader\FillStyle\SolidColor.shader" />
      <None Include="Assets\FlaImporter\Shader\FillStyle\Bitmap.shader" />
@@ -172,9 +167,6 @@
  </Reference>
  <Reference Include="Ionic.Zip">
  <HintPath>C:/projects/flaimporter/Assets/FlaImporter/Editor/Library/Ionic.Zip.dll</HintPath>
- </Reference>
- <Reference Include="protobuf-net">
- <HintPath>C:/projects/flaimporter/Assets/Library/protobuf-net.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.Graphs">
  <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEditor.Graphs.dll</HintPath>

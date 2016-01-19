@@ -46,9 +46,6 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\BundleExporter\Data\LanguageInfo.cs" />
-     <Compile Include="Assets\BundleExporter\Data\PlatformInfo.cs" />
-     <Compile Include="Assets\BundleExporter\Data\PlatformsInfo.cs" />
      <Compile Include="Assets\FlaImporter\FlaImporter\ColorAndFilersHolder\ColorTransform\Enums\FlaColorTransformPropertyTypeEnum.cs" />
      <Compile Include="Assets\FlaImporter\FlaImporter\ColorAndFilersHolder\ColorTransform\FlaColorTransform.cs" />
      <Compile Include="Assets\FlaImporter\FlaImporter\ColorAndFilersHolder\Enums\FlaColorAndFiltersHolderPropertyTypeEnum.cs" />
@@ -75,9 +72,6 @@
  </Reference>
  <Reference Include="UnityEngine.Analytics">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>
- </Reference>
- <Reference Include="protobuf-net">
- <HintPath>C:/projects/flaimporter/Assets/Library/protobuf-net.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.iOS.Extensions.Xcode">
  <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.Xcode.dll</HintPath>

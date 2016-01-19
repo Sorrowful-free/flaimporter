@@ -8,6 +8,7 @@ using Assets.FlaImporter.Editor.Extentions.FlaExtentionsRaw;
 using Assets.FlaImporter.Editor.Utils;
 using Assets.FlaImporter.FlaImporter.ColorAndFilersHolder;
 using Assets.FlaImporter.FlaImporter.Transorm;
+using CurveExtended;
 using UnityEngine;
 
 namespace Assets.FlaImporter.Editor.FlaProcessors
@@ -46,13 +47,30 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
                 propAnim.ColorOffset.Record(elementRaw.Color.Color.GetColorOffset(), time);
                 // RecordHelper(propAnim.ColorOffset.Record, time, elementRaw.Color.Color.GetColorOffset(),Vector4.zero);
 
-                var lastValue = propAnim.Visible.GetLastValue();
-                if (!lastValue)
-                {
-                    propAnim.Visible.Record(true, time);
-                }
+                //var lastValue = propAnim.Visible.GetLastValue();
+                //if (!lastValue)
+                //{
+                //    propAnim.Visible.Record(true, time);
+                //}
                     
            // }
+        }
+
+        public static void RecordVisibleElement(string objectName, bool visible, float time)
+        {
+            var propAnim = default(PropertyAnimationHolder);
+            if (!_propertyAnimations.TryGetValue(objectName, out propAnim))
+            {
+                propAnim = new PropertyAnimationHolder(objectName);
+                _propertyAnimations.Add(objectName, propAnim);
+            }
+            propAnim.Visible.Record(visible, time);
+            //var lastValue = propAnim.Visible.GetLastValue();
+            //if (lastValue)
+            //{
+            //    propAnim.Visible.Record(visible, time);
+            //    //propAnim.Visible.Record(false, time);
+            //}
         }
 
         private static void RecordHelper<TType>(Action<TType,float> recordFunction, float time,TType value, TType defaultValue) where TType : struct 
@@ -246,10 +264,10 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
 
         public void Record(bool value,float time)
         {
-            Flag.AddKey(time, !value?0:1);
+            Flag.AddKey(KeyframeUtil.GetNew(time, !value ? 0 : 1, TangentMode.Stepped));
         }
 
-        public bool GetLastValue()
+        public bool GetLastValue() 
         {
             return Flag.keys.LastOrDefault().value > 0;
         }
