@@ -1,4 +1,8 @@
 #ifndef FLA_CG_INCLUDES
+// Upgrade NOTE: excluded shader from DX11, Xbox360, OpenGL ES 2.0 because it uses unsized arrays
+#pragma exclude_renderers d3d11 xbox360 gles
+// Upgrade NOTE: excluded shader from DX11 and Xbox360 because it uses wrong array syntax (type[size] name)
+#pragma exclude_renderers d3d11 xbox360
 #define FLA_CG_INCLUDES
 
 #include "UnityCG.cginc"
@@ -18,6 +22,9 @@ int _MaskType = 0; //0 - masked, 1-mask
 
 float4 _TextureMatrixABCD = float4(1,0,0,1);
 float2 _TextureMatrixTXTY = float2(0,0); 
+
+float2 _Skew = float2(0,0); 
+
 
 
 
@@ -96,10 +103,19 @@ fixed4 apply_color_transform(fixed4 color)
 	return result;
 }
 
+float2 applySkew(float2 vertex)
+{
+	float2 v = vertex;
+	float _SkewX = _Skew.x/180*PI;
+	float _SkewY = _Skew.y/180*PI;
+	return float2(v.x + v.y*tan(_SkewX), v.y  +v.x*-tan(_SkewY));
+}
+
 fla_frag_data fla_vert_func(fla_vert_data input)
 {
 	fla_frag_data output;
 	float4 position = get_vertex_position(input.position,input.shape_tween_delta);
+	position.xy = applySkew(position.xy);
 	output.position = mul (UNITY_MATRIX_MVP, position);
 	if(_TextureIsCliped > 0)
 		output.uv_0 = input.uv_1;

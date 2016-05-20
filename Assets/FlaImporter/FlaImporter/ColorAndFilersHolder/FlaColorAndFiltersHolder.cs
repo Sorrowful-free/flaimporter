@@ -161,7 +161,7 @@ namespace Assets.FlaImporter.FlaImporter.ColorAndFilersHolder
                         
                         //StencilOp.
                         //CompareFunction.Always
-                    }
+                    } 
                 }
             }
         }

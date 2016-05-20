@@ -6,16 +6,16 @@
 		_StencilId("StencilId",Int) = 0
 		_StencilOp("StencilOp",Int) = 0
 		_StencilComp("StencilComp",Int) = 0
-		_ColorMask("ColorMask",Int) = 0
+		_ColorMask("ColorMask",Int) = 0  
 	}
-
+	  
 	SubShader 
 	{
 		Stencil
 		{
 			Ref [_StencilId]
-			Pass [_StencilOp]
-			Comp [_StencilComp]
+			Pass [_StencilOp]  
+			Comp [_StencilComp]  
 		}
 		Tags 
 		{
@@ -28,21 +28,21 @@
 		Lighting Off 
 		ZWrite Off
 		ZTest LEqual  
-		Blend SrcAlpha OneMinusSrcAlpha  
+		Blend SrcAlpha OneMinusSrcAlpha    
 		ColorMask [_ColorMask]
-		  
+		        
 		LOD 200
 
 		 Pass 
 		 {
-			CGPROGRAM			
+			CGPROGRAM			 
 			#include "../FlaCG.cginc" 
 			#pragma vertex fla_vert_func 
-			#pragma fragment frag   
+			#pragma fragment frag      
 
-			fixed4 _Color;
+			fixed4 _Color; 
 			
-			fixed4 frag (fla_frag_data input) : SV_Target 
+			fixed4 frag (fla_frag_data input) : SV_Target  
 			{ 
 				fixed4 color = _Color*_Color.a; 
 				fixed4 resultColor = apply_color_transform(color); 

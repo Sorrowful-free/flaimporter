@@ -178,7 +178,7 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
                 {
                     material = new Material(Shader.Find(FillStyleShadersNames.ShaderNames[FillStyleTypeEnum.SolidColor]));
                     var color = Color.black;
-                    Color.TryParseHexString(solidColor.Color, out color);
+                    ColorUtility.TryParseHtmlString(solidColor.Color, out color);
                     material.SetColor("_Color", color);
                     material.name = matName;
                     needSaveMaterial = true;
@@ -267,7 +267,7 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
             {
                 var entryRaw = entries[i];
                 var color = default(Color);
-                Color.TryParseHexString(entryRaw.Color, out color);
+                ColorUtility.TryParseHtmlString(entryRaw.Color, out color);
                 color.a = entryRaw.Alpha;
                 colors.SetPixel(i, 0, color);
                 weights.SetPixel(i,0,new Color(entryRaw.Ratio,0,0,0));

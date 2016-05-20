@@ -12,7 +12,7 @@ namespace Assets.FlaImporter.Editor
         public static void ConvertSelection()
         {
             var path = AssetDatabase.GetAssetPath(Selection.activeObject);
-            Instance.ProcessPath(path);
+            FlaPathProcessor.ProcessPath(path);
         }
 
         private static FlaImporterEditorWindow _instance;
@@ -45,7 +45,7 @@ namespace Assets.FlaImporter.Editor
                 {
                     return;
                 }
-                ProcessPath(path);
+                FlaPathProcessor.ProcessPath(path);
             }
             if (GUILayout.Button("Open XFL (xml)"))
             {
@@ -54,23 +54,10 @@ namespace Assets.FlaImporter.Editor
                 {
                     return;
                 }
-                ProcessPath(path);
+                FlaPathProcessor.ProcessPath(path);
             }
         }
         
-        private void ProcessPath(string path)
-        {
-            if (path.ToLower().EndsWith(".fla"))
-            {
-                FlaPreProcessor.ProcessZipFile(path).StartAsEditorCoroutine();
-                return;
-            }
-            else if (path.ToLower().EndsWith(".xml"))
-            {
-                FlaPreProcessor.ProcessXMLFile(path).StartAsEditorCoroutine();
-                return;
-            }
-            Debug.Log("it is no flash file");
-        }
+        
     }
 }

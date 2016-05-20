@@ -127,6 +127,7 @@
      <Compile Include="Assets\FlaImporter\Editor\FlaProcessors\FlaAnimationRecorder.cs" />
      <Compile Include="Assets\FlaImporter\Editor\FlaProcessors\FlaFrameElementProcessor.cs" />
      <Compile Include="Assets\FlaImporter\Editor\FlaProcessors\FlaObjectManager.cs" />
+     <Compile Include="Assets\FlaImporter\Editor\FlaProcessors\FlaPathProcessor.cs" />
      <Compile Include="Assets\FlaImporter\Editor\FlaProcessors\FlaPreProcessor.cs" />
      <Compile Include="Assets\FlaImporter\Editor\FlaProcessors\FlaProcessor.cs" />
      <Compile Include="Assets\FlaImporter\Editor\FlaProcessors\FlaShapeProcessor.cs" />

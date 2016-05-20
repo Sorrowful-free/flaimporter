@@ -19,7 +19,8 @@ namespace Assets.FlaImporter.Editor.Utils
 
         public static Vector2 GetSkew(this FlaMatrixRaw flaMatrix)
         {
-            return new Vector2(flaMatrix.GetSkewX(),flaMatrix.GetSkewY());
+            var angle = flaMatrix.GetAngle();
+            return new Vector2(flaMatrix.GetSkewX() - angle, flaMatrix.GetSkewY() - angle);
         }
 
         public static float GetAngle(this FlaMatrixRaw flaMatrix)

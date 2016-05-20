@@ -17,7 +17,9 @@ namespace Assets.FlaImporter.FlaImporter.Renderer.FillStyles
         {
             get
             {
-                return !Application.isPlaying ? _meshRenderer.sharedMaterial:_meshRenderer.material;
+                if(_meshRenderer != null)
+                    return !Application.isPlaying ? _meshRenderer.sharedMaterial:_meshRenderer.material;
+                return null;
             }
         }
 

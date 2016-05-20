@@ -53,18 +53,18 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
                 var layerIndex = flaTimeLine.Layers.IndexOf(layerRaw);
                 foreach (var frameRaw in layerRaw.Frames)
                 {
-                    lastItems.Clear();
+                   
                     var time = (float) frameRaw.Index/(float) frameRate;
 
                     foreach (var lastItem in lastItems)
                     {
-                        var isNotVisible = frameRaw.Elements.FirstOrDefault(
-                                e => lastItem.name.ToLower().StartsWith(e.GetName().ToLower())) == null;
+                        var isNotVisible = frameRaw.Elements.FirstOrDefault(e => lastItem.name.ToLower().StartsWith(e.GetName().ToLower())) == null;
                         if (isNotVisible)
                         {
                             FlaAnimationRecorder.RecordVisibleElement(lastItem.name,false,time);
                         }
                     }
+                    lastItems.Clear();
                     //if (_lastFrame != null)
                     //{
                     //    FlaAnimationRecorder.ReleaseFrameElements(,_lastFrame, frameRate);

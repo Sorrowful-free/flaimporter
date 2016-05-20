@@ -40,7 +40,9 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
                 //RecordHelper(propAnim.TransformPoint.Record, time, elementRaw.GetTransformPoint(),Vector2.zero);
                 propAnim.Rotation.Record(elementRaw.Matrix.Matrix.GetAngle(),time);
                 //RecordHelper(propAnim.Rotation.Record, time, elementRaw.Matrix.Matrix.GetAngle(),0);
-                propAnim.Skew.Record(elementRaw.Matrix.Matrix.GetSkew(), time);
+                var skew = elementRaw.Matrix.Matrix.GetSkew();
+                if (skew.x != skew.y)
+                    propAnim.Skew.Record(elementRaw.Matrix.Matrix.GetSkew(), time);
                 //RecordHelper(propAnim.Skew.Record, time, elementRaw.Matrix.Matrix.GetSkew(),Vector2.zero);
                 propAnim.ColorMultipler.Record(elementRaw.Color.Color.GetColorMultipler(),time);
                 // RecordHelper(propAnim.ColorMultipler.Record, time, (Vector4)elementRaw.Color.Color.GetColorMultipler(),Vector4.one);
@@ -185,6 +187,14 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
 
         public void Record(Vector4 vector,float time)
         {
+            if (R.length > 0
+                && Mathf.Approximately(R.keys.Last().value, vector.x)
+                && Mathf.Approximately(G.keys.Last().value, vector.y)
+                && Mathf.Approximately(B.keys.Last().value, vector.z)
+                && Mathf.Approximately(A.keys.Last().value, vector.w))
+            {
+                return;
+            }
             R.AddKey(time, vector.x);
             G.AddKey(time, vector.y);
             B.AddKey(time, vector.z);
@@ -232,6 +242,12 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
 
         public void Record(Vector2 vector, float time)
         {
+            if (X.length > 0 
+                && Mathf.Approximately(X.keys.Last().value, vector.x) 
+                && Mathf.Approximately(Y.keys.Last().value, vector.y))
+            {
+                return;
+            }
             X.AddKey(time, vector.x);
             Y.AddKey(time, vector.y);
         }
@@ -264,7 +280,12 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
 
         public void Record(bool value,float time)
         {
-            Flag.AddKey(KeyframeUtil.GetNew(time, !value ? 0 : 1, TangentMode.Stepped));
+            var recValue = !value ? 0 : 1;
+            if (Flag.length > 0 && Mathf.Approximately(Flag.keys.Last().value, recValue))
+            {
+                return;
+            }
+            Flag.AddKey(KeyframeUtil.GetNew(time, recValue, TangentMode.Stepped, TangentMode.Stepped));
         }
 
         public bool GetLastValue() 
@@ -276,7 +297,7 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
         {
             if (Flag.keys.Length > 1)
             {
-                Flag.SetCurveLinear();
+                //Flag.SetCurveLinear();
                 clip.SetCurve(relativePath, targetType, propertyName, Flag);     
             }
             
@@ -295,6 +316,10 @@ namespace Assets.FlaImporter.Editor.FlaProcessors
 
         public void Record(float value, float time)
         {
+            if (Float.length > 0 && Mathf.Approximately(Float.keys.Last().value,value))
+            {
+                return;
+            }
             Float.AddKey(time, value);
         }
 
